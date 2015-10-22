@@ -13,20 +13,48 @@ import MultipeerConnectivity
 typealias AVAMessage = String
 
 
-protocol AVAServiceManagerDelegate {
+struct AVANodeState {
+    let ownPeer: AVAVertex
+    let topology: AVATopology
+    let connectedPeers: [AVAVertex]
+    let disconnectedPeers: [AVAVertex]
     
-    func serviceManager(serviceManager: AVAServiceManager, didChangeStateForPeer peer: MCPeerID, inSession session: MCSession)
-    func serviceManager(serviceManager: AVAServiceManager, didReceiveMessage message: AVAMessage)
+    init(topology: AVATopology, ownPeer: AVAVertex, session: MCSession) {
+        self.ownPeer = ownPeer
+        self.topology = topology
+        
+        var connected = [AVAVertex]()
+        for peer in session.connectedPeers {
+            connected.append(peer.displayName)
+        }
+        self.connectedPeers = connected
+        
+        var disconnected = [AVAVertex]()
+        for vertex in topology.adjacentVerticesForVertex(ownPeer) {
+            if !self.connectedPeers.contains(vertex) {
+                disconnected.append(vertex)
+            }
+        }
+        self.disconnectedPeers = disconnected
+    }
 }
 
 
-class AVAServiceManager: NSObject {
+protocol AVANodeManagerDelegate {
+    
+    func nodeManager(nodeManager: AVANodeManager, stateUpdated state: AVANodeState)
+    func nodeManager(nodeManager: AVANodeManager, didReceiveMessage message: AVAMessage)
+}
+
+
+class AVANodeManager: NSObject {
  
     
     private let AVA_SERVICE_TYPE = "ava"
     private let myPeerId: MCPeerID
     private let serviceAdvertiser : MCNearbyServiceAdvertiser
     private let serviceBrowser : MCNearbyServiceBrowser
+    private let topology: AVATopology
     private let peersToConnect: [AVAVertex]
     private var remoteSessions = [AVAVertex: MCSession]()
     
@@ -37,12 +65,13 @@ class AVAServiceManager: NSObject {
         return session
     }()
     
-    var delegate: AVAServiceManagerDelegate?
+    var delegate: AVANodeManagerDelegate?
     var logger: AVALogging
 
     
     
     init(topology: AVATopology, ownPeerName: String, logger: AVALogging) {
+        self.topology = topology
         self.logger = logger
         self.myPeerId = MCPeerID(displayName: ownPeerName)
         self.peersToConnect = topology.adjacentVerticesForVertex(ownPeerName)
@@ -51,12 +80,6 @@ class AVAServiceManager: NSObject {
         self.serviceBrowser = MCNearbyServiceBrowser(peer: myPeerId, serviceType: AVA_SERVICE_TYPE)
         
         super.init()
-        
-        self.serviceAdvertiser.delegate = self
-        self.serviceAdvertiser.startAdvertisingPeer()
-
-        self.serviceBrowser.delegate = self
-        self.serviceBrowser.startBrowsingForPeers()
     }
     
     
@@ -64,10 +87,19 @@ class AVAServiceManager: NSObject {
         self.serviceAdvertiser.stopAdvertisingPeer()
         self.serviceBrowser.stopBrowsingForPeers()
     }
+    
+    
+    func start() {
+        self.serviceAdvertiser.delegate = self
+        self.serviceAdvertiser.startAdvertisingPeer()
+        
+        self.serviceBrowser.delegate = self
+        self.serviceBrowser.startBrowsingForPeers()
+    }
 }
 
 
-extension AVAServiceManager : MCNearbyServiceAdvertiserDelegate {
+extension AVANodeManager : MCNearbyServiceAdvertiserDelegate {
     
     func advertiser(advertiser: MCNearbyServiceAdvertiser, didNotStartAdvertisingPeer error: NSError) {
         print("\(__FUNCTION__)")
@@ -87,7 +119,7 @@ extension AVAServiceManager : MCNearbyServiceAdvertiserDelegate {
 }
 
 
-extension AVAServiceManager : MCNearbyServiceBrowserDelegate {
+extension AVANodeManager : MCNearbyServiceBrowserDelegate {
     
     func browser(browser: MCNearbyServiceBrowser, didNotStartBrowsingForPeers error: NSError) {
         print("\(__FUNCTION__)")
@@ -106,7 +138,7 @@ extension AVAServiceManager : MCNearbyServiceBrowserDelegate {
 }
 
 
-extension AVAServiceManager : MCSessionDelegate {
+extension AVANodeManager : MCSessionDelegate {
     
     func session(session: MCSession, peer peerID: MCPeerID, didChangeState state: MCSessionState) {
         if session != self.session {
@@ -133,26 +165,29 @@ extension AVAServiceManager : MCSessionDelegate {
         }
         
         self.logger.log(AVALogEntry(level: level, event: event, peerName: peerID.displayName, message: "Peer '\(peerID.displayName)' changed status to \(state.stringValue())"));
-        self.delegate?.serviceManager(self, didChangeStateForPeer: peerID, inSession: self.session)
+        self.delegate?.nodeManager(self, stateUpdated: AVANodeState(topology: self.topology, ownPeer: self.myPeerId.displayName, session: session))
     }
+    
     
     func session(session: MCSession, didReceiveData data: NSData, fromPeer peerID: MCPeerID) {
         self.logger.log(AVALogEntry(level: AVALogLevel.Info, event: AVAEvent.DataReceived, peerName: peerID.displayName, message: "Received \(data.length) bytes from peer \(peerID.displayName)"));
-        self.delegate?.serviceManager(self, didReceiveMessage: String(data: data, encoding: NSUTF8StringEncoding)!)
+        self.delegate?.nodeManager(self, didReceiveMessage: String(data: data, encoding: NSUTF8StringEncoding)!)
     }
+    
     
     func session(session: MCSession, didReceiveStream stream: NSInputStream, withName streamName: String, fromPeer peerID: MCPeerID) {
         print("\(__FUNCTION__)")
     }
     
+    
     func session(session: MCSession, didFinishReceivingResourceWithName resourceName: String, fromPeer peerID: MCPeerID, atURL localURL: NSURL, withError error: NSError?) {
         print("\(__FUNCTION__)")
     }
     
+    
     func session(session: MCSession, didStartReceivingResourceWithName resourceName: String, fromPeer peerID: MCPeerID, withProgress progress: NSProgress) {
         print("\(__FUNCTION__)")
     }
-    
 }
 
 

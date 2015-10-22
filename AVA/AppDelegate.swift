@@ -14,11 +14,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     var loggingTextView: NSTextView?
     
-    var serviceManager: AVAServiceManager?
+    var nodeManager: AVANodeManager?
     
     var setup: AVASetup!
     var topology: AVATopology!
-    var onArgumentsProcessed: ((setup: AVASetup) -> ())?
+    var onArgumentsProcessed: ((ownPeerName: AVAVertex, topology: AVATopology) -> ())?
     
     
     func applicationDidFinishLaunching(aNotification: NSNotification) {
@@ -30,28 +30,27 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             print("Missing parameter --peerName")
             exit(2)
         }
-        if let onArgumentsProcessed = self.onArgumentsProcessed {
-            onArgumentsProcessed(setup: self.setup)
-        }
-        
         
         if self.setup.isMaster {
             if self.setup.randomTopology {
                 self.buildRandomTopology()
             } else {
                 self.buildTopologyFromFile()
-                self.instantiateTopology(self.topology, ownPeerName: self.setup.peerName!)
-                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (Int64)(10 * NSEC_PER_SEC)), dispatch_get_main_queue()) {
-                    self.serviceManager?.bla()
-                }
+//                self.instantiateTopology(self.topology, ownPeerName: self.setup.peerName!)
             }
         } else {
             self.buildTopologyFromFile()
         }
         
-        if self.setup.peerName != nil {
-            self.serviceManager = AVAServiceManager(topology: self.topology, ownPeerName: self.setup.peerName!, logger: self)
+        if let onArgumentsProcessed = self.onArgumentsProcessed {
+            onArgumentsProcessed(ownPeerName: self.setup.peerName!, topology: self.topology)
         }
+        
+//        if self.setup.peerName != nil {
+//            self.nodeManager = AVANodeManager(topology: self.topology, ownPeerName: self.setup.peerName!, logger: self)
+//            self.nodeManager?.delegate = self
+//            self.nodeManager?.start()
+//        }
     }
 
     func applicationWillTerminate(aNotification: NSNotification) {
@@ -110,7 +109,7 @@ extension AppDelegate {
             exit(2)
         }
     }
-    
+
 }
 
 
@@ -141,6 +140,20 @@ extension AppDelegate: AVALogging {
             self.loggingTextView?.textStorage?.appendAttributedString(attributedString)
             self.loggingTextView?.scrollRangeToVisible(NSMakeRange((self.loggingTextView?.string?.characters.count)!, 0))
         }
-//        [self.outputTextView scrollRangeToVisible:NSMakeRange([[self.outputTextView string] length], 0)];
+    }
+}
+
+
+
+
+
+// Only for testing
+extension AppDelegate: AVANodeManagerDelegate {
+    
+    func nodeManager(nodeManager: AVANodeManager, stateUpdated state: AVANodeState) {
+    }
+    
+    
+    func nodeManager(nodeManager: AVANodeManager, didReceiveMessage message: AVAMessage) {
     }
 }
