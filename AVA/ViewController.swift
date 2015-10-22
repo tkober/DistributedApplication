@@ -10,18 +10,18 @@ import Cocoa
 
 class ViewController: NSViewController {
 
+    @IBOutlet weak var logScrollView: NSScrollView!
+    @IBOutlet weak var nameLabel: NSTextField?
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
-    }
-
-    override var representedObject: AnyObject? {
-        didSet {
-        // Update the view, if already loaded.
+        let appDelegate = NSApp.delegate as! AppDelegate
+        appDelegate.loggingTextView = logScrollView.contentView.documentView as? NSTextView
+        appDelegate.onArgumentsProcessed = {(setup: AVASetup) in
+            self.nameLabel?.stringValue = setup.peerName!
         }
     }
-
 
 }
 

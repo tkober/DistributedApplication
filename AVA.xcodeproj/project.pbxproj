@@ -11,6 +11,10 @@
 		F15C07CD1BD75CCF00EB41D8 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F15C07CC1BD75CCF00EB41D8 /* ViewController.swift */; };
 		F15C07CF1BD75CCF00EB41D8 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F15C07CE1BD75CCF00EB41D8 /* Assets.xcassets */; };
 		F15C07D21BD75CCF00EB41D8 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F15C07D01BD75CCF00EB41D8 /* Main.storyboard */; };
+		F15C07DB1BD75CF200EB41D8 /* AVAServiceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F15C07DA1BD75CF200EB41D8 /* AVAServiceManager.swift */; settings = {ASSET_TAGS = (); }; };
+		F15C07DE1BD7A4B000EB41D8 /* AVALogging.swift in Sources */ = {isa = PBXBuildFile; fileRef = F15C07DD1BD7A4B000EB41D8 /* AVALogging.swift */; settings = {ASSET_TAGS = (); }; };
+		F161EDE61BD81FF3008131C3 /* AVAArgumentsParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = F161EDE51BD81FF3008131C3 /* AVAArgumentsParser.swift */; settings = {ASSET_TAGS = (); }; };
+		F161EDE91BD856E6008131C3 /* AVATopology.swift in Sources */ = {isa = PBXBuildFile; fileRef = F161EDE81BD856E6008131C3 /* AVATopology.swift */; settings = {ASSET_TAGS = (); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -20,6 +24,10 @@
 		F15C07CE1BD75CCF00EB41D8 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F15C07D11BD75CCF00EB41D8 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		F15C07D31BD75CCF00EB41D8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		F15C07DA1BD75CF200EB41D8 /* AVAServiceManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AVAServiceManager.swift; sourceTree = "<group>"; };
+		F15C07DD1BD7A4B000EB41D8 /* AVALogging.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AVALogging.swift; sourceTree = "<group>"; };
+		F161EDE51BD81FF3008131C3 /* AVAArgumentsParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AVAArgumentsParser.swift; sourceTree = "<group>"; };
+		F161EDE81BD856E6008131C3 /* AVATopology.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AVATopology.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -52,6 +60,10 @@
 		F15C07C91BD75CCF00EB41D8 /* AVA */ = {
 			isa = PBXGroup;
 			children = (
+				F161EDE71BD856D8008131C3 /* Topology */,
+				F161EDE41BD81FD5008131C3 /* ArgumentsParser */,
+				F15C07DC1BD7A4A200EB41D8 /* Logging */,
+				F15C07D91BD75CD900EB41D8 /* Networking */,
 				F15C07CA1BD75CCF00EB41D8 /* AppDelegate.swift */,
 				F15C07CC1BD75CCF00EB41D8 /* ViewController.swift */,
 				F15C07CE1BD75CCF00EB41D8 /* Assets.xcassets */,
@@ -59,6 +71,38 @@
 				F15C07D31BD75CCF00EB41D8 /* Info.plist */,
 			);
 			path = AVA;
+			sourceTree = "<group>";
+		};
+		F15C07D91BD75CD900EB41D8 /* Networking */ = {
+			isa = PBXGroup;
+			children = (
+				F15C07DA1BD75CF200EB41D8 /* AVAServiceManager.swift */,
+			);
+			name = Networking;
+			sourceTree = "<group>";
+		};
+		F15C07DC1BD7A4A200EB41D8 /* Logging */ = {
+			isa = PBXGroup;
+			children = (
+				F15C07DD1BD7A4B000EB41D8 /* AVALogging.swift */,
+			);
+			name = Logging;
+			sourceTree = "<group>";
+		};
+		F161EDE41BD81FD5008131C3 /* ArgumentsParser */ = {
+			isa = PBXGroup;
+			children = (
+				F161EDE51BD81FF3008131C3 /* AVAArgumentsParser.swift */,
+			);
+			name = ArgumentsParser;
+			sourceTree = "<group>";
+		};
+		F161EDE71BD856D8008131C3 /* Topology */ = {
+			isa = PBXGroup;
+			children = (
+				F161EDE81BD856E6008131C3 /* AVATopology.swift */,
+			);
+			name = Topology;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -130,8 +174,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F15C07DB1BD75CF200EB41D8 /* AVAServiceManager.swift in Sources */,
+				F161EDE61BD81FF3008131C3 /* AVAArgumentsParser.swift in Sources */,
 				F15C07CD1BD75CCF00EB41D8 /* ViewController.swift in Sources */,
+				F15C07DE1BD7A4B000EB41D8 /* AVALogging.swift in Sources */,
 				F15C07CB1BD75CCF00EB41D8 /* AppDelegate.swift in Sources */,
+				F161EDE91BD856E6008131C3 /* AVATopology.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -272,6 +320,7 @@
 				F15C07D81BD75CCF00EB41D8 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
