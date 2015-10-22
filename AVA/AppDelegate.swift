@@ -42,6 +42,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             self.buildTopologyFromFile()
         }
         
+        self.layoutWindow(CGSizeMake(400, 400), margin: 20)
+        
         if let onArgumentsProcessed = self.onArgumentsProcessed {
             onArgumentsProcessed(ownPeerName: self.setup.peerName!, isMaster: self.setup.isMaster, topology: self.topology)
         }
@@ -56,11 +58,33 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationWillTerminate(aNotification: NSNotification) {
         // Insert code here to tear down your application
     }
-
-}
-
-
-extension AppDelegate {
+    
+    
+    // MARK: Topology
+    
+    
+    func buildTopologyFromFile() {
+        if let path = self.setup.topologyFilePath {
+            self.topology = AVATopology(graphPath: path)
+        } else {
+            print("Missing parameter --topology")
+            exit(2)
+        }
+    }
+    
+    
+    func buildRandomTopology() {
+        if let size = self.setup.randomTopologySize {
+            print("TODO: Build random topology of size \(size)")
+        } else {
+            print("Missing parameter --randomTopologySize")
+            exit(2)
+        }
+    }
+    
+    
+    // MARK: Instantiation
+    
     
     func instantiateTopology(topology: AVATopology, ownPeerName peerName: String) {
         let vertices = topology.vertices
@@ -86,27 +110,22 @@ extension AppDelegate {
         print("Instantiated peer '\(vertex)'")
     }
     
-}
-
-
-extension AppDelegate {
     
-    func buildTopologyFromFile() {
-        if let path = self.setup.topologyFilePath {
-            self.topology = AVATopology(graphPath: path)
-        } else {
-            print("Missing parameter --topology")
-            exit(2)
-        }
-    }
+    // MARK: Layout
     
     
-    func buildRandomTopology() {
-        if let size = self.setup.randomTopologySize {
-            print("TODO: Build random topology of size \(size)")
-        } else {
-            print("Missing parameter --randomTopologySize")
-            exit(2)
+    func layoutWindow(size: CGSize, margin: CGFloat) {
+        if let window = NSApplication.sharedApplication().windows.first {
+            let visibleScreenFrame = window.screen?.visibleFrame
+            let windowesPerRow = UInt(floor((visibleScreenFrame?.size.width)! / (size.width + margin)))
+            let index = UInt(self.topology.vertices.sort().indexOf(self.setup.peerName!)!)
+            let row = index / windowesPerRow
+            let col = index % windowesPerRow
+            let x = (margin+size.width)*CGFloat(col) + visibleScreenFrame!.origin.x
+            let y = visibleScreenFrame!.size.height - ((margin+size.height)*CGFloat(row)) - size.height + visibleScreenFrame!.origin.y
+            let frame = CGRect(x: x, y: y, width: size.width, height: size.height)
+            window.setFrame(frame, display: true, animate: false)
+            window.makeKeyAndOrderFront(self)
         }
     }
 

@@ -114,7 +114,11 @@ class ViewController: NSViewController {
                 let dot = GRAPHVIZ.dotFromTopology(topology, vertexDecorator: { (vertex: AVAVertex) -> (color: String, style: String) in
                     return (vertex == ownPeerName ? "blue" : "grey", "solid")
                 }, ajacencyDecorator: { (adjacency: AVAAdjacency) -> (direction: AVAGraphvizAdjacencyDirection, color: String, style: String, label: String?) in
-                    return (AVAGraphvizAdjacencyDirection.Undirected, "grey", "solid", nil)
+                    if adjacency.v1 == ownPeerName || adjacency.v2 == ownPeerName {
+                        return (AVAGraphvizAdjacencyDirection.Undirected, "blue", "dotted", nil)
+                    } else {
+                        return (AVAGraphvizAdjacencyDirection.Undirected, "grey", "solid", nil)
+                    }
                 })
                 try dot.writeToFile(tempFilePath, atomically: true, encoding: NSUTF8StringEncoding)
                 GRAPHVIZ.renderPNGFromFile(tempFilePath) { (image) -> () in
