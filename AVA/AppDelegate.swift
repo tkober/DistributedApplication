@@ -18,7 +18,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     var setup: AVASetup!
     var topology: AVATopology!
-    var onArgumentsProcessed: ((ownPeerName: AVAVertex, topology: AVATopology) -> ())?
+    var onArgumentsProcessed: ((ownPeerName: AVAVertex, isMaster: Bool, topology: AVATopology) -> ())?
     
     
     func applicationDidFinishLaunching(aNotification: NSNotification) {
@@ -36,14 +36,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 self.buildRandomTopology()
             } else {
                 self.buildTopologyFromFile()
-//                self.instantiateTopology(self.topology, ownPeerName: self.setup.peerName!)
+                self.instantiateTopology(self.topology, ownPeerName: self.setup.peerName!)
             }
         } else {
             self.buildTopologyFromFile()
         }
         
         if let onArgumentsProcessed = self.onArgumentsProcessed {
-            onArgumentsProcessed(ownPeerName: self.setup.peerName!, topology: self.topology)
+            onArgumentsProcessed(ownPeerName: self.setup.peerName!, isMaster: self.setup.isMaster, topology: self.topology)
         }
         
 //        if self.setup.peerName != nil {

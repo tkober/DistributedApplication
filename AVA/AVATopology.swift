@@ -44,7 +44,7 @@ func !=(lhs: AVAAdjacency, rhs: AVAAdjacency) -> Bool {
 class AVATopology: NSObject {
     
     
-    private var adjacencies: [AVAAdjacency] = []
+    let adjacencies: [AVAAdjacency]
     
     
     var vertices: [AVAVertex] {
@@ -77,11 +77,11 @@ class AVATopology: NSObject {
     
     
     init(graph: NSData) {
-        super.init()
         var graphString = String(data: graph, encoding: NSUTF8StringEncoding)!
         graphString = graphString.stringByReplacingOccurrencesOfString("\n", withString: ";")
         
         graphString = graphString.stringByReplacingOccurrencesOfString(" ", withString: "")
+        var adjacencies = [AVAAdjacency]()
         
         var regex: NSRegularExpression
         do {
@@ -90,21 +90,23 @@ class AVATopology: NSObject {
             graphString = (graphString as NSString).substringWithRange(match.rangeAtIndex(3))
             
             try regex = NSRegularExpression(pattern: "([a-zA-Z0-9]+)(--)([a-zA-Z0-9]+)", options: NSRegularExpressionOptions(rawValue: 0))
+            
             regex.enumerateMatchesInString(graphString, options: NSMatchingOptions(rawValue: 0), range: NSMakeRange(0, graphString.characters.count), usingBlock: { (match: NSTextCheckingResult?, flags: NSMatchingFlags, _) -> Void in
                 let lhs = (graphString as NSString).substringWithRange(match!.rangeAtIndex(1))
                 let rhs = (graphString as NSString).substringWithRange(match!.rangeAtIndex(3))
                 let adjacency = AVAAdjacency(v1: lhs, v2: rhs)
-                let alreadyIncluded = self.adjacencies.contains({ (item: AVAAdjacency) -> Bool in
+                let alreadyIncluded = adjacencies.contains({ (item: AVAAdjacency) -> Bool in
                     return item == adjacency
                 })
                 if !alreadyIncluded {
-                    self.adjacencies.append(adjacency)
+                    adjacencies.append(adjacency)
                 }
             })
-            
         } catch {
             
         }
+        self.adjacencies = adjacencies
+        super.init()
     }
     
     

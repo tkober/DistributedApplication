@@ -94,6 +94,10 @@ class ViewController: NSViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        self.graphImageView?.wantsLayer = true
+        self.graphImageView?.layer?.backgroundColor = NSColor.whiteColor().CGColor
+        
         self.updateLocalLog()
         self.clearGraphImage()
         
@@ -101,8 +105,31 @@ class ViewController: NSViewController {
         let loggingTextView = logScrollView.contentView.documentView as? NSTextView
         loggingTextView?.editable = false
         appDelegate.loggingTextView = loggingTextView
-        appDelegate.onArgumentsProcessed = {(ownPeerName: AVAVertex, topology: AVATopology) in
-            self.nameLabel?.stringValue = ownPeerName
+        appDelegate.onArgumentsProcessed = {(ownPeerName: AVAVertex, isMaster: Bool, topology: AVATopology) in
+            let nameSuffix = isMaster ? " (Master)": ""
+            self.nameLabel?.stringValue = "Node: \(ownPeerName)\(nameSuffix)"
+        
+            let tempFilePath = "\(appDelegate.setup.applicationPackageDirectory)/~\(ownPeerName)_\(NSDate().timeIntervalSince1970).render"
+            do {
+                let dot = GRAPHVIZ.dotFromTopology(topology, vertexDecorator: { (vertex: AVAVertex) -> (color: String, style: String) in
+                    return (vertex == ownPeerName ? "blue" : "grey", "solid")
+                }, ajacencyDecorator: { (adjacency: AVAAdjacency) -> (direction: AVAGraphvizAdjacencyDirection, color: String, style: String, label: String?) in
+                    return (AVAGraphvizAdjacencyDirection.Undirected, "grey", "solid", nil)
+                })
+                try dot.writeToFile(tempFilePath, atomically: true, encoding: NSUTF8StringEncoding)
+                GRAPHVIZ.renderPNGFromFile(tempFilePath) { (image) -> () in
+                    if let graphImage = image {
+                        self.updateGraphImage(graphImage)
+                    }
+                    do {
+                        try NSFileManager.defaultManager().removeItemAtPath(tempFilePath)
+                    } catch {
+                        
+                    }
+                }
+            } catch {
+                
+            }
         }
     }
 

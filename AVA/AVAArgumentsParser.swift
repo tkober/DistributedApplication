@@ -30,6 +30,15 @@ class AVASetup: NSObject {
     }
     
     
+    var applicationPackageDirectory: String {
+        get {
+            var components = self.applicationPackagePath.componentsSeparatedByString("/")
+            components.removeLast()
+            return NSString.pathWithComponents(["/"] + components)
+        }
+    }
+    
+    
     init(applicationPath: String) {
         self.applicationPath = applicationPath
         super.init()
@@ -40,6 +49,7 @@ class AVASetup: NSObject {
         var result = "\(super.description) {"
         result += "\n\tapplicationPath -> \(applicationPath)"
         result += "\n\tapplicationPackagePath -> \(applicationPackagePath)"
+        result += "\napplicationPackageDirectory -> \(applicationPackageDirectory)"
         result += "\n\tisMaster -> \(isMaster)"
         result += "\n\trandomTopology -> \(randomTopology)"
         result += "\n\trandomTopologySize -> \(randomTopologySize)"

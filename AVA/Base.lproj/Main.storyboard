@@ -709,7 +709,7 @@
                                     <constraint firstAttribute="width" constant="21" id="QlD-6n-wey"/>
                                     <constraint firstAttribute="height" constant="21" id="nQk-Yo-qz9"/>
                                 </constraints>
-                                <buttonCell key="cell" type="disclosureTriangle" bezelStyle="disclosure" image="2C779D7B-8F7B-4A1A-A656-5298C072DC27" imagePosition="overlaps" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="meP-VL-YAY">
+                                <buttonCell key="cell" type="disclosureTriangle" bezelStyle="disclosure" image="4C65BD42-0670-42E2-8F39-555B2D8A5536" imagePosition="overlaps" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="meP-VL-YAY">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -730,11 +730,19 @@
                                 </textFieldCell>
                             </textField>
                             <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="YfC-p4-Rsz">
-                                <rect key="frame" x="0.0" y="152" width="480" height="118"/>
+                                <rect key="frame" x="0.0" y="152" width="480" height="73"/>
                                 <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" id="QJg-Ma-NfV"/>
                             </imageView>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="BWs-U7-60B">
+                                <rect key="frame" x="16" y="233" width="446" height="17"/>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="Label" id="T9o-Dc-veD">
+                                    <font key="font" size="13" name=".HelveticaNeueDeskInterface-Bold"/>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
                             <progressIndicator horizontalHuggingPriority="750" verticalHuggingPriority="750" maxValue="100" bezeled="NO" indeterminate="YES" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="QxH-QL-HPV">
-                                <rect key="frame" x="224" y="195" width="32" height="32"/>
+                                <rect key="frame" x="224" y="173" width="32" height="32"/>
                             </progressIndicator>
                         </subviews>
                         <constraints>
@@ -742,21 +750,25 @@
                             <constraint firstAttribute="trailing" secondItem="1Zi-Bb-ilS" secondAttribute="trailing" id="6I5-e6-x15"/>
                             <constraint firstItem="1Zi-Bb-ilS" firstAttribute="top" secondItem="4iX-KO-DDi" secondAttribute="bottom" constant="7" id="PZu-hY-frm"/>
                             <constraint firstItem="1Zi-Bb-ilS" firstAttribute="leading" secondItem="m2S-Jp-Qdl" secondAttribute="leading" id="QmN-az-IsS"/>
+                            <constraint firstItem="BWs-U7-60B" firstAttribute="leading" secondItem="m2S-Jp-Qdl" secondAttribute="leading" constant="18" id="VnE-na-Hpy"/>
                             <constraint firstItem="4iX-KO-DDi" firstAttribute="top" secondItem="YfC-p4-Rsz" secondAttribute="bottom" constant="8" id="WpI-2L-hd4"/>
                             <constraint firstItem="1Zi-Bb-ilS" firstAttribute="top" secondItem="JLp-3p-Wbj" secondAttribute="bottom" constant="3" id="Zgw-7w-aBa"/>
-                            <constraint firstItem="YfC-p4-Rsz" firstAttribute="top" secondItem="m2S-Jp-Qdl" secondAttribute="top" id="b4P-d0-TqK"/>
                             <constraint firstItem="QxH-QL-HPV" firstAttribute="centerY" secondItem="YfC-p4-Rsz" secondAttribute="centerY" id="f7G-c5-1it"/>
                             <constraint firstItem="QxH-QL-HPV" firstAttribute="centerX" secondItem="YfC-p4-Rsz" secondAttribute="centerX" id="lGv-4d-6Te"/>
+                            <constraint firstItem="BWs-U7-60B" firstAttribute="top" secondItem="m2S-Jp-Qdl" secondAttribute="top" constant="20" id="lmp-H0-5ni"/>
                             <constraint firstAttribute="bottom" secondItem="1Zi-Bb-ilS" secondAttribute="bottom" id="nvg-w5-bos"/>
+                            <constraint firstItem="YfC-p4-Rsz" firstAttribute="top" secondItem="BWs-U7-60B" secondAttribute="bottom" constant="8" id="pl1-ZX-5ns"/>
                             <constraint firstAttribute="trailing" secondItem="YfC-p4-Rsz" secondAttribute="trailing" id="r7J-lf-010"/>
                             <constraint firstItem="JLp-3p-Wbj" firstAttribute="leading" secondItem="m2S-Jp-Qdl" secondAttribute="leading" constant="7" id="ukq-Jh-bxU"/>
                             <constraint firstItem="YfC-p4-Rsz" firstAttribute="leading" secondItem="m2S-Jp-Qdl" secondAttribute="leading" id="xNr-Z1-d1B"/>
+                            <constraint firstAttribute="trailing" secondItem="BWs-U7-60B" secondAttribute="trailing" constant="20" id="zK0-9t-dsY"/>
                         </constraints>
                     </view>
                     <connections>
                         <outlet property="graphImageView" destination="YfC-p4-Rsz" id="06Y-kj-naG"/>
                         <outlet property="localLogHeightConstraint" destination="gRg-Mn-75W" id="hJb-1I-8gB"/>
                         <outlet property="logScrollView" destination="1Zi-Bb-ilS" id="0EB-I6-WSz"/>
+                        <outlet property="nameLabel" destination="BWs-U7-60B" id="ZKN-02-8Ql"/>
                         <outlet property="renderingGraphProgressIndicator" destination="QxH-QL-HPV" id="H86-xZ-f0v"/>
                         <outlet property="toggleLocalLogButton" destination="JLp-3p-Wbj" id="DpU-Uw-pW4"/>
                     </connections>
@@ -767,7 +779,7 @@
         </scene>
     </scenes>
     <resources>
-        <image name="2C779D7B-8F7B-4A1A-A656-5298C072DC27" width="1" height="1">
+        <image name="4C65BD42-0670-42E2-8F39-555B2D8A5536" width="1" height="1">
             <mutableData key="keyedArchiveRepresentation">
 YnBsaXN0MDDUAQIDBAUGPj9YJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3ASAAGGoK4HCBMU
 GR4fIyQsLzI4O1UkbnVsbNUJCgsMDQ4PEBESVk5TU2l6ZVYkY2xhc3NcTlNJbWFnZUZsYWdzVk5TUmVw
