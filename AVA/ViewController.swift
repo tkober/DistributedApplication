@@ -121,7 +121,7 @@ class ViewController: NSViewController {
                 return (vertex == ownPeerName ? "blue" : "grey", "solid")
                 }, ajacencyDecorator: { (adjacency: AVAAdjacency) -> (direction: AVAGraphvizAdjacencyDirection, color: String, style: String, label: String?) in
                     if adjacency.v1 == ownPeerName || adjacency.v2 == ownPeerName {
-                        return (AVAGraphvizAdjacencyDirection.Undirected, "orange", "dotted", nil)
+                        return (AVAGraphvizAdjacencyDirection.Undirected, "blue", "dotted", nil)
                     } else {
                         return (AVAGraphvizAdjacencyDirection.Undirected, "grey", "solid", nil)
                     }
