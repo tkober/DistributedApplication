@@ -55,7 +55,7 @@ class ViewController: NSViewController {
     // MARK: | Local Log
     
     
-    private var localLogState = LocalLogState.Hidden
+    private var localLogState = LocalLogState.Visible
     
     
     func updateLocalLog() {
@@ -105,35 +105,75 @@ class ViewController: NSViewController {
         let loggingTextView = logScrollView.contentView.documentView as? NSTextView
         loggingTextView?.editable = false
         appDelegate.loggingTextView = loggingTextView
-        appDelegate.onArgumentsProcessed = {(ownPeerName: AVAVertex, isMaster: Bool, topology: AVATopology) in
-            let nameSuffix = isMaster ? " (Master)": ""
-            self.nameLabel?.stringValue = "Node: \(ownPeerName)\(nameSuffix)"
+        appDelegate.onArgumentsProcessed = self.onArgumentProcessing
+        appDelegate.onNodeStateUpdate = self.onNodeStateUpdate
+    }
+    
+    
+    func onArgumentProcessing(ownPeerName: AVAVertex, isMaster: Bool, topology: AVATopology) {
+        let appDelegate = NSApp.delegate as! AppDelegate
+        let nameSuffix = isMaster ? " (Master)": ""
+        self.nameLabel?.stringValue = "Node: \(ownPeerName)\(nameSuffix)"
         
-            let tempFilePath = "\(appDelegate.setup.applicationPackageDirectory)/~\(ownPeerName)_\(NSDate().timeIntervalSince1970).render"
-            do {
-                let dot = GRAPHVIZ.dotFromTopology(topology, vertexDecorator: { (vertex: AVAVertex) -> (color: String, style: String) in
-                    return (vertex == ownPeerName ? "blue" : "grey", "solid")
+        let tempFilePath = "\(appDelegate.setup.applicationPackageDirectory)/~\(ownPeerName)_\(NSDate().timeIntervalSince1970).render"
+        do {
+            let dot = GRAPHVIZ.dotFromTopology(topology, vertexDecorator: { (vertex: AVAVertex) -> (color: String, style: String) in
+                return (vertex == ownPeerName ? "blue" : "grey", "solid")
                 }, ajacencyDecorator: { (adjacency: AVAAdjacency) -> (direction: AVAGraphvizAdjacencyDirection, color: String, style: String, label: String?) in
                     if adjacency.v1 == ownPeerName || adjacency.v2 == ownPeerName {
-                        return (AVAGraphvizAdjacencyDirection.Undirected, "blue", "dotted", nil)
+                        return (AVAGraphvizAdjacencyDirection.Undirected, "orange", "dotted", nil)
                     } else {
                         return (AVAGraphvizAdjacencyDirection.Undirected, "grey", "solid", nil)
                     }
-                })
-                try dot.writeToFile(tempFilePath, atomically: true, encoding: NSUTF8StringEncoding)
-                GRAPHVIZ.renderPNGFromFile(tempFilePath) { (image) -> () in
-                    if let graphImage = image {
-                        self.updateGraphImage(graphImage)
-                    }
-                    do {
-                        try NSFileManager.defaultManager().removeItemAtPath(tempFilePath)
-                    } catch {
-                        
-                    }
+            })
+            try dot.writeToFile(tempFilePath, atomically: true, encoding: NSUTF8StringEncoding)
+            GRAPHVIZ.renderPNGFromFile(tempFilePath) { (image) -> () in
+                if let graphImage = image {
+                    self.updateGraphImage(graphImage)
                 }
-            } catch {
-                
+                do {
+                    try NSFileManager.defaultManager().removeItemAtPath(tempFilePath)
+                } catch {
+                    
+                }
             }
+        } catch {
+            
+        }
+    }
+    
+    
+    func onNodeStateUpdate(state: AVANodeState) {
+        let appDelegate = NSApp.delegate as! AppDelegate
+        let ownPeerName = appDelegate.setup.peerName!
+        let topology = appDelegate.topology
+        let tempFilePath = "\(appDelegate.setup.applicationPackageDirectory)/~\(ownPeerName)_\(NSDate().timeIntervalSince1970).render"
+        
+        do {
+            let dot = GRAPHVIZ.dotFromTopology(topology, vertexDecorator: { (vertex: AVAVertex) -> (color: String, style: String) in
+                return (vertex == ownPeerName ? "blue" : "grey", "solid")
+                }, ajacencyDecorator: { (adjacency: AVAAdjacency) -> (direction: AVAGraphvizAdjacencyDirection, color: String, style: String, label: String?) in
+                    if adjacency.v1 == ownPeerName || adjacency.v2 == ownPeerName {
+                        let vertex = adjacency.v1 == ownPeerName ? adjacency.v2 : adjacency.v1
+                        let style = state.connectedPeers.contains(vertex) ? "solid" : "dotted"
+                        return (AVAGraphvizAdjacencyDirection.Undirected, "blue", style, nil)
+                    } else {
+                        return (AVAGraphvizAdjacencyDirection.Undirected, "grey", "solid", nil)
+                    }
+            })
+            try dot.writeToFile(tempFilePath, atomically: true, encoding: NSUTF8StringEncoding)
+            GRAPHVIZ.renderPNGFromFile(tempFilePath) { (image) -> () in
+                if let graphImage = image {
+                    self.updateGraphImage(graphImage)
+                }
+                do {
+                    try NSFileManager.defaultManager().removeItemAtPath(tempFilePath)
+                } catch {
+                    
+                }
+            }
+        } catch {
+            
         }
     }
 

@@ -19,6 +19,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var setup: AVASetup!
     var topology: AVATopology!
     var onArgumentsProcessed: ((ownPeerName: AVAVertex, isMaster: Bool, topology: AVATopology) -> ())?
+    var onNodeStateUpdate: ((state: AVANodeState) -> ())?
     
     
     func applicationDidFinishLaunching(aNotification: NSNotification) {
@@ -42,17 +43,17 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             self.buildTopologyFromFile()
         }
         
-        self.layoutWindow(CGSizeMake(400, 400), margin: 20)
+        self.layoutWindow(CGSizeMake(350, 450), margin: 20)
         
         if let onArgumentsProcessed = self.onArgumentsProcessed {
             onArgumentsProcessed(ownPeerName: self.setup.peerName!, isMaster: self.setup.isMaster, topology: self.topology)
         }
         
-//        if self.setup.peerName != nil {
-//            self.nodeManager = AVANodeManager(topology: self.topology, ownPeerName: self.setup.peerName!, logger: self)
-//            self.nodeManager?.delegate = self
-//            self.nodeManager?.start()
-//        }
+        if self.setup.peerName != nil {
+            self.nodeManager = AVANodeManager(topology: self.topology, ownPeerName: self.setup.peerName!, logger: self)
+            self.nodeManager?.delegate = self
+            self.nodeManager?.start()
+        }
     }
 
     func applicationWillTerminate(aNotification: NSNotification) {
@@ -170,6 +171,11 @@ extension AppDelegate: AVALogging {
 extension AppDelegate: AVANodeManagerDelegate {
     
     func nodeManager(nodeManager: AVANodeManager, stateUpdated state: AVANodeState) {
+        if let update = self.onNodeStateUpdate {
+            dispatch_async(dispatch_get_main_queue()) { () -> Void in
+                update(state: state)
+            }
+        }
     }
     
     
