@@ -10,7 +10,7 @@ import Foundation
 
 
 typealias AVAVertex = String
-
+typealias AVATopologyDimension = (vertexCount: Int, edgeCount: Int)
 
 class AVAAdjacency: NSObject {
     
@@ -63,6 +63,13 @@ class AVATopology: NSObject {
     }
     
     
+//    var dimension: AVATopologyDimension {
+//        get {
+//            return (self.vertices.count, self.adjacencies.count)
+//        }
+//    }
+    
+    
     func adjacentVerticesForVertex(vertex: AVAVertex) -> [AVAVertex] {
         var result: [AVAVertex] = []
         for adjacency in adjacencies {
@@ -74,6 +81,19 @@ class AVATopology: NSObject {
         }
         return result
     }
+    
+    
+    override var description: String {
+        var result = "\(super.description) {"
+        for adjacency in self.adjacencies {
+            result += "\n\t\(adjacency)"
+        }
+        result += "\n}"
+        return result
+    }
+    
+    
+    // MARK: | Initializer
     
     
     init(graph: NSData) {
@@ -116,12 +136,31 @@ class AVATopology: NSObject {
     }
     
     
-    override var description: String {
-        var result = "\(super.description) {"
-        for adjacency in self.adjacencies {
-            result += "\n\t\(adjacency)"
+    convenience init(randomWithDimension dimension: AVATopologyDimension) {
+        var vertices = [AVAVertex]()
+        for (var i = 1; i <= dimension.vertexCount; i++) {
+            vertices.append("\(i)")
         }
-        result += "\n}"
-        return result
+        var adjacencies = [AVAAdjacency]()
+        
+        var j = 0
+        var v1: AVAVertex
+        while (adjacencies.count < dimension.edgeCount) {
+            v1 = vertices[j]
+            var v2 = v1
+            while (v1 == v2) {
+                v2 = vertices[Int(arc4random_uniform(UInt32(vertices.count)))]
+            }
+            let newAdjacency = AVAAdjacency(v1: v1, v2: v2)
+            let alreadyIncluded = adjacencies.contains({ (item: AVAAdjacency) -> Bool in
+                return item == newAdjacency
+            })
+            if !alreadyIncluded {
+                adjacencies.append(newAdjacency)
+                j++
+                j = j % dimension.vertexCount
+            }
+        }
+        self.init(graph: GRAPHVIZ.graphvizFileFromAdjacencies(adjacencies))
     }
 }

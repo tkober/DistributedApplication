@@ -33,12 +33,16 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
         
         if self.setup.isMaster {
+            var topologyFilePath: String
             if self.setup.randomTopology {
                 self.buildRandomTopology()
+                topologyFilePath = "\(self.setup.applicationPackageDirectory)/~random.topology"
+                GRAPHVIZ.graphvizFileFromTopology(self.topology).writeToFile(topologyFilePath, atomically: true)
             } else {
+                topologyFilePath = self.setup.topologyFilePath!
                 self.buildTopologyFromFile()
-                self.instantiateTopology(self.topology, ownPeerName: self.setup.peerName!)
             }
+            self.instantiateTopology(self.topology, ownPeerName: self.setup.peerName!, topologyFilePath: topologyFilePath)
         } else {
             self.buildTopologyFromFile()
         }
@@ -75,8 +79,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     
     func buildRandomTopology() {
-        if let size = self.setup.randomTopologySize {
-            print("TODO: Build random topology of size \(size)")
+        if let dimension = self.setup.randomTopologyDimension {
+            self.topology = AVATopology(randomWithDimension: dimension)
         } else {
             print("Missing parameter --randomTopologySize")
             exit(2)
@@ -87,7 +91,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     // MARK: Instantiation
     
     
-    func instantiateTopology(topology: AVATopology, ownPeerName peerName: String) {
+    func instantiateTopology(topology: AVATopology, ownPeerName peerName: String, topologyFilePath: String) {
         let vertices = topology.vertices
         if !vertices.contains(peerName) {
             print("Own peer name is not included in the typology")
@@ -95,7 +99,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
         for vertex in vertices {
             if vertex != peerName {
-                instantiateVertex(vertex, fromTopology: self.setup.topologyFilePath!)
+                instantiateVertex(vertex, fromTopology: topologyFilePath)
             }
         }
     }

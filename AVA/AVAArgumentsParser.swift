@@ -14,7 +14,7 @@ class AVASetup: NSObject {
     var applicationPath: String
     var isMaster = false
     var randomTopology = false
-    var randomTopologySize: UInt?
+    var randomTopologyDimension: AVATopologyDimension?
     var topologyFilePath: String?
     var peerName: String?
     
@@ -52,7 +52,7 @@ class AVASetup: NSObject {
         result += "\napplicationPackageDirectory -> \(applicationPackageDirectory)"
         result += "\n\tisMaster -> \(isMaster)"
         result += "\n\trandomTopology -> \(randomTopology)"
-        result += "\n\trandomTopologySize -> \(randomTopologySize)"
+        result += "\n\trandomTopologySize -> \(randomTopologyDimension)"
         result += "\n\ttopologyFilePath -> \(topologyFilePath)"
         result += "\n\tpeerName -> \(peerName)"
         result += "\n}"
@@ -151,8 +151,18 @@ class AVAArgumentsParser: NSObject {
                 print("Missing arguments")
                 exit(2)
             }
+            let vertexCount = Int(self.currentArgument()!)!
+            if (!self.nextArgument()) {
+                print("Missing arguments")
+                exit(2)
+            }
+            let edgeCount = Int(self.currentArgument()!)!
+            if vertexCount > edgeCount {
+                print("Number of vertices is greater than the number of edges")
+                exit(2)
+            }
             setup.randomTopology = true
-            setup.randomTopologySize = UInt(self.currentArgument()!)
+            setup.randomTopologyDimension = (vertexCount, edgeCount)
         },
         "--peerName": {(setup: AVASetup) -> () in
             if (!self.nextArgument()) {

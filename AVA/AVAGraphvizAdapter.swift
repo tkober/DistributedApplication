@@ -121,4 +121,23 @@ class AVAGraphvizAdapter: NSObject {
         let data = pipe.fileHandleForReading.readDataToEndOfFile()
         result(image: NSImage(data: data))
     }
+    
+    
+    
+    // MARK: | Generating Graphviz File
+    
+    
+    func graphvizFileFromAdjacencies(adjacencies: [AVAAdjacency]) -> NSData {
+        var graphString = "graph g {"
+        for adjacency in adjacencies {
+            graphString += "\n\(adjacency.v1) -- \(adjacency.v2)"
+        }
+        graphString += "\n}"
+        return graphString.dataUsingEncoding(NSUTF8StringEncoding)!
+    }
+    
+    
+    func graphvizFileFromTopology(topology: AVATopology) -> NSData {
+        return self.graphvizFileFromAdjacencies(topology.adjacencies)
+    }
 }
