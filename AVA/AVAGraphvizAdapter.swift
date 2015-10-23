@@ -9,6 +9,19 @@
 import Cocoa
 
 
+typealias AVAGraphvizColor = String
+
+let AVAGraphvizBlue: AVAGraphvizColor = "blue"
+let AVAGraphvizGrey: AVAGraphvizColor = "grey"
+
+
+typealias AVAGraphvizLineStyle = String
+
+let AVAGraphvizSolid: AVAGraphvizLineStyle = "solid"
+let AVAGraphvizDotted: AVAGraphvizLineStyle = "dotted"
+
+
+
 enum AVAGraphvizAdjacencyDirection {
     case Undirected;
     case InOrder;
@@ -16,9 +29,9 @@ enum AVAGraphvizAdjacencyDirection {
 }
 
 
-typealias AVAGraphvizVertexDecoration = (color: String, style: String)
+typealias AVAGraphvizVertexDecoration = (color: AVAGraphvizColor, style: AVAGraphvizLineStyle)
 typealias AVAGraphvizVertexDecorator = (vertex: AVAVertex) -> AVAGraphvizVertexDecoration
-typealias AVAGraphvizAdjacencyDecoration = (direction: AVAGraphvizAdjacencyDirection, color: String, style: String, label: String?)
+typealias AVAGraphvizAdjacencyDecoration = (direction: AVAGraphvizAdjacencyDirection, color: AVAGraphvizColor, style: AVAGraphvizLineStyle, label: String?)
 typealias AVAGraphvizAdjacencyDecorator = (adjacency: AVAAdjacency) -> AVAGraphvizAdjacencyDecoration
 
 

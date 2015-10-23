@@ -117,26 +117,17 @@ class ViewController: NSViewController {
         
         let tempFilePath = "\(appDelegate.setup.applicationPackageDirectory)/~\(ownPeerName)_\(NSDate().timeIntervalSince1970).render"
         do {
-            let dot = GRAPHVIZ.dotFromTopology(topology, vertexDecorator: { (vertex: AVAVertex) -> (color: String, style: String) in
-                return (vertex == ownPeerName ? "blue" : "grey", "solid")
-                }, ajacencyDecorator: { (adjacency: AVAAdjacency) -> (direction: AVAGraphvizAdjacencyDirection, color: String, style: String, label: String?) in
-                    if adjacency.v1 == ownPeerName || adjacency.v2 == ownPeerName {
-                        return (AVAGraphvizAdjacencyDirection.Undirected, "blue", "dotted", nil)
-                    } else {
-                        return (AVAGraphvizAdjacencyDirection.Undirected, "grey", "solid", nil)
-                    }
+            let dot = GRAPHVIZ.dotFromTopology(topology, vertexDecorator: { (vertex: AVAVertex) -> AVAGraphvizVertexDecoration in
+                return (vertex == ownPeerName ? AVAGraphvizBlue : AVAGraphvizGrey, AVAGraphvizSolid)
+            }, ajacencyDecorator: { (adjacency: AVAAdjacency) -> AVAGraphvizAdjacencyDecoration in
+                if adjacency.v1 == ownPeerName || adjacency.v2 == ownPeerName {
+                    return (AVAGraphvizAdjacencyDirection.Undirected, AVAGraphvizBlue, AVAGraphvizDotted, nil)
+                } else {
+                    return (AVAGraphvizAdjacencyDirection.Undirected, AVAGraphvizGrey, AVAGraphvizSolid, nil)
+                }
             })
             try dot.writeToFile(tempFilePath, atomically: true, encoding: NSUTF8StringEncoding)
-            GRAPHVIZ.renderPNGFromFile(tempFilePath) { (image) -> () in
-                if let graphImage = image {
-                    self.updateGraphImage(graphImage)
-                }
-                do {
-                    try NSFileManager.defaultManager().removeItemAtPath(tempFilePath)
-                } catch {
-                    
-                }
-            }
+            self.renderAndUpdateGraphImage(tempFilePath)
         } catch {
             
         }
@@ -150,30 +141,35 @@ class ViewController: NSViewController {
         let tempFilePath = "\(appDelegate.setup.applicationPackageDirectory)/~\(ownPeerName)_\(NSDate().timeIntervalSince1970).render"
         
         do {
-            let dot = GRAPHVIZ.dotFromTopology(topology, vertexDecorator: { (vertex: AVAVertex) -> (color: String, style: String) in
-                return (vertex == ownPeerName ? "blue" : "grey", "solid")
-                }, ajacencyDecorator: { (adjacency: AVAAdjacency) -> (direction: AVAGraphvizAdjacencyDirection, color: String, style: String, label: String?) in
-                    if adjacency.v1 == ownPeerName || adjacency.v2 == ownPeerName {
-                        let vertex = adjacency.v1 == ownPeerName ? adjacency.v2 : adjacency.v1
-                        let style = state.connectedPeers.contains(vertex) ? "solid" : "dotted"
-                        return (AVAGraphvizAdjacencyDirection.Undirected, "blue", style, nil)
-                    } else {
-                        return (AVAGraphvizAdjacencyDirection.Undirected, "grey", "solid", nil)
-                    }
+            let dot = GRAPHVIZ.dotFromTopology(topology, vertexDecorator: { (vertex: AVAVertex) -> AVAGraphvizVertexDecoration in
+                return (vertex == ownPeerName ? AVAGraphvizBlue : AVAGraphvizGrey, AVAGraphvizSolid)
+            }, ajacencyDecorator: { (adjacency: AVAAdjacency) -> AVAGraphvizAdjacencyDecoration in
+                if adjacency.v1 == ownPeerName || adjacency.v2 == ownPeerName {
+                    let vertex = adjacency.v1 == ownPeerName ? adjacency.v2 : adjacency.v1
+                    let style = state.connectedPeers.contains(vertex) ? AVAGraphvizSolid : AVAGraphvizDotted
+                    return (AVAGraphvizAdjacencyDirection.Undirected, AVAGraphvizBlue, style, nil)
+                } else {
+                    return (AVAGraphvizAdjacencyDirection.Undirected, AVAGraphvizGrey, AVAGraphvizSolid, nil)
+                }
             })
             try dot.writeToFile(tempFilePath, atomically: true, encoding: NSUTF8StringEncoding)
-            GRAPHVIZ.renderPNGFromFile(tempFilePath) { (image) -> () in
-                if let graphImage = image {
-                    self.updateGraphImage(graphImage)
-                }
-                do {
-                    try NSFileManager.defaultManager().removeItemAtPath(tempFilePath)
-                } catch {
-                    
-                }
-            }
+            self.renderAndUpdateGraphImage(tempFilePath)
         } catch {
             
+        }
+    }
+    
+    
+    func renderAndUpdateGraphImage(tempFilePath: String) {
+        GRAPHVIZ.renderPNGFromFile(tempFilePath) { (image) -> () in
+            if let graphImage = image {
+                self.updateGraphImage(graphImage)
+            }
+            do {
+                try NSFileManager.defaultManager().removeItemAtPath(tempFilePath)
+            } catch {
+                
+            }
         }
     }
 
