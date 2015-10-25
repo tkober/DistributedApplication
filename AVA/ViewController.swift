@@ -32,6 +32,7 @@ class ViewController: NSViewController {
     @IBOutlet private weak var localLogHeightConstraint: NSLayoutConstraint?
     @IBOutlet private weak var renderingGraphProgressIndicator: NSProgressIndicator?
     @IBOutlet private weak var graphImageView: NSImageView?
+    @IBOutlet private weak var terminateButton: NSButton?
     
     
     
@@ -49,6 +50,12 @@ class ViewController: NSViewController {
             break
         }
         self.updateLocalLog()
+    }
+    
+    
+    @IBAction private func terminateButtonPressed(sender: NSButton) {
+        let appDelegate = NSApp.delegate as! AppDelegate
+        appDelegate.terminateTopology()
     }
     
     
@@ -114,6 +121,7 @@ class ViewController: NSViewController {
         let appDelegate = NSApp.delegate as! AppDelegate
         let nameSuffix = isMaster ? " (Master)": ""
         self.nameLabel?.stringValue = "Node: \(ownPeerName)\(nameSuffix)"
+        self.terminateButton?.hidden = !isMaster
         
         let tempFilePath = "\(appDelegate.setup.applicationPackageDirectory)/~\(ownPeerName)_\(NSDate().timeIntervalSince1970).render"
         do {

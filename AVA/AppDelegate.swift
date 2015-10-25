@@ -88,6 +88,15 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
     
     
+    func terminateTopology() {
+        self.nodeManager?.delegate = nil
+        self.nodeManager?.broadcastMessage(AVAMessage.terminateMessage(self.setup.peerName!))
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(1 * Double(NSEC_PER_SEC))), dispatch_get_main_queue()) { () -> Void in
+            exit(0)
+        }
+    }
+    
+    
     // MARK: Instantiation
     
     
@@ -184,5 +193,18 @@ extension AppDelegate: AVANodeManagerDelegate {
     
     
     func nodeManager(nodeManager: AVANodeManager, didReceiveMessage message: AVAMessage) {
+        switch message.type {
+        case .Terminate:
+            self.terminateTopology()
+            break
+            
+        case .ApplicationData:
+            break
+        }
+    }
+    
+    
+    func nodeManager(nodeManager: AVANodeManager, didReceiveUninterpretableData: NSData) {
+        
     }
 }

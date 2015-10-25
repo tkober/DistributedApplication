@@ -10,9 +10,6 @@ import Foundation
 import MultipeerConnectivity
 
 
-typealias AVAMessage = String
-
-
 struct AVANodeState {
     let ownPeer: AVAVertex
     let topology: AVATopology
@@ -44,6 +41,7 @@ protocol AVANodeManagerDelegate {
     
     func nodeManager(nodeManager: AVANodeManager, stateUpdated state: AVANodeState)
     func nodeManager(nodeManager: AVANodeManager, didReceiveMessage message: AVAMessage)
+    func nodeManager(nodeManager: AVANodeManager, didReceiveUninterpretableData: NSData)
 }
 
 
@@ -96,6 +94,54 @@ class AVANodeManager: NSObject {
         self.serviceBrowser.delegate = self
         self.serviceBrowser.startBrowsingForPeers()
     }
+    
+    
+    // MARK: | State
+    
+    
+    var state: AVANodeState {
+        get {
+            return AVANodeState(topology: self.topology, ownPeer: self.myPeerId.displayName, session: session)
+        }
+    }
+    
+    
+    // MARK: | Messaging
+    
+    
+    func sendMessage(message:AVAMessage, toVertex vertex: AVAVertex) -> Bool {
+        for connectedPeer in self.session.connectedPeers {
+            if connectedPeer.displayName == vertex {
+                return self.sendMessage(message, toPeers: [connectedPeer])
+            }
+        }
+        return false
+    }
+    
+    
+    func sendMessage(message:AVAMessage, toPeers peers: [MCPeerID]) -> Bool {
+        for peer in peers {
+            if !self.session.connectedPeers.contains(peer) {
+                return false
+            }
+        }
+        if let messageData = message.data() {
+            do {
+                try self.session.sendData(messageData, toPeers: peers, withMode: MCSessionSendDataMode.Unreliable)
+                return true
+            } catch {
+                return false
+            }
+        } else {
+            return false
+        }
+    }
+    
+    
+    func broadcastMessage(message: AVAMessage) -> Bool {
+        return self.sendMessage(message, toPeers: self.session.connectedPeers)
+    }
+    
 }
 
 
@@ -105,6 +151,7 @@ extension AVANodeManager : MCNearbyServiceAdvertiserDelegate {
         print("\(__FUNCTION__)")
         print("error -> \(error)")
     }
+    
     
     func advertiser(advertiser: MCNearbyServiceAdvertiser, didReceiveInvitationFromPeer peerID: MCPeerID, withContext context: NSData?, invitationHandler: ((Bool, MCSession) -> Void)) {
         self.logger.log(AVALogEntry(level: AVALogLevel.Debug, event: AVAEvent.InvitationReceived, peerName: peerID.displayName, message: "Received Invitation from peer \(peerID.displayName)"));
@@ -126,12 +173,14 @@ extension AVANodeManager : MCNearbyServiceBrowserDelegate {
         print("error -> \(error)")
     }
     
+    
     func browser(browser: MCNearbyServiceBrowser, foundPeer peerID: MCPeerID, withDiscoveryInfo info: [String : String]?) {
         self.logger.log(AVALogEntry(level: AVALogLevel.Debug, event: AVAEvent.Discovery, peerName: peerID.displayName, message: "Discovered peer \(peerID.displayName)"));
         if self.peersToConnect.contains(peerID.displayName) {
             browser.invitePeer(peerID, toSession: self.session, withContext: nil, timeout: 20)
         }
     }
+    
     
     func browser(browser: MCNearbyServiceBrowser, lostPeer peerID: MCPeerID) {
     }
@@ -165,13 +214,17 @@ extension AVANodeManager : MCSessionDelegate {
         }
         
         self.logger.log(AVALogEntry(level: level, event: event, peerName: peerID.displayName, message: "Peer '\(peerID.displayName)' changed status to \(state.stringValue())"));
-        self.delegate?.nodeManager(self, stateUpdated: AVANodeState(topology: self.topology, ownPeer: self.myPeerId.displayName, session: session))
+        self.delegate?.nodeManager(self, stateUpdated: self.state)
     }
     
     
     func session(session: MCSession, didReceiveData data: NSData, fromPeer peerID: MCPeerID) {
         self.logger.log(AVALogEntry(level: AVALogLevel.Info, event: AVAEvent.DataReceived, peerName: peerID.displayName, message: "Received \(data.length) bytes from peer \(peerID.displayName)"));
-        self.delegate?.nodeManager(self, didReceiveMessage: String(data: data, encoding: NSUTF8StringEncoding)!)
+        if let message = AVAMessage.messageFromData(data) {
+            self.delegate?.nodeManager(self, didReceiveMessage: message)
+        } else {
+            self.delegate?.nodeManager(self, didReceiveUninterpretableData: data)
+        }
     }
     
     
