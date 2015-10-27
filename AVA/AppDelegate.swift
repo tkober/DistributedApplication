@@ -21,9 +21,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var onArgumentsProcessed: ((ownPeerName: AVAVertex, isMaster: Bool, topology: AVATopology) -> ())?
     var onNodeStateUpdate: ((state: AVANodeState) -> ())?
     
+    let loggingQueue: dispatch_queue_t = dispatch_queue_create("ava(\(NSProcessInfo.processInfo().processIdentifier)).app_delegate.logging)", DISPATCH_QUEUE_SERIAL)
+    
+    lazy var logfilePath: String = "\(self.setup.applicationPackageDirectory)/~\(self.setup.peerName!).dlog"
+    var loggingStream: NSOutputStream?
+    
     
     func applicationDidFinishLaunching(aNotification: NSNotification) {
-        // Insert code here to initialize your application
+        
         let arguments = NSProcessInfo.processInfo().arguments
         self.setup = AVAArgumentsParser.sharedInstance.parseArguments(arguments)
         
@@ -31,6 +36,16 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             print("Missing parameter --peerName")
             exit(2)
         }
+        
+        if (NSFileManager.defaultManager().fileExistsAtPath(logfilePath)) {
+            do {
+                try NSFileManager.defaultManager().removeItemAtPath(logfilePath)
+            } catch {
+                
+            }
+        }
+        loggingStream = NSOutputStream(toFileAtPath: self.logfilePath, append: true)
+        loggingStream?.open()
         
         if self.setup.isMaster {
             var topologyFilePath: String
@@ -149,6 +164,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 extension AppDelegate: AVALogging {
     
     func log(entry: AVALogEntry) {
+        dispatch_async(self.loggingQueue) { () -> Void in
+            if let stream = self.loggingStream, log = entry.stringValue() {
+                stream.write("\(log),\n")
+            }
+        }
         dispatch_async(dispatch_get_main_queue()) { () -> Void in
             var attributes: [String: AnyObject]
             switch (entry.level) {
@@ -169,11 +189,47 @@ extension AppDelegate: AVALogging {
                 break
             }
             
-            let attributedString = NSAttributedString(string: "[\(entry.event.stringValue())]: \(entry.message)\n", attributes: attributes)
+            let attributedString = NSAttributedString(string: "[\(entry.event.stringValue())]: \(entry.description)\n", attributes: attributes)
             self.loggingTextView?.textStorage?.appendAttributedString(attributedString)
             self.loggingTextView?.scrollRangeToVisible(NSMakeRange((self.loggingTextView?.string?.characters.count)!, 0))
         }
     }
+}
+
+
+extension NSOutputStream {
+    
+    /// Write String to outputStream
+    ///
+    /// - parameter string:                The string to write.
+    /// - parameter encoding:              The NSStringEncoding to use when writing the string. This will default to UTF8.
+    /// - parameter allowLossyConversion:  Whether to permit lossy conversion when writing the string.
+    ///
+    /// - returns:                         Return total number of bytes written upon success. Return -1 upon failure.
+    
+    func write(string: String, encoding: NSStringEncoding = NSUTF8StringEncoding, allowLossyConversion: Bool = true) -> Int {
+        if let data = string.dataUsingEncoding(encoding, allowLossyConversion: allowLossyConversion) {
+            var bytes = UnsafePointer<UInt8>(data.bytes)
+            var bytesRemaining = data.length
+            var totalBytesWritten = 0
+            
+            while bytesRemaining > 0 {
+                let bytesWritten = self.write(bytes, maxLength: bytesRemaining)
+                if bytesWritten < 0 {
+                    return -1
+                }
+                
+                bytesRemaining -= bytesWritten
+                bytes += bytesWritten
+                totalBytesWritten += bytesWritten
+            }
+            
+            return totalBytesWritten
+        }
+        
+        return -1
+    }
+    
 }
 
 
@@ -204,7 +260,7 @@ extension AppDelegate: AVANodeManagerDelegate {
     }
     
     
-    func nodeManager(nodeManager: AVANodeManager, didReceiveUninterpretableData: NSData) {
+    func nodeManager(nodeManager: AVANodeManager, didReceiveUninterpretableData data: NSData, fromPeer peer: AVAVertex) {
         
     }
 }

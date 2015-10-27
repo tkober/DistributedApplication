@@ -64,34 +64,46 @@ enum AVAEvent: Int {
 
 struct AVALogEntry {
     
-    let LEVEL_KEY: NSString = "level"
-    let EVENT_KEY: NSString = "event"
-    let PEER_NAME_KEY: NSString = "peerName"
-    let MESSAGE_KEY: NSString = "message"
+    private let LEVEL_KEY: String = "level"
+    private let EVENT_KEY: String = "event"
+    private let PEER_KEY: String = "peer"
+    private let DESCRIPTION_KEY: String = "description"
+    private let REMOTE_KEY: String = "remotePeer"
+    private let MESSAGE_KEY: String = "message"
     
     let level: AVALogLevel
     let event: AVAEvent
-    let peerName: String
-    let message: String
+    let peer: String
+    let description: String
+    let remotePeer: String?
+    let message: AVAMessage?
     
     
-    init(level: AVALogLevel, event: AVAEvent, peerName: String, message: String) {
+    init(level: AVALogLevel, event: AVAEvent, peer: String, description: String, remotePeer: String? = nil, message: AVAMessage? = nil) {
         self.level = level
         self.event = event
-        self.peerName = peerName
+        self.peer = peer
+        self.description = description
+        self.remotePeer = remotePeer
         self.message = message
     }
     
     
     func stringValue() -> String? {
-        let json: [NSString: AnyObject] = [
+        var json: [String: AnyObject] = [
             LEVEL_KEY: NSNumber(integer: self.level.rawValue),
             EVENT_KEY: NSNumber(integer: self.event.rawValue),
-            PEER_NAME_KEY: self.peerName,
-            MESSAGE_KEY: self.message
+            PEER_KEY: self.peer,
+            DESCRIPTION_KEY: self.description
         ]
+        if let remotePeer = self.remotePeer {
+            json[REMOTE_KEY] = remotePeer
+        }
+        if let messageJSON = self.message?.json() {
+            json[MESSAGE_KEY] = messageJSON
+        }
         do {
-            let jsonData = try NSJSONSerialization.dataWithJSONObject(json, options: NSJSONWritingOptions(rawValue: 0))
+            let jsonData = try NSJSONSerialization.dataWithJSONObject(json, options: NSJSONWritingOptions(rawValue: 1))
             return String(data: jsonData, encoding: NSUTF8StringEncoding)
         } catch {
             return nil

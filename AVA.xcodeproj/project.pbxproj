@@ -17,6 +17,7 @@
 		F161EDE61BD81FF3008131C3 /* AVAArgumentsParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = F161EDE51BD81FF3008131C3 /* AVAArgumentsParser.swift */; };
 		F161EDE91BD856E6008131C3 /* AVATopology.swift in Sources */ = {isa = PBXBuildFile; fileRef = F161EDE81BD856E6008131C3 /* AVATopology.swift */; };
 		F1B3F2C81BDD5C00009C0E7B /* NSDate+ISO8601.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1B3F2C71BDD5C00009C0E7B /* NSDate+ISO8601.swift */; };
+		F1B3F2CB1BDD79B3009C0E7B /* AVAApplication.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1B3F2CA1BDD79B3009C0E7B /* AVAApplication.swift */; };
 		F1E816671BDAE5CF00F03284 /* AVAMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1E816661BDAE5CF00F03284 /* AVAMessage.swift */; };
 /* End PBXBuildFile section */
 
@@ -33,6 +34,7 @@
 		F161EDE51BD81FF3008131C3 /* AVAArgumentsParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AVAArgumentsParser.swift; sourceTree = "<group>"; };
 		F161EDE81BD856E6008131C3 /* AVATopology.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AVATopology.swift; sourceTree = "<group>"; };
 		F1B3F2C71BDD5C00009C0E7B /* NSDate+ISO8601.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSDate+ISO8601.swift"; sourceTree = "<group>"; };
+		F1B3F2CA1BDD79B3009C0E7B /* AVAApplication.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AVAApplication.swift; sourceTree = "<group>"; };
 		F1E816661BDAE5CF00F03284 /* AVAMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AVAMessage.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -74,6 +76,7 @@
 		F15C07C91BD75CCF00EB41D8 /* AVA */ = {
 			isa = PBXGroup;
 			children = (
+				F1B3F2C91BDD79A4009C0E7B /* Application */,
 				F1B3F2C61BDD5B9B009C0E7B /* NSDate+ISO8601 */,
 				F146FD411BD97ABF0028B4E1 /* Grahviz */,
 				F161EDE71BD856D8008131C3 /* Topology */,
@@ -128,6 +131,14 @@
 				F1B3F2C71BDD5C00009C0E7B /* NSDate+ISO8601.swift */,
 			);
 			name = "NSDate+ISO8601";
+			sourceTree = "<group>";
+		};
+		F1B3F2C91BDD79A4009C0E7B /* Application */ = {
+			isa = PBXGroup;
+			children = (
+				F1B3F2CA1BDD79B3009C0E7B /* AVAApplication.swift */,
+			);
+			name = Application;
 			sourceTree = "<group>";
 		};
 		F1E816651BDAE5C400F03284 /* Message */ = {
@@ -216,6 +227,7 @@
 				F15C07CB1BD75CCF00EB41D8 /* AppDelegate.swift in Sources */,
 				F146FD431BD97AD70028B4E1 /* AVAGraphvizAdapter.swift in Sources */,
 				F161EDE91BD856E6008131C3 /* AVATopology.swift in Sources */,
+				F1B3F2CB1BDD79B3009C0E7B /* AVAApplication.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

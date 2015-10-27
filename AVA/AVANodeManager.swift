@@ -41,7 +41,7 @@ protocol AVANodeManagerDelegate {
     
     func nodeManager(nodeManager: AVANodeManager, stateUpdated state: AVANodeState)
     func nodeManager(nodeManager: AVANodeManager, didReceiveMessage message: AVAMessage)
-    func nodeManager(nodeManager: AVANodeManager, didReceiveUninterpretableData: NSData)
+    func nodeManager(nodeManager: AVANodeManager, didReceiveUninterpretableData data: NSData, fromPeer peer: AVAVertex)
 }
 
 
@@ -125,7 +125,7 @@ class AVANodeManager: NSObject {
                 return false
             }
         }
-        if let messageData = message.data() {
+        if let messageData = message.jsonData() {
             do {
                 try self.session.sendData(messageData, toPeers: peers, withMode: MCSessionSendDataMode.Unreliable)
                 return true
@@ -154,7 +154,8 @@ extension AVANodeManager : MCNearbyServiceAdvertiserDelegate {
     
     
     func advertiser(advertiser: MCNearbyServiceAdvertiser, didReceiveInvitationFromPeer peerID: MCPeerID, withContext context: NSData?, invitationHandler: ((Bool, MCSession) -> Void)) {
-        self.logger.log(AVALogEntry(level: AVALogLevel.Debug, event: AVAEvent.InvitationReceived, peerName: peerID.displayName, message: "Received Invitation from peer \(peerID.displayName)"));
+        let logEntry = AVALogEntry(level: .Debug, event: .InvitationReceived, peer: self.myPeerId.displayName, description: "Received Invitation from peer \(peerID.displayName)", remotePeer: peerID.displayName)
+        self.logger.log(logEntry)
         if (self.peersToConnect.contains(peerID.displayName)) {
             let session = MCSession(peer: self.myPeerId)
             session.delegate = self
@@ -175,7 +176,8 @@ extension AVANodeManager : MCNearbyServiceBrowserDelegate {
     
     
     func browser(browser: MCNearbyServiceBrowser, foundPeer peerID: MCPeerID, withDiscoveryInfo info: [String : String]?) {
-        self.logger.log(AVALogEntry(level: AVALogLevel.Debug, event: AVAEvent.Discovery, peerName: peerID.displayName, message: "Discovered peer \(peerID.displayName)"));
+        let logEntry = AVALogEntry(level: .Debug, event: .Discovery, peer: self.myPeerId.displayName, description: "Discovered peer \(peerID.displayName)", remotePeer: peerID.displayName)
+        self.logger.log(logEntry)
         if self.peersToConnect.contains(peerID.displayName) {
             browser.invitePeer(peerID, toSession: self.session, withContext: nil, timeout: 20)
         }
@@ -213,17 +215,21 @@ extension AVANodeManager : MCSessionDelegate {
             break;
         }
         
-        self.logger.log(AVALogEntry(level: level, event: event, peerName: peerID.displayName, message: "Peer '\(peerID.displayName)' changed status to \(state.stringValue())"));
+        let logEntry = AVALogEntry(level: level, event: event, peer: self.myPeerId.displayName, description: "Peer '\(peerID.displayName)' changed status to \(state.stringValue())")
+        self.logger.log(logEntry)
         self.delegate?.nodeManager(self, stateUpdated: self.state)
     }
     
     
     func session(session: MCSession, didReceiveData data: NSData, fromPeer peerID: MCPeerID) {
-        self.logger.log(AVALogEntry(level: AVALogLevel.Info, event: AVAEvent.DataReceived, peerName: peerID.displayName, message: "Received \(data.length) bytes from peer \(peerID.displayName)"));
         if let message = AVAMessage.messageFromData(data) {
+            let logEntry = AVALogEntry(level: .Info, event: .DataReceived, peer: self.myPeerId.displayName, description: "Received message (\(data.length) bytes) from \(peerID.displayName)", remotePeer: peerID.displayName, message: message)
+            self.logger.log(logEntry)
             self.delegate?.nodeManager(self, didReceiveMessage: message)
         } else {
-            self.delegate?.nodeManager(self, didReceiveUninterpretableData: data)
+            let logEntry = AVALogEntry(level: .Warning, event: .DataReceived, peer: self.myPeerId.displayName, description: "Received uninterpretable data (\(data.length) bytes) from \(peerID.displayName)", remotePeer: peerID.displayName)
+            self.logger.log(logEntry)
+            self.delegate?.nodeManager(self, didReceiveUninterpretableData: data, fromPeer: peerID.displayName)
         }
     }
     

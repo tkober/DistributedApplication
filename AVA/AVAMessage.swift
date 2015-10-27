@@ -18,7 +18,7 @@ enum AVAMessageType: Int {
 }
 
 
-struct AVAMessage {
+class AVAMessage: NSObject {
     
     private static let TYPE_JSON_KEY = "type"
     private static let TIMESTAMP_JSON_KEY = "timestamp"
@@ -69,18 +69,24 @@ struct AVAMessage {
     }
     
     
-    // MARK: | Data
+    // MARK: | JSON
     
     
-    func data() -> NSData? {
-        var json: [String: AnyObject] = [
+    func json() -> [String: AnyObject] {
+        var result: [String: AnyObject] = [
             AVAMessage.TYPE_JSON_KEY: NSNumber(integer: self.type.rawValue),
             AVAMessage.TIMESTAMP_JSON_KEY: self.timestamp.iso8601Representation(),
             AVAMessage.SENDER_JSON_KEY: self.sender,
         ]
         if let payload = self.payload {
-            json[AVAMessage.PAYLOAD_JSON_KEY] = payload
+            result[AVAMessage.PAYLOAD_JSON_KEY] = payload
         }
+        return result
+    }
+    
+    
+    func jsonData() -> NSData? {
+        let json = self.json()
         do {
             let data: NSData?
             try data = NSJSONSerialization.dataWithJSONObject(json, options: NSJSONWritingOptions.PrettyPrinted)
