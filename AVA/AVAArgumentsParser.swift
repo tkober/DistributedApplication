@@ -9,6 +9,11 @@
 import Foundation
 
 
+enum AVAServiceType: UInt {
+    case Uebung1 = 1
+}
+
+
 class AVASetup: NSObject {
     
     var applicationPath: String
@@ -17,10 +22,13 @@ class AVASetup: NSObject {
     var randomTopologyDimension: AVATopologyDimension?
     var topologyFilePath: String?
     var peerName: String?
+    var rumor: String?
+    var service: AVAServiceType!
     
     
     var applicationPackagePath: String {
         get {
+            
             var components = self.applicationPath.componentsSeparatedByString("/")
             while (components.last != nil && !components.last!.hasSuffix(".app")) {
                 components.removeLast()
@@ -55,6 +63,8 @@ class AVASetup: NSObject {
         result += "\n\trandomTopologySize -> \(randomTopologyDimension)"
         result += "\n\ttopologyFilePath -> \(topologyFilePath)"
         result += "\n\tpeerName -> \(peerName)"
+        result += "\n\trumor -> \(rumor)"
+        result += "\n\tservice -> \(service)"
         result += "\n}"
         return result
     }
@@ -171,5 +181,20 @@ class AVAArgumentsParser: NSObject {
             }
             setup.peerName = self.currentArgument()
         },
+        "--rumor": {(setup: AVASetup) -> () in
+            if (!self.nextArgument()) {
+                print("Missing arguments")
+                exit(2)
+            }
+            setup.rumor = self.currentArgument()
+        },
+        "--service": {(setup: AVASetup) -> () in
+            if (!self.nextArgument()) {
+                print("Missing arguments")
+                exit(2)
+            }
+            setup.service = AVAServiceType(rawValue: UInt(self.currentArgument()!)!)
+        },
+        
     ]
 }

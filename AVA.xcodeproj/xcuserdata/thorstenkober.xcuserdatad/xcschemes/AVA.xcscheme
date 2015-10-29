@@ -79,11 +79,11 @@
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "4"
+            argument = "5"
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "5"
+            argument = "6"
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
@@ -92,6 +92,22 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "2"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "--service"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "1"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "--rumor"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "Hallo_Welt"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>

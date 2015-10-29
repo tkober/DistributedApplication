@@ -47,12 +47,12 @@ protocol AVANodeManagerDelegate {
 
 class AVANodeManager: NSObject {
  
+    let topology: AVATopology
+    let myPeerId: MCPeerID
     
     private let AVA_SERVICE_TYPE = "ava"
-    private let myPeerId: MCPeerID
     private let serviceAdvertiser : MCNearbyServiceAdvertiser
     private let serviceBrowser : MCNearbyServiceBrowser
-    private let topology: AVATopology
     private let peersToConnect: [AVAVertex]
     private var remoteSessions = [AVAVertex: MCSession]()
     
@@ -142,6 +142,17 @@ class AVANodeManager: NSObject {
         return self.sendMessage(message, toPeers: self.session.connectedPeers)
     }
     
+    
+    func broadcastMessage(message: AVAMessage, exceptingPeers: [MCPeerID]) -> Bool {
+        var peers = [MCPeerID]()
+        for peer in self.session.connectedPeers {
+            if !exceptingPeers.contains(peer) {
+                peers.append(peer)
+            }
+        }
+        return self.sendMessage(message, toPeers: peers)
+    }
+    
 }
 
 
@@ -211,7 +222,7 @@ extension AVANodeManager : MCSessionDelegate {
             
         case .NotConnected:
             event = AVAEvent.Disconnect
-            level = AVALogLevel.Warning
+            level = AVALogLevel.Error
             break;
         }
         

@@ -26,6 +26,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     lazy var logfilePath: String = "\(self.setup.applicationPackageDirectory)/~\(self.setup.peerName!).dlog"
     var loggingStream: NSOutputStream?
     
+    var service: AVAService?
+    var messageBuffer = [AVAMessage]()
+    
+    
     
     func applicationDidFinishLaunching(aNotification: NSNotification) {
         
@@ -37,15 +41,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             exit(2)
         }
         
-        if (NSFileManager.defaultManager().fileExistsAtPath(logfilePath)) {
-            do {
-                try NSFileManager.defaultManager().removeItemAtPath(logfilePath)
-            } catch {
-                
-            }
-        }
-        loggingStream = NSOutputStream(toFileAtPath: self.logfilePath, append: true)
-        loggingStream?.open()
+        self.setupLogger()
+        self.service = self.serviceFromSetup(self.setup)
         
         if self.setup.isMaster {
             var topologyFilePath: String
@@ -57,7 +54,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 topologyFilePath = self.setup.topologyFilePath!
                 self.buildTopologyFromFile()
             }
-            self.instantiateTopology(self.topology, ownPeerName: self.setup.peerName!, topologyFilePath: topologyFilePath)
+            self.instantiateTopology(self.topology, ownPeerName: self.setup.peerName!, topologyFilePath: topologyFilePath, withServiceOfType: self.setup.service)
         } else {
             self.buildTopologyFromFile()
         }
@@ -115,7 +112,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     // MARK: Instantiation
     
     
-    func instantiateTopology(topology: AVATopology, ownPeerName peerName: String, topologyFilePath: String) {
+    func instantiateTopology(topology: AVATopology, ownPeerName peerName: String, topologyFilePath: String, withServiceOfType serviceType: AVAServiceType) {
         let vertices = topology.vertices
         if !vertices.contains(peerName) {
             print("Own peer name is not included in the typology")
@@ -123,16 +120,16 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
         for vertex in vertices {
             if vertex != peerName {
-                instantiateVertex(vertex, fromTopology: topologyFilePath)
+                instantiateVertex(vertex, fromTopology: topologyFilePath, withServiceOfType: serviceType)
             }
         }
     }
     
     
-    func instantiateVertex(vertex: AVAVertex, fromTopology topology: String) {
+    func instantiateVertex(vertex: AVAVertex, fromTopology topology: String, withServiceOfType serviceType: AVAServiceType) {
         let task = NSTask()
         task.launchPath = self.setup.applicationPath
-        task.arguments = ["--topology", topology, "--peerName", vertex]
+        task.arguments = ["--topology", topology, "--peerName", vertex, "--service", "\(serviceType.rawValue)"]
         dispatch_async(dispatch_queue_create("peer_\(vertex)_instantiate", DISPATCH_QUEUE_SERIAL)) { () -> Void in
             task.launch()
         }
@@ -194,18 +191,75 @@ extension AppDelegate: AVALogging {
             self.loggingTextView?.scrollRangeToVisible(NSMakeRange((self.loggingTextView?.string?.characters.count)!, 0))
         }
     }
+    
+    
+    func setupLogger() {
+        if (NSFileManager.defaultManager().fileExistsAtPath(logfilePath)) {
+            do {
+                try NSFileManager.defaultManager().removeItemAtPath(logfilePath)
+            } catch {
+                
+            }
+        }
+        loggingStream = NSOutputStream(toFileAtPath: self.logfilePath, append: true)
+        loggingStream?.open()
+    }
+}
+
+
+extension AppDelegate: AVANodeManagerDelegate {
+    
+    func nodeManager(nodeManager: AVANodeManager, stateUpdated state: AVANodeState) {
+        if state.disconnectedPeers.count == 0 {
+            if let service = self.service {
+                service.startWithBufferedMessage(self.messageBuffer)
+            }
+        }
+        if let update = self.onNodeStateUpdate {
+            dispatch_async(dispatch_get_main_queue()) { () -> Void in
+                update(state: state)
+            }
+        }
+    }
+    
+    
+    func nodeManager(nodeManager: AVANodeManager, didReceiveMessage message: AVAMessage) {
+        switch message.type {
+        case .Terminate:
+            self.terminateTopology()
+            break
+            
+        case .ApplicationData:
+            if let service = self.service {
+                service.nodeManager(nodeManager, didReceiveApplicationDataMessage: message)
+            } else {
+                self.messageBuffer.append(message)
+            }
+            break
+        }
+    }
+    
+    
+    func nodeManager(nodeManager: AVANodeManager, didReceiveUninterpretableData data: NSData, fromPeer peer: AVAVertex) {
+        
+    }
+}
+
+
+extension AppDelegate {
+    
+    func serviceFromSetup(setup: AVASetup) -> AVAService {
+        switch setup.service! {
+        case AVAServiceType.Uebung1:
+            return AVAUebung1(setup: setup)
+            
+        }
+    }
+    
 }
 
 
 extension NSOutputStream {
-    
-    /// Write String to outputStream
-    ///
-    /// - parameter string:                The string to write.
-    /// - parameter encoding:              The NSStringEncoding to use when writing the string. This will default to UTF8.
-    /// - parameter allowLossyConversion:  Whether to permit lossy conversion when writing the string.
-    ///
-    /// - returns:                         Return total number of bytes written upon success. Return -1 upon failure.
     
     func write(string: String, encoding: NSStringEncoding = NSUTF8StringEncoding, allowLossyConversion: Bool = true) -> Int {
         if let data = string.dataUsingEncoding(encoding, allowLossyConversion: allowLossyConversion) {
@@ -230,37 +284,4 @@ extension NSOutputStream {
         return -1
     }
     
-}
-
-
-
-
-
-// Only for testing
-extension AppDelegate: AVANodeManagerDelegate {
-    
-    func nodeManager(nodeManager: AVANodeManager, stateUpdated state: AVANodeState) {
-        if let update = self.onNodeStateUpdate {
-            dispatch_async(dispatch_get_main_queue()) { () -> Void in
-                update(state: state)
-            }
-        }
-    }
-    
-    
-    func nodeManager(nodeManager: AVANodeManager, didReceiveMessage message: AVAMessage) {
-        switch message.type {
-        case .Terminate:
-            self.terminateTopology()
-            break
-            
-        case .ApplicationData:
-            break
-        }
-    }
-    
-    
-    func nodeManager(nodeManager: AVANodeManager, didReceiveUninterpretableData data: NSData, fromPeer peer: AVAVertex) {
-        
-    }
 }

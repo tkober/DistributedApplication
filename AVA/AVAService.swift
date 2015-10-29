@@ -9,8 +9,21 @@
 import Foundation
 
 
-protocol AVAApplication: class {
+protocol AVAService: class {
     
+    // MARK: | Starting Service
+    func startWithBufferedMessage(messages: [AVAMessage])
+    
+    
+    // MARK: | Messaging
     func nodeManager(nodeManager: AVANodeManager, didReceiveApplicationDataMessage message: AVAMessage)
+    
+}
+
+
+protocol AVAJSONConvertable {
+    
+    init(json: AVAJSON) throws
+    func toJSON() -> AVAJSON
     
 }

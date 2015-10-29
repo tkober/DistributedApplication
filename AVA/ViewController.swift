@@ -33,6 +33,7 @@ class ViewController: NSViewController {
     @IBOutlet private weak var renderingGraphProgressIndicator: NSProgressIndicator?
     @IBOutlet private weak var graphImageView: NSImageView?
     @IBOutlet private weak var terminateButton: NSButton?
+    @IBOutlet private weak var showDistributedLogButton: NSButton?
     
     
     
@@ -122,6 +123,7 @@ class ViewController: NSViewController {
         let nameSuffix = isMaster ? " (Master)": ""
         self.nameLabel?.stringValue = "Node: \(ownPeerName)\(nameSuffix)"
         self.terminateButton?.hidden = !isMaster
+        self.showDistributedLogButton?.hidden = !isMaster
         
         let tempFilePath = "\(appDelegate.setup.applicationPackageDirectory)/~\(ownPeerName)_\(NSDate().timeIntervalSince1970).render"
         do {
