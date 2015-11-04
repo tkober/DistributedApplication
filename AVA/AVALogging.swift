@@ -59,15 +59,16 @@ enum AVALogLevel: Int {
 
 
 enum AVAEvent: Int {
-    case Discovery;
-    case InvitationSent;
-    case InvitationReceived;
-    case Connecting;
-    case Connect;
-    case Disconnect;
-    case DataSent;
-    case DataReceived;
-    case Processing;
+    case Discovery
+    case InvitationSent
+    case InvitationReceived
+    case Connecting
+    case Connect
+    case Disconnect
+    case DataSent
+    case DataReceived
+    case Processing
+    
     
     func stringValue() -> String {
         switch self {

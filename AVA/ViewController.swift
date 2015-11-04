@@ -197,7 +197,6 @@ class ViewController: NSViewController {
         if segue.identifier == SHOW_DISTRIUBTED_LOG_SEGUE_ID {
             let logViewController = segue.destinationController as! AVALogViewController
             let appDelegate = NSApp.delegate as! AppDelegate
-            print("\(appDelegate.setup.applicationPackageDirectory)")
             logViewController.gatherLogs(appDelegate.setup.applicationPackageDirectory)
         }
     }

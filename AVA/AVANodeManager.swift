@@ -128,6 +128,9 @@ class AVANodeManager: NSObject {
         if let messageData = message.jsonData() {
             do {
                 try self.session.sendData(messageData, toPeers: peers, withMode: MCSessionSendDataMode.Unreliable)
+                for peer in peers {
+                    self.logger.log(AVALogEntry(level: AVALogLevel.Debug, event: AVAEvent.DataSent, peer: self.myPeerId.displayName, description: "Sent message (\(messageData.length) bytes) to \(peer.displayName)", remotePeer: peer.displayName, message: message))
+                }
                 return true
             } catch {
                 return false

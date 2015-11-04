@@ -133,7 +133,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         dispatch_async(dispatch_queue_create("peer_\(vertex)_instantiate", DISPATCH_QUEUE_SERIAL)) { () -> Void in
             task.launch()
         }
-        print("Instantiated peer '\(vertex)'")
+        self.log(AVALogEntry(level: AVALogLevel.Debug, event: AVAEvent.Processing, peer: self.setup.peerName!, description: "Instantiated peer '\(vertex)'", remotePeer: vertex))
     }
     
     

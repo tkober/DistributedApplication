@@ -715,7 +715,7 @@
                                     <constraint firstAttribute="height" constant="21" id="nQk-Yo-qz9"/>
                                 </constraints>
                                 <animations/>
-                                <buttonCell key="cell" type="disclosureTriangle" bezelStyle="disclosure" image="EB54290D-019D-494D-B6AF-97935238E5D6" imagePosition="overlaps" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="meP-VL-YAY">
+                                <buttonCell key="cell" type="disclosureTriangle" bezelStyle="disclosure" image="950837DE-70E1-4105-8096-C6FB5E1F9FFF" imagePosition="overlaps" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="meP-VL-YAY">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -895,7 +895,7 @@
                                     <constraint firstAttribute="height" constant="21" id="CVw-4l-YfM"/>
                                 </constraints>
                                 <animations/>
-                                <buttonCell key="cell" type="disclosureTriangle" bezelStyle="disclosure" image="84FABEB5-55A0-4DC4-95DF-0A9CBE02C4CF" imagePosition="overlaps" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="9Wq-oR-qMu">
+                                <buttonCell key="cell" type="disclosureTriangle" bezelStyle="disclosure" image="B1B0B4BB-5697-48C5-A181-77D2C73BA4BB" imagePosition="overlaps" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="9Wq-oR-qMu">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -1034,7 +1034,7 @@
                                                     <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                                     <prototypeCellViews>
                                                         <tableCellView identifier="level" id="Kxw-l1-b27">
-                                                            <rect key="frame" x="169" y="1" width="96" height="17"/>
+                                                            <rect key="frame" x="169" y="1" width="95.5" height="17"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                             <subviews>
                                                                 <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="lxp-kV-XHB">
@@ -1060,7 +1060,7 @@
                                                         </tableCellView>
                                                     </prototypeCellViews>
                                                 </tableColumn>
-                                                <tableColumn identifier="description" width="377.70703125" minWidth="10" maxWidth="3.4028234663852886e+38" id="0q3-Vi-tCh">
+                                                <tableColumn identifier="description" width="283.34375" minWidth="10" maxWidth="3.4028234663852886e+38" id="0q3-Vi-tCh">
                                                     <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="Description">
                                                         <font key="font" metaFont="smallSystem"/>
                                                         <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
@@ -1074,11 +1074,11 @@
                                                     <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                                     <prototypeCellViews>
                                                         <tableCellView identifier="description" id="pX8-og-XGW">
-                                                            <rect key="frame" x="267.5" y="1" width="378" height="17"/>
+                                                            <rect key="frame" x="267.5" y="1" width="284" height="17"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                             <subviews>
                                                                 <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="lZ3-vg-hem">
-                                                                    <rect key="frame" x="0.0" y="0.0" width="377" height="17"/>
+                                                                    <rect key="frame" x="0.0" y="0.0" width="283" height="17"/>
                                                                     <animations/>
                                                                     <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="Table View Cell" id="w3d-xZ-4fI">
                                                                         <font key="font" metaFont="system"/>
@@ -1100,7 +1100,7 @@
                                                         </tableCellView>
                                                     </prototypeCellViews>
                                                 </tableColumn>
-                                                <tableColumn identifier="timestamp" width="122" minWidth="10" maxWidth="3.4028234663852886e+38" id="Y1n-bb-7Rs">
+                                                <tableColumn identifier="timestamp" width="215.5" minWidth="10" maxWidth="3.4028234663852886e+38" id="Y1n-bb-7Rs">
                                                     <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="Timestamp">
                                                         <font key="font" metaFont="smallSystem"/>
                                                         <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
@@ -1114,11 +1114,11 @@
                                                     <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                                     <prototypeCellViews>
                                                         <tableCellView identifier="timestamp" id="kcy-Lf-nmw">
-                                                            <rect key="frame" x="648" y="1" width="122" height="17"/>
+                                                            <rect key="frame" x="554" y="1" width="216" height="17"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                             <subviews>
                                                                 <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="M8J-4b-01C">
-                                                                    <rect key="frame" x="0.0" y="0.0" width="122" height="17"/>
+                                                                    <rect key="frame" x="0.0" y="0.0" width="216" height="17"/>
                                                                     <animations/>
                                                                     <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="Table View Cell" id="ePU-tf-0hO">
                                                                         <font key="font" metaFont="system"/>
@@ -1196,7 +1196,7 @@
         </scene>
     </scenes>
     <resources>
-        <image name="84FABEB5-55A0-4DC4-95DF-0A9CBE02C4CF" width="1" height="1">
+        <image name="950837DE-70E1-4105-8096-C6FB5E1F9FFF" width="1" height="1">
             <mutableData key="keyedArchiveRepresentation">
 YnBsaXN0MDDUAQIDBAUGPT5YJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3ASAAGGoK4HCBMU
 GR4fIyQrLjE3OlUkbnVsbNUJCgsMDQ4PEBESVk5TU2l6ZVYkY2xhc3NcTlNJbWFnZUZsYWdzVk5TUmVw
@@ -1246,7 +1246,7 @@ AKkAqwCwALMAtQC3ALkAuwDAANcA2QDbCVMJWAljCWwJfwmDCY4JlwmcCaQJpwmsCbsJvwnGCc4J2wng
 CeIJ5AnpCfEJ9An5CgEKBAoWChkKHgAAAAAAAAIBAAAAAAAAAEEAAAAAAAAAAAAAAAAAAAogA
 </mutableData>
         </image>
-        <image name="EB54290D-019D-494D-B6AF-97935238E5D6" width="1" height="1">
+        <image name="B1B0B4BB-5697-48C5-A181-77D2C73BA4BB" width="1" height="1">
             <mutableData key="keyedArchiveRepresentation">
 YnBsaXN0MDDUAQIDBAUGPT5YJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3ASAAGGoK4HCBMU
 GR4fIyQrLjE3OlUkbnVsbNUJCgsMDQ4PEBESVk5TU2l6ZVYkY2xhc3NcTlNJbWFnZUZsYWdzVk5TUmVw
