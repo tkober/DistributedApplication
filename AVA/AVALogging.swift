@@ -54,6 +54,23 @@ enum AVALogLevel: Int {
         }
         return attributes
     }
+    
+    
+    func graphvizsColor() -> AVAGraphvizColor {
+        switch (self) {
+        case .Debug:
+            return AVAGraphvizBlack
+            
+        case .Info:
+            return AVAGraphvizBlue
+            
+        case .Warning:
+            return AVAGraphvizOrange
+            
+        case .Error:
+            return AVAGraphvizRed
+        }
+    }
 }
 
 
@@ -98,6 +115,39 @@ enum AVAEvent: Int {
             
         case .Processing:
             return "Processing"
+            
+        }
+    }
+    
+    
+    func adjacencyDirection(ownPeerToRemoteInOrder inOrder: Bool) -> AVAGraphvizAdjacencyDirection {
+        switch self {
+        case .Discovery:
+            return inOrder ? .InOrder : .Inverse
+            
+        case .InvitationSent:
+            return inOrder ? .InOrder : .Inverse
+            
+        case .InvitationReceived:
+            return inOrder ? .Inverse : .InOrder
+            
+        case .Connecting:
+            return inOrder ? .InOrder : .Inverse
+            
+        case .Connect:
+            return inOrder ? .InOrder : .Inverse
+            
+        case .Disconnect:
+            return inOrder ? .InOrder : .Inverse
+            
+        case .DataSent:
+            return inOrder ? .InOrder : .Inverse
+            
+        case .DataReceived:
+            return inOrder ? .Inverse : .InOrder
+            
+        default:
+            return .Undirected
             
         }
     }

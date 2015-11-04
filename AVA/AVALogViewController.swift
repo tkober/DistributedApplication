@@ -92,8 +92,14 @@ class AVALogViewController: NSViewController {
         
         do {
             let dot = GRAPHVIZ.dotFromTopology(topology, vertexDecorator: { (vertex: AVAVertex) -> AVAGraphvizVertexDecoration in
-                return (AVAGraphvizGrey, AVAGraphvizSolid)
+                return (logEntry.peer == vertex ? logEntry.level.graphvizsColor() :  AVAGraphvizGrey, AVAGraphvizSolid)
             }, ajacencyDecorator: { (adjacency: AVAAdjacency) -> AVAGraphvizAdjacencyDecoration in
+                if let remotePeer = logEntry.remotePeer {
+                    let logAdjacency = AVAAdjacency(v1: logEntry.peer, v2: remotePeer)
+                    if logAdjacency == adjacency {
+                        return (logEntry.event.adjacencyDirection(ownPeerToRemoteInOrder: adjacency.v1 == logEntry.peer), logEntry.level.graphvizsColor(), AVAGraphvizSolid, nil)
+                    }
+                }
                 return (AVAGraphvizAdjacencyDirection.Undirected, AVAGraphvizGrey, AVAGraphvizSolid, nil)
             })
             try dot.writeToFile(tempFilePath, atomically: true, encoding: NSUTF8StringEncoding)
