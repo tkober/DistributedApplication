@@ -97,7 +97,7 @@ class AVALogViewController: NSViewController {
                 if let remotePeer = logEntry.remotePeer {
                     let logAdjacency = AVAAdjacency(v1: logEntry.peer, v2: remotePeer)
                     if logAdjacency == adjacency {
-                        return (logEntry.event.adjacencyDirection(ownPeerToRemoteInOrder: adjacency.v1 == logEntry.peer), logEntry.level.graphvizsColor(), AVAGraphvizSolid, nil)
+                        return (logEntry.event.adjacencyDirection(ownPeerToRemoteInOrder: adjacency.v1 == logEntry.peer), logEntry.level.graphvizsColor(), AVAGraphvizSolid, logEntry.event.stringValue())
                     }
                 }
                 return (AVAGraphvizAdjacencyDirection.Undirected, AVAGraphvizGrey, AVAGraphvizSolid, nil)

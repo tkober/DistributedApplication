@@ -229,7 +229,7 @@ extension AVANodeManager : MCSessionDelegate {
             break;
         }
         
-        let logEntry = AVALogEntry(level: level, event: event, peer: self.myPeerId.displayName, description: "Peer '\(peerID.displayName)' changed status to \(state.stringValue())")
+        let logEntry = AVALogEntry(level: level, event: event, peer: self.myPeerId.displayName, description: "Peer '\(peerID.displayName)' changed status to \(state.stringValue())", remotePeer: peerID.displayName)
         self.logger.log(logEntry)
         self.delegate?.nodeManager(self, stateUpdated: self.state)
     }

@@ -107,7 +107,12 @@ class AVAGraphvizAdapter: NSObject {
             directionString = ""
             break;
         }
-        return "[color=\(decoration.color), style=\(decoration.style)\(directionString)]"
+        var result = "[color=\(decoration.color), style=\(decoration.style)\(directionString)"
+        if let label = decoration.label {
+            result += ", label=\(label), fontcolor=\(decoration.color)"
+        }
+        result += "]"
+        return result
     }
 
 
