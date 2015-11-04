@@ -56,6 +56,12 @@ class AVAGraphvizAdapter: NSObject {
     }
     
     
+    // MARK: GCD
+    
+    
+    private lazy var renderingQueue = dispatch_queue_create("ava.graphviz_adapter.rendering_queue", DISPATCH_QUEUE_SERIAL)
+    
+    
     // MARK: Source File Creation
     
     
@@ -108,18 +114,33 @@ class AVAGraphvizAdapter: NSObject {
     typealias AVAGraphvizRenderingCompletion = (image: NSImage?) -> ()
     
     
-    func renderPNGFromFile(filePath: String, result: AVAGraphvizRenderingCompletion) {
-        let task = NSTask()
-        task.launchPath = "/usr/local/bin/dot"
-        task.arguments = ["-Tpng", filePath]
-
-        let pipe = NSPipe()
-        task.standardOutput = pipe
-        
-        task.launch()
-        
-        let data = pipe.fileHandleForReading.readDataToEndOfFile()
-        result(image: NSImage(data: data))
+    func renderPNGFromFile(filePath: String, concurrent: Bool = true, result: AVAGraphvizRenderingCompletion) {
+        let rendering: dispatch_block_t = { () -> Void in
+            let task = NSTask()
+            task.launchPath = "/usr/local/bin/dot"
+            task.arguments = ["-Tpng", filePath]
+            
+            let pipe = NSPipe()
+            task.standardOutput = pipe
+            
+            task.launch()
+            
+            let data = pipe.fileHandleForReading.readDataToEndOfFile()
+            if concurrent {
+                dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                    result(image: NSImage(data: data))
+                })
+            } else {
+                result(image: NSImage(data: data))
+            }
+        }
+        if concurrent {
+            dispatch_async(self.renderingQueue) { () -> Void in
+                rendering()
+            }
+        } else {
+            rendering()
+        }
     }
     
     
