@@ -17,6 +17,8 @@ class AVALogViewController: NSViewController {
     
     @IBOutlet private var tableView: NSTableView?
     @IBOutlet private var textView: NSTextView?
+    @IBOutlet private weak var renderingGraphProgressIndicator: NSProgressIndicator?
+    @IBOutlet private weak var graphImageView: NSImageView?
 
     
     // MARK: | Logs
@@ -78,6 +80,66 @@ class AVALogViewController: NSViewController {
         }
     }
     
+    
+    // MARK: | Graphviz
+    
+    
+    func visualizeLogEntry(logEntry: AVALogEntry) {
+        let appDelegate = NSApp.delegate as! AppDelegate
+        let ownPeerName = appDelegate.setup.peerName!
+        let topology = appDelegate.topology
+        let tempFilePath = "\(appDelegate.setup.applicationPackageDirectory)/~\(ownPeerName)_\(NSDate().timeIntervalSince1970).render"
+        
+        do {
+            let dot = GRAPHVIZ.dotFromTopology(topology, vertexDecorator: { (vertex: AVAVertex) -> AVAGraphvizVertexDecoration in
+                return (AVAGraphvizGrey, AVAGraphvizSolid)
+            }, ajacencyDecorator: { (adjacency: AVAAdjacency) -> AVAGraphvizAdjacencyDecoration in
+                return (AVAGraphvizAdjacencyDirection.Undirected, AVAGraphvizGrey, AVAGraphvizSolid, nil)
+            })
+            try dot.writeToFile(tempFilePath, atomically: true, encoding: NSUTF8StringEncoding)
+            self.renderAndUpdateGraphImage(tempFilePath)
+        } catch {
+            
+        }
+    }
+    
+    
+    func renderAndUpdateGraphImage(tempFilePath: String) {
+        GRAPHVIZ.renderPNGFromFile(tempFilePath) { (image) -> () in
+            if let graphImage = image {
+                self.updateGraphImage(graphImage)
+            }
+            do {
+                try NSFileManager.defaultManager().removeItemAtPath(tempFilePath)
+            } catch {
+                
+            }
+        }
+    }
+    
+    
+    func clearGraphImage() {
+        self.graphImageView?.image = nil
+        self.renderingGraphProgressIndicator?.hidden = false
+        self.renderingGraphProgressIndicator?.startAnimation(self)
+    }
+    
+    
+    func updateGraphImage(image: NSImage) {
+        self.renderingGraphProgressIndicator?.hidden = true
+        self.graphImageView?.image = image
+    }
+
+    
+    
+    // MARK: | Views Lifecylce
+    
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        self.graphImageView?.wantsLayer = true
+        self.graphImageView?.layer?.backgroundColor = NSColor.whiteColor().CGColor
+    }
 }
 
 
@@ -129,6 +191,8 @@ extension AVALogViewController: NSTableViewDelegate {
     
     func tableViewSelectionDidChange(notification: NSNotification) {
         if let row = self.tableView?.selectedRow {
+            self.clearGraphImage()
+            self.visualizeLogEntry(self.logs[row])
             if let messageString = self.logs[row].message?.stringValue() {
                 self.textView?.string = messageString
             } else {
