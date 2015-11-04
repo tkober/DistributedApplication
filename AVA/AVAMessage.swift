@@ -43,6 +43,22 @@ class AVAMessage: NSObject {
     }
     
     
+    convenience init(json: [String: AnyObject]) {
+        let type = json[AVAMessage.TYPE_JSON_KEY] as! NSNumber
+        let sender = json[AVAMessage.SENDER_JSON_KEY]
+        let payload = json[AVAMessage.PAYLOAD_JSON_KEY]
+        let timestamp = (json[AVAMessage.TIMESTAMP_JSON_KEY] as! NSNumber).doubleValue
+        self.init(type: AVAMessageType(rawValue: type.integerValue)!, sender: (sender as! String), payload: payload, timestamp: timestamp)
+    }
+    
+    
+    convenience init(data: NSData) throws {
+        let json: [String: AnyObject]
+        try json = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions(rawValue: 0)) as! [String: AnyObject]
+        self.init(json: json)
+    }
+    
+    
     static func terminateMessage(sender: String) -> AVAMessage {
         return AVAMessage(type: AVAMessageType.Terminate, sender: sender)
     }
@@ -50,22 +66,6 @@ class AVAMessage: NSObject {
     
     static func applicationDataMessage(sender: String, payload: AnyObject) -> AVAMessage {
         return AVAMessage(type: AVAMessageType.ApplicationData, sender: sender, payload: payload)
-    }
-    
-    
-    static func messageFromData(data: NSData) -> AVAMessage? {
-        let json: [String: AnyObject]
-        do {
-            try json = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions(rawValue: 0)) as! [String: AnyObject]
-            if let type = json[AVAMessage.TYPE_JSON_KEY], sender = json[AVAMessage.SENDER_JSON_KEY], timestampString = json[AVAMessage.TIMESTAMP_JSON_KEY] {
-                let payload = json[AVAMessage.PAYLOAD_JSON_KEY]
-                let timestamp = (timestampString as! NSNumber).doubleValue
-                return AVAMessage(type: AVAMessageType(rawValue: (type as! NSNumber).integerValue)!, sender: (sender as! String), payload: payload, timestamp: timestamp)
-            }
-            return nil
-        } catch {
-            return nil
-        }
     }
     
     
@@ -80,6 +80,15 @@ class AVAMessage: NSObject {
         ]
         if let payload = self.payload {
             result[AVAMessage.PAYLOAD_JSON_KEY] = payload
+        }
+        return result
+    }
+    
+    
+    func stringValue() -> String? {
+        var result: String?
+        if let jsonData = self.jsonData() {
+            result = String(data: jsonData, encoding: NSUTF8StringEncoding)
         }
         return result
     }

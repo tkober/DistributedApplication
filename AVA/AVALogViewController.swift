@@ -10,6 +10,13 @@ import Cocoa
 
 
 class AVALogViewController: NSViewController {
+    
+    
+    // MARK: | IB Outlets
+    
+    
+    @IBOutlet private var tableView: NSTableView?
+    @IBOutlet private var textView: NSTextView?
 
     
     // MARK: | Logs
@@ -117,5 +124,16 @@ extension AVALogViewController: NSTableViewDelegate {
         }
         result.textField?.attributedStringValue = NSAttributedString(string: text, attributes: logEntry.level.attributes())
         return result
+    }
+    
+    
+    func tableViewSelectionDidChange(notification: NSNotification) {
+        if let row = self.tableView?.selectedRow {
+            if let messageString = self.logs[row].message?.stringValue() {
+                self.textView?.string = messageString
+            } else {
+                self.textView?.string = ""
+            }
+        }
     }
 }

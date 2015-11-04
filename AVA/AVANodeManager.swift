@@ -236,11 +236,12 @@ extension AVANodeManager : MCSessionDelegate {
     
     
     func session(session: MCSession, didReceiveData data: NSData, fromPeer peerID: MCPeerID) {
-        if let message = AVAMessage.messageFromData(data) {
+        do {
+            let message = try AVAMessage(data: data)
             let logEntry = AVALogEntry(level: .Info, event: .DataReceived, peer: self.myPeerId.displayName, description: "Received message (\(data.length) bytes) from \(peerID.displayName)", remotePeer: peerID.displayName, message: message)
             self.logger.log(logEntry)
             self.delegate?.nodeManager(self, didReceiveMessage: message)
-        } else {
+        } catch {
             let logEntry = AVALogEntry(level: .Warning, event: .DataReceived, peer: self.myPeerId.displayName, description: "Received uninterpretable data (\(data.length) bytes) from \(peerID.displayName)", remotePeer: peerID.displayName)
             self.logger.log(logEntry)
             self.delegate?.nodeManager(self, didReceiveUninterpretableData: data, fromPeer: peerID.displayName)

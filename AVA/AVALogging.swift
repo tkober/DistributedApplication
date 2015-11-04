@@ -142,9 +142,9 @@ class AVALogEntry: NSObject {
         let entryDescription = json[DESCRIPTION_KEY] as! String
         let remotePeer = json[REMOTE_KEY] as! String?
         var message: AVAMessage?
-//        if let messageData = json[MESSAGE_KEY] as! NSData? {
-//            message = AVAMessage.messageFromData(messageData)
-//        }
+        if let messageJSON = json[MESSAGE_KEY] as! [String: AnyObject]? {
+            message = AVAMessage(json: messageJSON)
+        }
         let timestamp = (json[TIMESTAMP_KEY] as! NSNumber).doubleValue
         self.init(level: logLevel, event: event, peer: peer, description: entryDescription, remotePeer: remotePeer, message: message, timestamp: timestamp)
     }
