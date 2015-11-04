@@ -167,26 +167,7 @@ extension AppDelegate: AVALogging {
             }
         }
         dispatch_async(dispatch_get_main_queue()) { () -> Void in
-            var attributes: [String: AnyObject]
-            switch (entry.level) {
-            case .Debug:
-                attributes = [NSForegroundColorAttributeName: NSColor.darkGrayColor()]
-                break
-                
-            case .Info:
-                attributes = [NSForegroundColorAttributeName: NSColor.blueColor()]
-                break
-                
-            case .Warning:
-                attributes = [NSForegroundColorAttributeName: NSColor.orangeColor()]
-                break
-                
-            case .Error:
-                attributes = [NSForegroundColorAttributeName: NSColor.redColor()]
-                break
-            }
-            
-            let attributedString = NSAttributedString(string: "[\(entry.event.stringValue())]: \(entry.description)\n", attributes: attributes)
+            let attributedString = NSAttributedString(string: "[\(entry.event.stringValue())]: \(entry.entryDescription)\n", attributes: entry.level.attributes())
             self.loggingTextView?.textStorage?.appendAttributedString(attributedString)
             self.loggingTextView?.scrollRangeToVisible(NSMakeRange((self.loggingTextView?.string?.characters.count)!, 0))
         }

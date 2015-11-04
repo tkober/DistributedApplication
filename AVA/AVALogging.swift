@@ -6,7 +6,7 @@
 //  Copyright © 2015 Thorsten Kober. All rights reserved.
 //
 
-import Foundation
+import Cocoa
 
 
 enum AVALogLevel: Int {
@@ -14,7 +14,48 @@ enum AVALogLevel: Int {
     case Info;
     case Warning;
     case Error;
+    
+    
+    func stringValue() -> String {
+        switch (self) {
+        case .Debug:
+            return "Debug"
+            
+        case .Info:
+            return "Info"
+            
+        case .Warning:
+            return "Warning"
+            
+        case .Error:
+            return "Error"
+        }
+    }
+    
+    
+    func attributes() -> [String: AnyObject] {
+        var attributes: [String: AnyObject]
+        switch (self) {
+        case .Debug:
+            attributes = [NSForegroundColorAttributeName: NSColor.darkGrayColor()]
+            break
+            
+        case .Info:
+            attributes = [NSForegroundColorAttributeName: NSColor.blueColor()]
+            break
+            
+        case .Warning:
+            attributes = [NSForegroundColorAttributeName: NSColor.orangeColor()]
+            break
+            
+        case .Error:
+            attributes = [NSForegroundColorAttributeName: NSColor.redColor()]
+            break
+        }
+        return attributes
+    }
 }
+
 
 
 enum AVAEvent: Int {
@@ -62,30 +103,49 @@ enum AVAEvent: Int {
 }
 
 
-struct AVALogEntry {
-    
-    private let LEVEL_KEY: String = "level"
-    private let EVENT_KEY: String = "event"
-    private let PEER_KEY: String = "peer"
-    private let DESCRIPTION_KEY: String = "description"
-    private let REMOTE_KEY: String = "remotePeer"
-    private let MESSAGE_KEY: String = "message"
+private let LEVEL_KEY: String = "level"
+private let EVENT_KEY: String = "event"
+private let PEER_KEY: String = "peer"
+private let DESCRIPTION_KEY: String = "description"
+private let REMOTE_KEY: String = "remotePeer"
+private let MESSAGE_KEY: String = "message"
+private let TIMESTAMP_KEY: String = "timestamp"
+
+
+class AVALogEntry: NSObject {
     
     let level: AVALogLevel
     let event: AVAEvent
     let peer: String
-    let description: String
+    let entryDescription: String
     let remotePeer: String?
     let message: AVAMessage?
+    let timestamp: NSDate
     
     
-    init(level: AVALogLevel, event: AVAEvent, peer: String, description: String, remotePeer: String? = nil, message: AVAMessage? = nil) {
+    init(level: AVALogLevel, event: AVAEvent, peer: String, description: String, remotePeer: String? = nil, message: AVAMessage? = nil, timestamp: NSDate = NSDate()) {
         self.level = level
         self.event = event
         self.peer = peer
-        self.description = description
+        self.entryDescription = description
         self.remotePeer = remotePeer
         self.message = message
+        self.timestamp = timestamp
+    }
+    
+    
+    convenience init(json: [String: AnyObject]) {
+        let logLevel = AVALogLevel(rawValue: (json[LEVEL_KEY] as! NSNumber).integerValue)!
+        let event = AVAEvent(rawValue: (json[EVENT_KEY] as! NSNumber).integerValue)!
+        let peer = json[PEER_KEY] as! String
+        let entryDescription = json[DESCRIPTION_KEY] as! String
+        let remotePeer = json[REMOTE_KEY] as! String?
+        var message: AVAMessage?
+//        if let messageData = json[MESSAGE_KEY] as! NSData? {
+//            message = AVAMessage.messageFromData(messageData)
+//        }
+        let timestamp = NSDate.dateFromISO8601Representation(json[TIMESTAMP_KEY] as! String)!
+        self.init(level: logLevel, event: event, peer: peer, description: entryDescription, remotePeer: remotePeer, message: message, timestamp: timestamp)
     }
     
     
@@ -94,7 +154,8 @@ struct AVALogEntry {
             LEVEL_KEY: NSNumber(integer: self.level.rawValue),
             EVENT_KEY: NSNumber(integer: self.event.rawValue),
             PEER_KEY: self.peer,
-            DESCRIPTION_KEY: self.description
+            DESCRIPTION_KEY: self.entryDescription,
+            TIMESTAMP_KEY: self.timestamp.iso8601Representation()
         ]
         if let remotePeer = self.remotePeer {
             json[REMOTE_KEY] = remotePeer
@@ -114,4 +175,14 @@ struct AVALogEntry {
 
 protocol AVALogging: class {
     func log(enty: AVALogEntry)
+}
+
+
+func >(lhs: AVALogEntry, rhs: AVALogEntry) -> Bool {
+    return lhs.timestamp.compare(rhs.timestamp) == NSComparisonResult.OrderedDescending
+}
+
+
+func <(lhs: AVALogEntry, rhs: AVALogEntry) -> Bool {
+    return lhs.timestamp.compare(rhs.timestamp) == NSComparisonResult.OrderedAscending
 }

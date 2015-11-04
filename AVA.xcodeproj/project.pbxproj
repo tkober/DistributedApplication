@@ -20,6 +20,7 @@
 		F19D22C41BE03C31006CB5F8 /* AVAUebung1.swift in Sources */ = {isa = PBXBuildFile; fileRef = F19D22C31BE03C31006CB5F8 /* AVAUebung1.swift */; };
 		F1B3F2C81BDD5C00009C0E7B /* NSDate+ISO8601.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1B3F2C71BDD5C00009C0E7B /* NSDate+ISO8601.swift */; };
 		F1B3F2CB1BDD79B3009C0E7B /* AVAService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1B3F2CA1BDD79B3009C0E7B /* AVAService.swift */; };
+		F1C697601BE8B53B0022D8F6 /* AVALogViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1C6975F1BE8B53B0022D8F6 /* AVALogViewController.swift */; };
 		F1E816671BDAE5CF00F03284 /* AVAMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1E816661BDAE5CF00F03284 /* AVAMessage.swift */; };
 /* End PBXBuildFile section */
 
@@ -39,6 +40,7 @@
 		F19D22C31BE03C31006CB5F8 /* AVAUebung1.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AVAUebung1.swift; sourceTree = "<group>"; };
 		F1B3F2C71BDD5C00009C0E7B /* NSDate+ISO8601.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSDate+ISO8601.swift"; sourceTree = "<group>"; };
 		F1B3F2CA1BDD79B3009C0E7B /* AVAService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AVAService.swift; sourceTree = "<group>"; };
+		F1C6975F1BE8B53B0022D8F6 /* AVALogViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AVALogViewController.swift; sourceTree = "<group>"; };
 		F1E816661BDAE5CF00F03284 /* AVAMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AVAMessage.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -166,6 +168,7 @@
 		F1C6975D1BE8B47F0022D8F6 /* DistributetLog */ = {
 			isa = PBXGroup;
 			children = (
+				F1C6975F1BE8B53B0022D8F6 /* AVALogViewController.swift */,
 			);
 			name = DistributetLog;
 			sourceTree = "<group>";
@@ -258,6 +261,7 @@
 			files = (
 				F19D22C41BE03C31006CB5F8 /* AVAUebung1.swift in Sources */,
 				F1E816671BDAE5CF00F03284 /* AVAMessage.swift in Sources */,
+				F1C697601BE8B53B0022D8F6 /* AVALogViewController.swift in Sources */,
 				F15C07DB1BD75CF200EB41D8 /* AVANodeManager.swift in Sources */,
 				F161EDE61BD81FF3008131C3 /* AVAArgumentsParser.swift in Sources */,
 				F1B3F2C81BDD5C00009C0E7B /* NSDate+ISO8601.swift in Sources */,

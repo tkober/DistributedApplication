@@ -22,6 +22,12 @@ class ViewController: NSViewController {
     
     
     private let LOCAL_LOG_SIZE: CGFloat = 120.0
+    
+    
+    // MARK: | Segues
+    
+    
+    private let SHOW_DISTRIUBTED_LOG_SEGUE_ID = "showDistributedLog"
 
     
     // MARK: | IB Outlets
@@ -180,6 +186,19 @@ class ViewController: NSViewController {
             } catch {
                 
             }
+        }
+    }
+    
+    
+    // MARK: | Storyboard
+    
+    
+    override func prepareForSegue(segue: NSStoryboardSegue, sender: AnyObject?) {
+        if segue.identifier == SHOW_DISTRIUBTED_LOG_SEGUE_ID {
+            let logViewController = segue.destinationController as! AVALogViewController
+            let appDelegate = NSApp.delegate as! AppDelegate
+            print("\(appDelegate.setup.applicationPackageDirectory)")
+            logViewController.gatherLogs(appDelegate.setup.applicationPackageDirectory)
         }
     }
 
