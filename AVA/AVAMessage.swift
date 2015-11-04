@@ -27,7 +27,7 @@ class AVAMessage: NSObject {
     
     
     let type: AVAMessageType
-    let timestamp: NSDate
+    let timestamp: NSTimeInterval
     let sender: String
     var payload: AVAJSON?
     
@@ -35,7 +35,7 @@ class AVAMessage: NSObject {
     // MARK: | Initializer
     
     
-    init(type: AVAMessageType, sender: String, payload: AVAJSON? = nil, timestamp: NSDate = NSDate()) {
+    init(type: AVAMessageType, sender: String, payload: AVAJSON? = nil, timestamp: NSTimeInterval = NSDate().timeIntervalSince1970) {
         self.type = type
         self.sender = sender
         self.payload = payload
@@ -59,8 +59,8 @@ class AVAMessage: NSObject {
             try json = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions(rawValue: 0)) as! [String: AnyObject]
             if let type = json[AVAMessage.TYPE_JSON_KEY], sender = json[AVAMessage.SENDER_JSON_KEY], timestampString = json[AVAMessage.TIMESTAMP_JSON_KEY] {
                 let payload = json[AVAMessage.PAYLOAD_JSON_KEY]
-                let timestamp = NSDate.dateFromISO8601Representation(timestampString as! String)
-                return AVAMessage(type: AVAMessageType(rawValue: (type as! NSNumber).integerValue)!, sender: (sender as! String), payload: payload, timestamp: timestamp!)
+                let timestamp = (timestampString as! NSNumber).doubleValue
+                return AVAMessage(type: AVAMessageType(rawValue: (type as! NSNumber).integerValue)!, sender: (sender as! String), payload: payload, timestamp: timestamp)
             }
             return nil
         } catch {
@@ -75,7 +75,7 @@ class AVAMessage: NSObject {
     func json() -> [String: AnyObject] {
         var result: [String: AnyObject] = [
             AVAMessage.TYPE_JSON_KEY: NSNumber(integer: self.type.rawValue),
-            AVAMessage.TIMESTAMP_JSON_KEY: self.timestamp.iso8601Representation(),
+            AVAMessage.TIMESTAMP_JSON_KEY: NSNumber(double: self.timestamp),
             AVAMessage.SENDER_JSON_KEY: self.sender,
         ]
         if let payload = self.payload {

@@ -108,7 +108,7 @@ extension AVALogViewController: NSTableViewDelegate {
             break
             
         case "timestamp":
-            text = logEntry.timestamp.iso8601Representation()
+            text = "\(logEntry.timestamp)"
             break
             
         default:

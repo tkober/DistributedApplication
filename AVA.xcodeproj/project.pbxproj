@@ -18,7 +18,6 @@
 		F161EDE61BD81FF3008131C3 /* AVAArgumentsParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = F161EDE51BD81FF3008131C3 /* AVAArgumentsParser.swift */; };
 		F161EDE91BD856E6008131C3 /* AVATopology.swift in Sources */ = {isa = PBXBuildFile; fileRef = F161EDE81BD856E6008131C3 /* AVATopology.swift */; };
 		F19D22C41BE03C31006CB5F8 /* AVAUebung1.swift in Sources */ = {isa = PBXBuildFile; fileRef = F19D22C31BE03C31006CB5F8 /* AVAUebung1.swift */; };
-		F1B3F2C81BDD5C00009C0E7B /* NSDate+ISO8601.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1B3F2C71BDD5C00009C0E7B /* NSDate+ISO8601.swift */; };
 		F1B3F2CB1BDD79B3009C0E7B /* AVAService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1B3F2CA1BDD79B3009C0E7B /* AVAService.swift */; };
 		F1C697601BE8B53B0022D8F6 /* AVALogViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1C6975F1BE8B53B0022D8F6 /* AVALogViewController.swift */; };
 		F1E816671BDAE5CF00F03284 /* AVAMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1E816661BDAE5CF00F03284 /* AVAMessage.swift */; };
@@ -38,7 +37,6 @@
 		F161EDE51BD81FF3008131C3 /* AVAArgumentsParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AVAArgumentsParser.swift; sourceTree = "<group>"; };
 		F161EDE81BD856E6008131C3 /* AVATopology.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AVATopology.swift; sourceTree = "<group>"; };
 		F19D22C31BE03C31006CB5F8 /* AVAUebung1.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AVAUebung1.swift; sourceTree = "<group>"; };
-		F1B3F2C71BDD5C00009C0E7B /* NSDate+ISO8601.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSDate+ISO8601.swift"; sourceTree = "<group>"; };
 		F1B3F2CA1BDD79B3009C0E7B /* AVAService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AVAService.swift; sourceTree = "<group>"; };
 		F1C6975F1BE8B53B0022D8F6 /* AVALogViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AVALogViewController.swift; sourceTree = "<group>"; };
 		F1E816661BDAE5CF00F03284 /* AVAMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AVAMessage.swift; sourceTree = "<group>"; };
@@ -84,7 +82,6 @@
 			children = (
 				F15C07CA1BD75CCF00EB41D8 /* AppDelegate.swift */,
 				F1B3F2C91BDD79A4009C0E7B /* Service */,
-				F1B3F2C61BDD5B9B009C0E7B /* NSDate+ISO8601 */,
 				F146FD411BD97ABF0028B4E1 /* Grahviz */,
 				F161EDE71BD856D8008131C3 /* Topology */,
 				F161EDE41BD81FD5008131C3 /* ArgumentsParser */,
@@ -138,14 +135,6 @@
 				F14F06FC1BE0B7B400BA4C6A /* AVARumor.swift */,
 			);
 			name = Uebung1;
-			sourceTree = "<group>";
-		};
-		F1B3F2C61BDD5B9B009C0E7B /* NSDate+ISO8601 */ = {
-			isa = PBXGroup;
-			children = (
-				F1B3F2C71BDD5C00009C0E7B /* NSDate+ISO8601.swift */,
-			);
-			name = "NSDate+ISO8601";
 			sourceTree = "<group>";
 		};
 		F1B3F2C91BDD79A4009C0E7B /* Service */ = {
@@ -264,7 +253,6 @@
 				F1C697601BE8B53B0022D8F6 /* AVALogViewController.swift in Sources */,
 				F15C07DB1BD75CF200EB41D8 /* AVANodeManager.swift in Sources */,
 				F161EDE61BD81FF3008131C3 /* AVAArgumentsParser.swift in Sources */,
-				F1B3F2C81BDD5C00009C0E7B /* NSDate+ISO8601.swift in Sources */,
 				F15C07CD1BD75CCF00EB41D8 /* ViewController.swift in Sources */,
 				F14F06FD1BE0B7B400BA4C6A /* AVARumor.swift in Sources */,
 				F15C07DE1BD7A4B000EB41D8 /* AVALogging.swift in Sources */,

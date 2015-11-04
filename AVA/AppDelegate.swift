@@ -32,7 +32,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     
     func applicationDidFinishLaunching(aNotification: NSNotification) {
-        
         let arguments = NSProcessInfo.processInfo().arguments
         self.setup = AVAArgumentsParser.sharedInstance.parseArguments(arguments)
         

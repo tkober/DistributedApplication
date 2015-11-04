@@ -121,10 +121,10 @@ class AVALogEntry: NSObject {
     let entryDescription: String
     let remotePeer: String?
     let message: AVAMessage?
-    let timestamp: NSDate
+    let timestamp: NSTimeInterval
     
     
-    init(level: AVALogLevel, event: AVAEvent, peer: String, description: String, remotePeer: String? = nil, message: AVAMessage? = nil, timestamp: NSDate = NSDate()) {
+    init(level: AVALogLevel, event: AVAEvent, peer: String, description: String, remotePeer: String? = nil, message: AVAMessage? = nil, timestamp: NSTimeInterval = NSDate().timeIntervalSince1970) {
         self.level = level
         self.event = event
         self.peer = peer
@@ -145,7 +145,7 @@ class AVALogEntry: NSObject {
 //        if let messageData = json[MESSAGE_KEY] as! NSData? {
 //            message = AVAMessage.messageFromData(messageData)
 //        }
-        let timestamp = NSDate.dateFromISO8601Representation(json[TIMESTAMP_KEY] as! String)!
+        let timestamp = (json[TIMESTAMP_KEY] as! NSNumber).doubleValue
         self.init(level: logLevel, event: event, peer: peer, description: entryDescription, remotePeer: remotePeer, message: message, timestamp: timestamp)
     }
     
@@ -156,7 +156,7 @@ class AVALogEntry: NSObject {
             EVENT_KEY: NSNumber(integer: self.event.rawValue),
             PEER_KEY: self.peer,
             DESCRIPTION_KEY: self.entryDescription,
-            TIMESTAMP_KEY: self.timestamp.iso8601Representation()
+            TIMESTAMP_KEY: NSNumber(double: self.timestamp)
         ]
         if let remotePeer = self.remotePeer {
             json[REMOTE_KEY] = remotePeer
@@ -180,10 +180,10 @@ protocol AVALogging: class {
 
 
 func >(lhs: AVALogEntry, rhs: AVALogEntry) -> Bool {
-    return lhs.timestamp.compare(rhs.timestamp) == NSComparisonResult.OrderedDescending
+    return lhs.timestamp > rhs.timestamp
 }
 
 
 func <(lhs: AVALogEntry, rhs: AVALogEntry) -> Bool {
-    return lhs.timestamp.compare(rhs.timestamp) == NSComparisonResult.OrderedAscending
+    return lhs.timestamp < rhs.timestamp
 }
