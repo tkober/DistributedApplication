@@ -14,6 +14,7 @@ enum AVALogLevel: Int {
     case Info;
     case Warning;
     case Error;
+    case Success;
     
     
     func stringValue() -> String {
@@ -29,6 +30,9 @@ enum AVALogLevel: Int {
             
         case .Error:
             return "Error"
+            
+        case .Success:
+            return "Success"
         }
     }
     
@@ -51,6 +55,10 @@ enum AVALogLevel: Int {
         case .Error:
             attributes = [NSForegroundColorAttributeName: NSColor.redColor()]
             break
+            
+        case .Success:
+            attributes = [NSForegroundColorAttributeName: NSColor.purpleColor()]
+            break
         }
         return attributes
     }
@@ -69,6 +77,9 @@ enum AVALogLevel: Int {
             
         case .Error:
             return AVAGraphvizRed
+            
+        case .Success:
+            return AVAGraphvizPurple
         }
     }
 }
