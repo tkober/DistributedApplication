@@ -67,7 +67,7 @@ extension AVAUebung1: AVAService {
     func startWithBufferedMessage(messages: [AVAMessage]) {
         if self.setup!.isMaster {
             let rumor = AVARumor(rumor: self.setup!.rumor!)
-            self.logger.log(AVALogEntry(level: AVALogLevel.Info, event: AVAEvent.Processing, peer: self.setup!.peerName! , description: "Start spreading rumor '\(self.setup!.rumor!)'"))
+            self.logger.log(AVALogEntry(level: AVALogLevel.Warning, event: AVAEvent.Processing, peer: self.setup!.peerName! , description: "Start spreading rumor '\(self.setup!.rumor!)'"))
             let message = AVAMessage(type: AVAMessageType.ApplicationData, sender: self.setup!.peerName!, payload: rumor.toJSON())
             self.nodeManager.broadcastMessage(message)
         } else {
