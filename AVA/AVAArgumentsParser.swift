@@ -11,7 +11,27 @@ import Foundation
 
 enum AVAServiceType: UInt {
     case Uebung1 = 1
+    
+    func nodeInstantiationParametersFromSetup(setup: AVASetup) -> [String] {
+        var result = [SERVICE_PARAMETER_NAME, "\(self.rawValue)"]
+        switch self {
+        case .Uebung1:
+            result.appendContentsOf([RUMOR_PARAMETER_NAME, setup.rumor!, RUMOR_COUNT_TO_ACCAPTENCE_PARAMETER_NAME, "\(setup.rumorCountToAcceptance!)"])
+            break
+            
+        }
+        return result
+    }
 }
+
+
+private let MASTER_PARAMETER_NAME = "--master"
+private let TOPOLOGY_PARAMETER_NAME = "--topology"
+private let RANDOM_TOPOLOGY_PARAMETER_NAME = "--randomTopology"
+private let PEER_NAME_PARAMETER_NAME = "--peerName"
+private let RUMOR_PARAMETER_NAME = "--rumor"
+private let RUMOR_COUNT_TO_ACCAPTENCE_PARAMETER_NAME = "--rumorCountToAcceptance"
+private let SERVICE_PARAMETER_NAME = "--service"
 
 
 class AVASetup: NSObject {
@@ -23,6 +43,7 @@ class AVASetup: NSObject {
     var topologyFilePath: String?
     var peerName: String?
     var rumor: String?
+    var rumorCountToAcceptance: Int?
     var service: AVAServiceType!
     
     
@@ -64,6 +85,7 @@ class AVASetup: NSObject {
         result += "\n\ttopologyFilePath -> \(topologyFilePath)"
         result += "\n\tpeerName -> \(peerName)"
         result += "\n\trumor -> \(rumor)"
+        result += "\n\trumorCountToAcceptance -> \(rumorCountToAcceptance)"
         result += "\n\tservice -> \(service)"
         result += "\n}"
         return result
@@ -146,17 +168,17 @@ class AVAArgumentsParser: NSObject {
     
     
     private lazy var parsingRules: AVAArgumentParserRules = [
-        "--master": {(setup: AVASetup) -> () in
+        MASTER_PARAMETER_NAME: {(setup: AVASetup) -> () in
             setup.isMaster = true
         },
-        "--topology": {(setup: AVASetup) -> () in
+        TOPOLOGY_PARAMETER_NAME: {(setup: AVASetup) -> () in
             if (!self.nextArgument()) {
                 print("Missing arguments")
                 exit(2)
             }
             setup.topologyFilePath = self.currentArgument()
         },
-        "--randomTopology": {(setup: AVASetup) -> () in
+        RANDOM_TOPOLOGY_PARAMETER_NAME: {(setup: AVASetup) -> () in
             if (!self.nextArgument()) {
                 print("Missing arguments")
                 exit(2)
@@ -174,21 +196,28 @@ class AVAArgumentsParser: NSObject {
             setup.randomTopology = true
             setup.randomTopologyDimension = (vertexCount, edgeCount)
         },
-        "--peerName": {(setup: AVASetup) -> () in
+        PEER_NAME_PARAMETER_NAME: {(setup: AVASetup) -> () in
             if (!self.nextArgument()) {
                 print("Missing arguments")
                 exit(2)
             }
             setup.peerName = self.currentArgument()
         },
-        "--rumor": {(setup: AVASetup) -> () in
+        RUMOR_PARAMETER_NAME: {(setup: AVASetup) -> () in
             if (!self.nextArgument()) {
                 print("Missing arguments")
                 exit(2)
             }
             setup.rumor = self.currentArgument()
         },
-        "--service": {(setup: AVASetup) -> () in
+        RUMOR_COUNT_TO_ACCAPTENCE_PARAMETER_NAME: {(setup: AVASetup) -> () in
+            if (!self.nextArgument()) {
+                print("Missing arguments")
+                exit(2)
+            }
+            setup.rumorCountToAcceptance = Int(self.currentArgument()!)
+        },
+        SERVICE_PARAMETER_NAME: {(setup: AVASetup) -> () in
             if (!self.nextArgument()) {
                 print("Missing arguments")
                 exit(2)

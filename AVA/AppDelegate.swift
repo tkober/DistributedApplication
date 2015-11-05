@@ -128,7 +128,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     func instantiateVertex(vertex: AVAVertex, fromTopology topology: String, withServiceOfType serviceType: AVAServiceType) {
         let task = NSTask()
         task.launchPath = self.setup.applicationPath
-        task.arguments = ["--topology", topology, "--peerName", vertex, "--service", "\(serviceType.rawValue)"]
+        task.arguments = ["--topology", topology, "--peerName", vertex]
+        task.arguments?.appendContentsOf(serviceType.nodeInstantiationParametersFromSetup(self.setup))
         dispatch_async(dispatch_queue_create("peer_\(vertex)_instantiate", DISPATCH_QUEUE_SERIAL)) { () -> Void in
             task.launch()
         }

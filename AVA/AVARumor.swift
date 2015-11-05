@@ -18,9 +18,11 @@ class AVARumor: NSObject, AVAJSONConvertable {
     
     private static let RUMOR_TEXT_KEY = "rumorText"
     
-    private let rumorText: String
+    let rumorText: String
     
     var heardFrom = [AVAVertex]()
+    
+    var accepted = false
     
     
     // MARK: | Initializer

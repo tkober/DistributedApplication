@@ -46,7 +46,10 @@ class AVAUebung1: NSObject {
             if !heardRumor.heardFrom.contains(peer) {
                 heardRumor.heardFrom.append(peer)
             }
-            
+            if heardRumor.heardFrom.count >= self.setup?.rumorCountToAcceptance! && !heardRumor.accepted {
+                self.logger.log(AVALogEntry(level: AVALogLevel.Warning, event: AVAEvent.Processing, peer: self.setup!.peerName!, description: "Peer '\(self.setup!.peerName!)' accepted rumor '\(rumor.rumorText)'"))
+                heardRumor.accepted = true
+            }
         } else {
             rumor.heardFrom.append(peer)
             self.rumors.append(rumor)
