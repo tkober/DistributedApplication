@@ -715,7 +715,7 @@
                                     <constraint firstAttribute="height" constant="21" id="nQk-Yo-qz9"/>
                                 </constraints>
                                 <animations/>
-                                <buttonCell key="cell" type="disclosureTriangle" bezelStyle="disclosure" image="5839E1A8-098E-4202-AE90-46E3BBDAEA32" imagePosition="overlaps" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="meP-VL-YAY">
+                                <buttonCell key="cell" type="disclosureTriangle" bezelStyle="disclosure" image="25770DF7-DD62-4928-BBD0-B1B6260D9BEB" imagePosition="overlaps" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="meP-VL-YAY">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -894,7 +894,7 @@
                                     <constraint firstAttribute="height" constant="21" id="CVw-4l-YfM"/>
                                 </constraints>
                                 <animations/>
-                                <buttonCell key="cell" type="disclosureTriangle" bezelStyle="disclosure" image="8A9BD225-E436-415A-BCEE-63776C9114E8" imagePosition="overlaps" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="9Wq-oR-qMu">
+                                <buttonCell key="cell" type="disclosureTriangle" bezelStyle="disclosure" image="1773EDDB-AA03-4FB5-B12F-8D074E052ECF" imagePosition="overlaps" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="9Wq-oR-qMu">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -918,7 +918,7 @@
                             <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="aPX-NS-T1r">
                                 <rect key="frame" x="393" y="0.0" width="381" height="240"/>
                                 <animations/>
-                                <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" id="ris-yy-JtJ"/>
+                                <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyUpOrDown" id="ris-yy-JtJ"/>
                             </imageView>
                             <progressIndicator wantsLayer="YES" horizontalHuggingPriority="750" verticalHuggingPriority="750" maxValue="100" bezeled="NO" indeterminate="YES" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="69t-Ta-LVy">
                                 <rect key="frame" x="567" y="104" width="32" height="32"/>
@@ -1202,7 +1202,7 @@
         </scene>
     </scenes>
     <resources>
-        <image name="5839E1A8-098E-4202-AE90-46E3BBDAEA32" width="1" height="1">
+        <image name="1773EDDB-AA03-4FB5-B12F-8D074E052ECF" width="1" height="1">
             <mutableData key="keyedArchiveRepresentation">
 YnBsaXN0MDDUAQIDBAUGPT5YJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3ASAAGGoK4HCBMU
 GR4fIyQrLjE3OlUkbnVsbNUJCgsMDQ4PEBESVk5TU2l6ZVYkY2xhc3NcTlNJbWFnZUZsYWdzVk5TUmVw
@@ -1252,7 +1252,7 @@ AKkAqwCwALMAtQC3ALkAuwDAANcA2QDbCVMJWAljCWwJfwmDCY4JlwmcCaQJpwmsCbsJvwnGCc4J2wng
 CeIJ5AnpCfEJ9An5CgEKBAoWChkKHgAAAAAAAAIBAAAAAAAAAEEAAAAAAAAAAAAAAAAAAAogA
 </mutableData>
         </image>
-        <image name="8A9BD225-E436-415A-BCEE-63776C9114E8" width="1" height="1">
+        <image name="25770DF7-DD62-4928-BBD0-B1B6260D9BEB" width="1" height="1">
             <mutableData key="keyedArchiveRepresentation">
 YnBsaXN0MDDUAQIDBAUGPT5YJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3ASAAGGoK4HCBMU
 GR4fIyQrLjE3OlUkbnVsbNUJCgsMDQ4PEBESVk5TU2l6ZVYkY2xhc3NcTlNJbWFnZUZsYWdzVk5TUmVw

@@ -132,6 +132,14 @@ class AVALogViewController: NSViewController {
     
     
     func updateGraphImage(image: NSImage) {
+        let imageViewWith = self.graphImageView!.frame.size.width
+        let imageViewHeight = self.graphImageView!.frame.size.height
+        let ratio = image.size.width / image.size.height
+        if (imageViewHeight * ratio) <= imageViewWith {
+            image.size = CGSizeMake(imageViewHeight * ratio, imageViewHeight)
+        } else {
+            image.size = CGSizeMake(imageViewWith, imageViewWith / ratio)
+        }
         self.renderingGraphProgressIndicator?.hidden = true
         self.graphImageView?.image = image
     }
@@ -197,6 +205,9 @@ extension AVALogViewController: NSTableViewDelegate {
     
     func tableViewSelectionDidChange(notification: NSNotification) {
         if let row = self.tableView?.selectedRow {
+            if row < 0 || row >= self.logs.count {
+                return
+            }
             self.clearGraphImage()
             self.visualizeLogEntry(self.logs[row])
             if let messageString = self.logs[row].message?.stringValue() {

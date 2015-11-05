@@ -98,6 +98,14 @@ class ViewController: NSViewController {
     
     
     func updateGraphImage(image: NSImage) {
+        let imageViewWith = self.graphImageView!.frame.size.width
+        let imageViewHeight = self.graphImageView!.frame.size.height
+        let ratio = image.size.width / image.size.height
+        if (imageViewHeight * ratio) <= imageViewWith {
+            image.size = CGSizeMake(imageViewHeight * ratio, imageViewHeight)
+        } else {
+            image.size = CGSizeMake(imageViewWith, imageViewWith / ratio)
+        }
         self.renderingGraphProgressIndicator?.hidden = true
         self.graphImageView?.image = image
     }
