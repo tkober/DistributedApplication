@@ -33,20 +33,68 @@ enum AVAGraphvizAdjacencyDirection {
 }
 
 
+/**
+ 
+ Ein Tupel, welches welches beschreibt, wie Graphviz einen Knoten darstellen soll.
+ 
+ */
 typealias AVAGraphvizVertexDecoration = (color: AVAGraphvizColor, style: AVAGraphvizLineStyle)
+
+
+/**
+ 
+ Eine Closure, die dazu verwendet wird einen Knoten für Graphviz zu dekorieren.
+ 
+ - parameters:
+ 
+    - vertex: Der Knoten, der Dekoriert werden soll.
+ 
+ - returns: Eine AVAGraphvizVertexDecoration, die beschreibt, wie Graphviz den gegebenen Knoten darstellen soll.
+ 
+ */
 typealias AVAGraphvizVertexDecorator = (vertex: AVAVertex) -> AVAGraphvizVertexDecoration
+
+
+/**
+ 
+ Ein Tupel, welches beschreibt, wie Graphviz eine Kante darstellen soll.
+ 
+ */
 typealias AVAGraphvizAdjacencyDecoration = (direction: AVAGraphvizAdjacencyDirection, color: AVAGraphvizColor, style: AVAGraphvizLineStyle, label: String?)
+
+
+/**
+ 
+ Eine Closure, die dazu verwendet wird eine Kante für Graphviz zu dekorieren.
+ 
+ - parameters:
+    
+    - adjacency: Die zu dekorierende Kante als AVAAdjacency-Objekt.
+ 
+ - returns: Eine AVAGraphvizAdjacencyDecoration, die beschreibt, wie Graphviz die gegebene Kante darstellen soll.
+ 
+ */
 typealias AVAGraphvizAdjacencyDecorator = (adjacency: AVAAdjacency) -> AVAGraphvizAdjacencyDecoration
 
 
 let GRAPHVIZ = AVAGraphvizAdapter.sharedInstance
 
 
+/**
+ 
+ Ein Singleton, welches in der Lage ist aus gegebenen AVATopology-Objekten beschreibungen für das Graphviz tool DOT zu generieren und diese als PNG zu rendern.
+ 
+ */
 class AVAGraphvizAdapter: NSObject {
     
     // MARK: Shared Instance
     
     
+    /**
+    
+     Instanz des Singleton
+    
+     */
     class var sharedInstance : AVAGraphvizAdapter {
         struct Static {
             static var onceToken : dispatch_once_t = 0
@@ -60,15 +108,34 @@ class AVAGraphvizAdapter: NSObject {
     }
     
     
-    // MARK: GCD
+    /**
+     
+     Eine nebenläufige Dispatch-Queue, die dazu verwendet wird .dot-Files zu rendern.
+     
+     */
     
     
-    private lazy var renderingQueue = dispatch_queue_create("ava.graphviz_adapter.rendering_queue", DISPATCH_QUEUE_SERIAL)
+    private lazy var renderingQueue = dispatch_queue_create("ava.graphviz_adapter.rendering_queue", DISPATCH_QUEUE_CONCURRENT)
     
     
     // MARK: Source File Creation
     
     
+    /**
+    
+     Erzeugt ein .dot-File von einer gegeben AVATopology-Instanz.
+    
+     - parameters:
+     
+       - topology: Die Topologie, die dargestellt werden soll.
+    
+       - vertexDecorator: Eine AVAGraphvizVertexDecorator Closure, die zur Dekoration der Knoten verwendet wird.
+    
+       - ajacencyDecorator: Eine AVAGraphvizAdjacencyDecorator Closure, die zur Dekoration der Kanten verwendet wird.
+    
+     - returns: Den Inhalt des .dot-Files als String.
+    
+     */
     func dotFromTopology(topology: AVATopology, vertexDecorator: AVAGraphvizVertexDecorator, ajacencyDecorator: AVAGraphvizAdjacencyDecorator) -> String {
         var result = "digraph G {"
         for vertex in topology.vertices {
@@ -92,12 +159,34 @@ class AVAGraphvizAdapter: NSObject {
     }
     
     
-    func stringFromVertexDecoration(decoration: AVAGraphvizVertexDecoration) -> String {
+    /**
+     
+     Erzeugt einen String zur Dekoration eines Knotens in einem .dot-File aus einer AVAGraphvizVertexDecoration Closure.
+     
+     - parameters:
+     
+        - decoration: Die Dekoration des Knotens.
+     
+     - returns: Einen String zur verwendung in einem .dot-File.
+     
+     */
+    private func stringFromVertexDecoration(decoration: AVAGraphvizVertexDecoration) -> String {
         return "[color=\(decoration.color), fontcolor=\(decoration.color), style=\(decoration.style)]"
     }
     
     
-    func stringFromAdjacencyDecoration(decoration: AVAGraphvizAdjacencyDecoration) -> String {
+    /**
+     
+     Erzeugt einen String zur Dekoration einer Kante in einem .dot-File aus einer AVAGraphvizAdjacencyDecoration Closure.
+     
+     - parameters:
+     
+        - decoration: Die Dekoration der Kante.
+     
+     - returns: Einen String zur verwendung in einem .dot-File.
+     
+     */
+    private func stringFromAdjacencyDecoration(decoration: AVAGraphvizAdjacencyDecoration) -> String {
         let directionString: String
         switch (decoration.direction) {
         case .Undirected:
@@ -120,10 +209,34 @@ class AVAGraphvizAdapter: NSObject {
     // MARK: Rendering
     
     
+    /**
+    
+     Eine Closure die als Callback für asynchrones Rendern verwendet wird.
+    
+     - parameters:
+     
+       - image: Das gerenderte Bild als NSImage-Optional.
+    
+     */
     typealias AVAGraphvizRenderingCompletion = (image: NSImage?) -> ()
     
     
-    func renderPNGFromFile(filePath: String, concurrent: Bool = true, result: AVAGraphvizRenderingCompletion) {
+    /**
+     
+     Rendert ein gegebenes .dot-File als PNG.
+     
+     - parameters:
+     
+        - filePath: Der Pfad zum .dot-File.
+     
+        - concurrent: Gibt an, ob das Bild synchron auf dem aktuellen Thread oder asynchron auf einem speziellen Thread gerendert werden soll.
+     
+        - result: Callback Closure vom Typ AVAGraphvizRenderingCompletion. Diese wird immer auf dem Main-Thread aufgerufen!
+     
+     - important: Alle asynchronen Renderings finden auf einem gemeinsamen Thread statt. Dies kann sich negativ auf die Performance auswirken, falls sehr viele Renderings paralell stattfinden.
+     
+     */
+    func renderPNGFromDOTFile(filePath: String, concurrent: Bool = true, result: AVAGraphvizRenderingCompletion) {
         let rendering: dispatch_block_t = { () -> Void in
             let task = NSTask()
             task.launchPath = "/usr/local/bin/dot"
@@ -151,12 +264,21 @@ class AVAGraphvizAdapter: NSObject {
             rendering()
         }
     }
+}
+
+
+extension AVAGraphvizAdapter {
     
     
-    
-    // MARK: | Generating Graphviz File
-    
-    
+    /**
+     
+     Erzeugt aus einer Adjazenz-Liste ein .dot-File zur Weitergabe der Topologie an andere Knoten.
+     
+     - parameters: Die Adjazenz-Liste.
+     
+     - returns: Das .dot-File als NSData.
+     
+     */
     func graphvizFileFromAdjacencies(adjacencies: [AVAAdjacency]) -> NSData {
         var graphString = "graph g {"
         for adjacency in adjacencies {
@@ -167,6 +289,17 @@ class AVAGraphvizAdapter: NSObject {
     }
     
     
+    /**
+     
+     Erzeugt ein .dot-File zur Weitergabe einer gegebenen Topologie an andere Knoten.
+     
+     - parameters:
+        
+        - topology: Die AVATopology, die weitergegeben werden soll.
+     
+     - returns: Das .dot-File als NSData.
+     
+     */
     func graphvizFileFromTopology(topology: AVATopology) -> NSData {
         return self.graphvizFileFromAdjacencies(topology.adjacencies)
     }

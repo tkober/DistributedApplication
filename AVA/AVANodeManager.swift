@@ -10,12 +10,55 @@ import Foundation
 import MultipeerConnectivity
 
 
+/**
+ 
+ Repräsentiert den Status des eigenen Knoten, sprich welche Nachbarn bereits verbunden sind.
+ 
+ */
 struct AVANodeState {
+    
+    /**
+     
+     Der Name des eigenen Knoten.
+     
+     */
     let ownPeer: AVAVertex
+    
+    /**
+     
+     Die Topologie.
+     
+     */
     let topology: AVATopology
+    
+    /**
+     
+     Die Nachbarn, die bereits verbunden sind.
+     
+     */
     let connectedPeers: [AVAVertex]
+    
+    /**
+     
+     Die Nachbar, die noch nicht verbunden sind.
+     
+     */
     let disconnectedPeers: [AVAVertex]
     
+    
+    /**
+     
+     Erzeugt den Status für eine gegebene Topologie.
+     
+     - parameters:
+     
+        - topology: Die Topologie, für welche ein Status erzeugt werden soll.
+     
+        - ownPeer: Der Name des eigenen Knoten.
+     
+        - session: Die Session des eigenen Knoten.
+     
+     */
     init(topology: AVATopology, ownPeer: AVAVertex, session: MCSession) {
         self.ownPeer = ownPeer
         self.topology = topology
@@ -37,37 +80,145 @@ struct AVANodeState {
 }
 
 
+
+/**
+ 
+ Dieses Protokoll muss von Klassen implementiert werde, die als Delegate eines AVANodeManagers fungieren sollen.
+ 
+ */
 protocol AVANodeManagerDelegate {
     
+    /**
+     
+     Wird aufgerufen, wenn sich der Status eines AVANodeManagers ändert.
+     
+     - parameters:
+     
+        - nodeManager: Der AVANodeManager, dessen Status sich geändert hat.
+     
+        - state: Der neue Status.
+     
+     */
     func nodeManager(nodeManager: AVANodeManager, stateUpdated state: AVANodeState)
+    
+    /**
+     
+     Wird aufgerufen, wenn ein AVANodeManager, eine Nachricht empfangen hat.
+     
+     - parameters:
+     
+        - nodeManager: Der AVANodeManager, der eine Nachricht empfangen hat.
+     
+        - message: Die Empfangene Nachricht.
+     
+     */
     func nodeManager(nodeManager: AVANodeManager, didReceiveMessage message: AVAMessage)
+    
+    /**
+     
+     Wird aufgerufen, wenn ein AVANodeManager Daten erhalten hat, aus denen sich keine AVAMesage instantiieren ließ.
+     
+     - parameters:
+     
+        - nodeManager: Der AVANodeManager, die Daten empfangen hat.
+     
+        - data: Die empfangenen Daten.
+     
+        - peer: Der Absender der Daten.
+     
+     */
     func nodeManager(nodeManager: AVANodeManager, didReceiveUninterpretableData data: NSData, fromPeer peer: AVAVertex)
 }
 
 
+
+/**
+ 
+ Ist für die gesamte Netzwerkkommunikation zwischen eines Knotens und seinen Nachbarn zuständig.
+ 
+ */
 class AVANodeManager: NSObject {
  
+    /**
+     
+     Die Topologie, in welcher sich der Knoten befindet.
+     
+     */
     let topology: AVATopology
+    
+    /**
+     
+     Das eigene Peer.
+     
+     */
     let myPeerId: MCPeerID
     
+    
+    /**
+     
+     Der Name des Bonjour-Service mit dem Advertising betrieben wird.
+     
+     */
     private let AVA_SERVICE_TYPE = "ava"
+    
     private let serviceAdvertiser : MCNearbyServiceAdvertiser
     private let serviceBrowser : MCNearbyServiceBrowser
+    
+    /**
+     
+     Ein Liste mit den Namen der Nachbarn, also den Peers die verbunden werden sollen.
+     
+     */
     private let peersToConnect: [AVAVertex]
+    
+    /**
+     
+     Die MCSessions-Objekte der Nachbarn mit denen der eigene Knoten verbunden ist.
+     
+     */
     private var remoteSessions = [AVAVertex: MCSession]()
     
     
+    /**
+     
+     Die eigene MCSession mit der sich die Nachbarn verbinden sollen.
+     
+     */
     lazy var session: MCSession = {
         let session = MCSession(peer: self.myPeerId, securityIdentity: nil, encryptionPreference: MCEncryptionPreference.Required)
         session.delegate = self
         return session
     }()
     
+    
+    /**
+     
+     Der delegate des NodeManagers.
+     
+     */
     var delegate: AVANodeManagerDelegate?
+    
+    /**
+     
+     Der Logger, welchem
+     
+     */
     var logger: AVALogging
 
     
-    
+    /**
+     
+     Erzeugt einen neuen AVANodeManger, der als ein gegebener Knoten in einer gegeben Topologie arbeitet.
+     
+     - parameters:
+     
+        - topology: Die Topologie, in welcher gearbetiet werden soll.
+     
+        - ownPeerName: Der Name des eigenen Knotens.
+     
+        - logger: Der Logger der verwendet werden soll.
+     
+     */
     init(topology: AVATopology, ownPeerName: String, logger: AVALogging) {
         self.topology = topology
         self.logger = logger
@@ -87,6 +238,11 @@ class AVANodeManager: NSObject {
     }
     
     
+    /**
+     
+     Startet den AVANodeManager.
+     
+     */
     func start() {
         self.serviceAdvertiser.delegate = self
         self.serviceAdvertiser.startAdvertisingPeer()
@@ -99,6 +255,11 @@ class AVANodeManager: NSObject {
     // MARK: | State
     
     
+    /**
+    
+    Der aktuelle Status des AVANodeManagers
+    
+    */
     var state: AVANodeState {
         get {
             return AVANodeState(topology: self.topology, ownPeer: self.myPeerId.displayName, session: session)
@@ -109,6 +270,19 @@ class AVANodeManager: NSObject {
     // MARK: | Messaging
     
     
+    /**
+    
+     Sendet eine AVAMessage an einen Knoten.
+    
+     - parameters:
+    
+       - message: Die Nachtricht die gesendet werden soll.
+    
+       - vertex: Der Knoten, an welchen die Nachricht gesendet werden soll.
+    
+     - returns: Einen boolschen Wert, der angibt ob das Senden erfolgreich war.
+    
+    */
     func sendMessage(message:AVAMessage, toVertex vertex: AVAVertex) -> Bool {
         for connectedPeer in self.session.connectedPeers {
             if connectedPeer.displayName == vertex {
@@ -119,7 +293,20 @@ class AVANodeManager: NSObject {
     }
     
     
-    func sendMessage(message:AVAMessage, toPeers peers: [MCPeerID]) -> Bool {
+    /**
+     
+     Sendet eine Nachricht an eine Liste von Knoten.
+    
+     - parameters:
+     
+        - message: Die Nachtricht die gesendet werden soll.
+     
+        - peers: Die Knoten, an welche die Nachricht gesendet werden soll.
+     
+     - returns: Einen boolschen Wert, der angibt ob das Senden erfolgreich war.
+     
+     */
+    func sendMessage(message: AVAMessage, toPeers peers: [MCPeerID]) -> Bool {
         for peer in peers {
             if !self.session.connectedPeers.contains(peer) {
                 return false
@@ -141,11 +328,35 @@ class AVANodeManager: NSObject {
     }
     
     
+    /**
+     
+     Sendet eine Nachricht an alle Nachbarn.
+     
+     - parameters: 
+     
+        - message: Die Nachtricht die gesendet werden soll.
+     
+     - returns: Einen boolschen Wert, der angibt ob das Senden erfolgreich war.
+     
+     */
     func broadcastMessage(message: AVAMessage) -> Bool {
         return self.sendMessage(message, toPeers: self.session.connectedPeers)
     }
     
     
+    /**
+     
+     Sendet eine Nachricht an alle Nachbarn, mit Ausnahme einer Liste an Knoten.
+     
+     - parameters:
+     
+        - message: Die Nachtricht die gesendet werden soll.
+     
+        - exceptingPeers: Die Knoten, an welche die Nachricht nicht gesendet werden soll.
+     
+     - returns: Einen boolschen Wert, der angibt ob das Senden erfolgreich war.
+     
+     */
     func broadcastMessage(message: AVAMessage, exceptingPeers: [MCPeerID]) -> Bool {
         var peers = [MCPeerID]()
         for peer in self.session.connectedPeers {

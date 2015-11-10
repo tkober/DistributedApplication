@@ -9,9 +9,32 @@
 import Foundation
 
 
+/**
+ 
+ Enthält die verschiedenen Service Arten.
+ 
+ */
 enum AVAServiceType: UInt {
+    
+    /**
+     
+     Service für die Übung 1.
+     
+     */
     case Uebung1 = 1
     
+    
+    /**
+     
+     Gibt die für den Service wichtigen Parameter zurück, damit andere Knoten instanziiert werden können.
+     
+     - parameters:
+     
+        - setup: Das Setup, aus welchem die Parameter für die Instanziierung entnommen werden soll.
+     
+     - returns: Die servicerelevanten Parameter zur Instanziierung eines neuen Knoten.
+     
+     */
     func nodeInstantiationParametersFromSetup(setup: AVASetup) -> [String] {
         var result = [SERVICE_PARAMETER_NAME, "\(self.rawValue)"]
         switch self {
@@ -34,19 +57,81 @@ private let RUMOR_COUNT_TO_ACCAPTENCE_PARAMETER_NAME = "--rumorCountToAcceptance
 private let SERVICE_PARAMETER_NAME = "--service"
 
 
+/**
+ 
+ Repräsentiert die aus den Übergabeparametern enommenen Informationen.
+ 
+ */
 class AVASetup: NSObject {
     
+    /**
+     
+     Der Pfad zum Binary der Anwendung.
+     
+     */
     var applicationPath: String
+    
+    /**
+     
+     Gibt an, ob dieser Knoten Master ist.
+     
+     */
     var isMaster = false
+    
+    /**
+     
+     Gibt an, ob eine zufällige Topologie erzeugt und instanziiert werden soll.
+     
+     */
     var randomTopology = false
+    
+    /**
+     
+     Gibt die Dimension der zufällig zu erzeugenden Topologie an.
+     
+     */
     var randomTopologyDimension: AVATopologyDimension?
+    
+    /**
+     
+     Der Pfad, unter welchem eine Beschreibung der Topologie als .dot-File zu finden ist.
+     
+     */
     var topologyFilePath: String?
+    
+    /**
+     
+     Der Name des Knoten.
+     
+     */
     var peerName: String?
+    
+    /**
+     
+     Das zu verbreitende Gerücht.
+     
+     */
     var rumor: String?
+    
+    /**
+     
+     Die Anzahl an Knoten, von denen ein Gerücht hören muss, bevor es akzeptiert wird.
+     
+     */
     var rumorCountToAcceptance: Int?
+    
+    /**
+     
+     Der Service, den der Knoten bereitstellen soll.
+     
+     */
     var service: AVAServiceType!
     
-    
+    /**
+     
+     Der Pfad zum Package (.app) der Anwendung
+     
+     */
     var applicationPackagePath: String {
         get {
             
@@ -58,7 +143,11 @@ class AVASetup: NSObject {
         }
     }
     
-    
+    /**
+     
+     Der Pfad zu dem Directory, in welchem das Package der Anwendung liegt.
+     
+     */
     var applicationPackageDirectory: String {
         get {
             var components = self.applicationPackagePath.componentsSeparatedByString("/")
@@ -68,6 +157,15 @@ class AVASetup: NSObject {
     }
     
     
+    /**
+     
+     Erzeugt ein neues AVASetup-Objekt.
+     
+     - parameters:
+     
+        - applicationPath: Der Pfad zum Binary der Anwendung.
+     
+     */
     init(applicationPath: String) {
         self.applicationPath = applicationPath
         super.init()
@@ -96,11 +194,21 @@ class AVASetup: NSObject {
 typealias AVAArgument = String
 
 
+/**
+ 
+ Ein Singleto, welches die Übergabeparameter ausliest und verarbeitet.
+ 
+ */
 class AVAArgumentsParser: NSObject {
     
     // MARK: - Shared Instance
     
     
+    /**
+    
+     Die Instanz des Singleton.
+    
+     */
     class var sharedInstance : AVAArgumentsParser {
         struct Static {
             static var onceToken : dispatch_once_t = 0
@@ -117,12 +225,29 @@ class AVAArgumentsParser: NSObject {
     // MARK: - Arguments
     
     
+    /**
+    
+     Die Übergabeparameter.
+    
+     */
     private var arguments: [AVAArgument]?
     
     
+    /**
+     
+     Der Index des aktuell zu verarbeitenden Arguments.
+     
+     */
     private var currentArgumentIndex: Int = -1
     
     
+    /**
+     
+     Gibt das aktuell zu verarbeitende Argument zurück.
+     
+     - returns: Das aktuell zu verarbeitenden Arguments.
+     
+     */
     private func currentArgument() -> AVAArgument? {
         if let arguments = self.arguments {
             return self.currentArgumentIndex < 0 || self.currentArgumentIndex >= arguments.count ? nil : arguments[self.currentArgumentIndex]
@@ -131,6 +256,13 @@ class AVAArgumentsParser: NSObject {
     }
     
     
+    /**
+     
+     Setzt den Index des aktuell zu verarbeitenden Arguments auf das nächste.
+     
+     - returns: Ein boolscher Wert, der angibt, ob ein nächstes Argument existiert.
+     
+     */
     private func nextArgument() -> Bool {
         self.currentArgumentIndex++
 
@@ -141,6 +273,19 @@ class AVAArgumentsParser: NSObject {
     // MARK: - Parsing
     
     
+    /**
+    
+     Verarbeitet eine Liste von Übergabeparametern und erzeugt daraus eine AVASetup-Instanz.
+    
+     Dabei wird stets nach einer Verarbeitungs-Regel für das aktuelle Argument gesucht und diese, falls vorhanden, angewandt. Existiert keine Regel wird das Argument übersprungen.
+    
+     - parameters:
+        
+        - arguments: Die Überageparameter, die verarbeitet werden sollen.
+    
+     - returns: Das erzeugte AVASetup.
+    
+     */
     func parseArguments(arguments: [AVAArgument]) -> AVASetup {
         self.arguments = arguments
         if !nextArgument() {
@@ -167,6 +312,11 @@ class AVAArgumentsParser: NSObject {
     private typealias AVAArgumentParserRules = [String: AVARuleProcessing]
     
     
+    /**
+     
+     Die Regeln zur verarbeitung von Übergabeparametern.
+     
+     */
     private lazy var parsingRules: AVAArgumentParserRules = [
         MASTER_PARAMETER_NAME: {(setup: AVASetup) -> () in
             setup.isMaster = true

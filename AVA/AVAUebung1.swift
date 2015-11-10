@@ -10,45 +10,78 @@ import Cocoa
 import MultipeerConnectivity
 
 
-class AVAUebung1: NSObject {
+/**
+ 
+ Implementiert die Logik der Übung 1.
+ 
+ Beim Starten des Services werden die gebufferten Nachrichten nach der Reihenfolge ihres Eintreffens über die nodeManager:didReceiveApplicationDataMessage: Methode aus dem AVAService Protokoll verarbeitet.
+ 
+ Sollte der Knoten beim Start der Master seinm, sendet er das Gerüht aus dem Setup an seine Nachbarn.
+ 
+ */
+class AVAUebung1: NSObject, AVAService {
     
     
+    /**
+     
+     Alle Empfangenen Gerüchte
+     
+     */
     private var rumors = [AVARumor]()
     
     
+    /**
+     
+     Der AVALogging, der zum Loggen verwendet werden soll.
+     
+     */
     private let logger: AVALogging
     
     
+    /**
+     
+     Das AVASetup welches aus den Übergabe-Parametern erstellt wurde.
+     
+     */
     private var setup: AVASetup?
     
     
+    /**
+     
+     Der AVANodeManager des aktuellen Knoten.
+     
+     */
     private lazy var nodeManager: AVANodeManager = {
         let appDelegate = NSApp.delegate as! AppDelegate
         return appDelegate.nodeManager!
     }()
     
     
-    init(setup: AVASetup) {
-        self.setup = setup
-        self.logger = NSApp.delegate as! AppDelegate
-        super.init()
-    }
-    
-    
-    func handleHeardRumor(rumor: AVARumor, fromPeer peer: AVAVertex) {
+    /**
+     
+     Verarbeitet ein eingetroffenes Gerücht wie folgt:
+     
+        1. Falls in der Liste der bereits gehörten Gerüchte ein gleiches Objekt enthalten ist, wird der Sender der Liste heardFrom hinzugefüt, falls diese den Sendern nicht bereits enthält. Wurde das Gerücht noch nicht gehört wird es der Liste der gehörten Gerüchte hinzugefügt.
+     
+        2. Falls das Gerücht von ausreichend Knoten gehöhrt wurde, wird es markiert.
+     
+    - parameters:
         
+        - rumor: Das gehörte Gerücht.
+     
+        - peer: Der Sender, vom welchem das Gerücht gehört wurde.
+     
+     */
+    func handleHeardRumor(rumor: AVARumor, fromPeer peer: AVAVertex) {
         let rumorIndex = self.rumors.indexOf { (item: AVARumor) -> Bool in
             return item == rumor
         }
+        var heardRumor = rumor
         if let index = rumorIndex {
-            let heardRumor = self.rumors[index]
+            heardRumor = self.rumors[index]
             // Nicht Weitersagen
             if !heardRumor.heardFrom.contains(peer) {
                 heardRumor.heardFrom.append(peer)
-            }
-            if heardRumor.heardFrom.count >= self.setup?.rumorCountToAcceptance! && !heardRumor.accepted {
-                self.logger.log(AVALogEntry(level: AVALogLevel.Success, event: AVAEvent.Processing, peer: self.setup!.peerName!, description: "Peer '\(self.setup!.peerName!)' accepted rumor '\(rumor.rumorText)'"))
-                heardRumor.accepted = true
             }
         } else {
             rumor.heardFrom.append(peer)
@@ -60,12 +93,22 @@ class AVAUebung1: NSObject {
             })
             self.nodeManager.broadcastMessage(message, exceptingPeers: peerID)
         }
+        if heardRumor.heardFrom.count >= self.setup?.rumorCountToAcceptance! && !heardRumor.accepted {
+            self.logger.log(AVALogEntry(level: AVALogLevel.Success, event: AVAEvent.Processing, peer: self.setup!.peerName!, description: "Peer '\(self.setup!.peerName!)' accepted rumor '\(rumor.rumorText)'"))
+            heardRumor.accepted = true
+        }
     }
     
-}
-
-
-extension AVAUebung1: AVAService {
+    
+    // MARK: | AVAService
+    
+    
+    required init(setup: AVASetup) {
+        self.setup = setup
+        self.logger = NSApp.delegate as! AppDelegate
+        super.init()
+    }
+    
     
     func startWithBufferedMessage(messages: [AVAMessage]) {
         if self.setup!.isMaster {
@@ -95,4 +138,5 @@ extension AVAUebung1: AVAService {
             self.logger.log(AVALogEntry(level: AVALogLevel.Warning, event: AVAEvent.Processing, peer: self.setup!.peerName!, description: "Received application data do not contain any payload"))
         }
     }
+    
 }

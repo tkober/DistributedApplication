@@ -111,7 +111,7 @@ class AVALogViewController: NSViewController {
     
     
     func renderAndUpdateGraphImage(tempFilePath: String) {
-        GRAPHVIZ.renderPNGFromFile(tempFilePath) { (image) -> () in
+        GRAPHVIZ.renderPNGFromDOTFile(tempFilePath) { (image) -> () in
             if let graphImage = image {
                 self.updateGraphImage(graphImage)
             }

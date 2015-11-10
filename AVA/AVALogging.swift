@@ -9,6 +9,11 @@
 import Cocoa
 
 
+/**
+ 
+ Enthält die Verschiedenen Log-Ebenen.
+ 
+ */
 enum AVALogLevel: Int {
     case Debug;
     case Info;
@@ -86,6 +91,11 @@ enum AVALogLevel: Int {
 
 
 
+/**
+ 
+ Beschreibt die Ereignisse, die einen Log-Eintrag hervorrufen.
+ 
+ */
 enum AVAEvent: Int {
     case Discovery
     case InvitationSent
@@ -174,17 +184,89 @@ private let MESSAGE_KEY: String = "message"
 private let TIMESTAMP_KEY: String = "timestamp"
 
 
+/**
+ 
+ Beschreibt einen Log-Eintrag.
+ 
+ */
 class AVALogEntry: NSObject {
     
+    /**
+     
+     Die Log-Ebene des Eintrags.
+     
+     */
     let level: AVALogLevel
+    
+    
+    /**
+     
+     Das auslösende Ereignis.
+     
+     */
     let event: AVAEvent
+    
+    
+    /**
+     
+     Der Knoten auf welchem dieses Ereignis eintrat.
+     
+     */
     let peer: String
+    
+    
+    /**
+     
+     Eine kurze Beschreibung.
+     
+     */
     let entryDescription: String
+    
+    
+    /**
+     
+     Der Nachbar auf welchen sich das auslösende Ereignis eventuell bezieht.
+     
+     */
     let remotePeer: String?
+    
+    /**
+     
+     Eine eventuell übermittelte Nachricht.
+     
+     */
     let message: AVAMessage?
+    
+    
+    /**
+     
+     Ein Timestamp.
+     
+     */
     let timestamp: NSTimeInterval
     
     
+    /**
+     
+     Erstellt einen neuen Log-Eintrag.
+     
+     - parameters:
+     
+        - level: Der AVALogLevel des Eintrags.
+    
+        - event: Das auslösende Ereignis.
+     
+        - peer: Der Knoten auf welchem dieses Ereignis eintrat.
+     
+        - description: Eine kurze Beschreibung.
+     
+        - remotePeer: Der Nachbar auf welchen sich das auslösende Ereignis eventuell bezieht. Der Default-Wert ist nil.
+     
+        - message: Eine eventuell übermittelte Nachricht. Der Default-Wert ist nil.
+     
+        - timestamp: Der Zeitpunkt, zu welchem das Ereignis auftrat. Der Default wert ist die aktuelle Zeit.
+     
+     */
     init(level: AVALogLevel, event: AVAEvent, peer: String, description: String, remotePeer: String? = nil, message: AVAMessage? = nil, timestamp: NSTimeInterval = NSDate().timeIntervalSince1970) {
         self.level = level
         self.event = event
@@ -196,6 +278,15 @@ class AVALogEntry: NSObject {
     }
     
     
+    /**
+     
+     Erstellt einen neuen Log-Eintrag aus gegebenem JSON.
+     
+     - parameters:
+     
+        - json: Ein JSON-Objekt welches die Informationen eines Log-Eintrags enthält.
+     
+     */
     convenience init(json: [String: AnyObject]) {
         let logLevel = AVALogLevel(rawValue: (json[LEVEL_KEY] as! NSNumber).integerValue)!
         let event = AVAEvent(rawValue: (json[EVENT_KEY] as! NSNumber).integerValue)!
@@ -211,7 +302,14 @@ class AVALogEntry: NSObject {
     }
     
     
-    func stringValue() -> String? {
+    /**
+     
+     Erzeugt JSON als String, aus welchem sich der Zustand einer Instanz reinstanziieren lässt.
+     
+     - returns: Ein entsprechendes JSON-Objekt als String.
+     
+     */
+    func jsonStringValue() -> String? {
         var json: [String: AnyObject] = [
             LEVEL_KEY: NSNumber(integer: self.level.rawValue),
             EVENT_KEY: NSNumber(integer: self.event.rawValue),
@@ -235,16 +333,51 @@ class AVALogEntry: NSObject {
 }
 
 
+/**
+ 
+ Dieses Protokoll muss von einer Klasse implementiert werden, um AVALogEnty-Objekte verarbeiten zu können.
+ 
+ */
 protocol AVALogging: class {
+    
+    
+    /**
+     
+     Wird zur Verarbeitung eines Log-Eintrags aufgerufen.
+     
+     
+     - parameters:
+        
+        - entry: Der Log-Eintrag, der verarbeitet werden soll.
+     
+     */
     func log(enty: AVALogEntry)
+    
+    
+    /**
+     
+     Wird aufgerufen um den Logger zu starten.
+     
+     */
+    func setupLogger()
 }
 
 
+/**
+ 
+ > Operator, welcher prüft ob ein Log-Eintrag zeitlich nach einem anderen liegt.
+ 
+ */
 func >(lhs: AVALogEntry, rhs: AVALogEntry) -> Bool {
     return lhs.timestamp > rhs.timestamp
 }
 
 
+/**
+ 
+ < Operator, welcher prüft ob ein Log-Eintrag zeitlich vor einem anderen liegt.
+ 
+ */
 func <(lhs: AVALogEntry, rhs: AVALogEntry) -> Bool {
     return lhs.timestamp < rhs.timestamp
 }

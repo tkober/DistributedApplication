@@ -10,8 +10,20 @@ import Foundation
 
 
 typealias AVAVertex = String
+
+/**
+ 
+ Ein Tupel, welches die Anzahl an Knoten und Kanten einer Topologie enthält.
+ 
+ */
 typealias AVATopologyDimension = (vertexCount: Int, edgeCount: Int)
 
+
+/**
+ 
+ Repräsentiert zwei adjazente Knoten.
+ 
+ */
 class AVAAdjacency: NSObject {
     
     let v1: AVAVertex
@@ -30,23 +42,50 @@ class AVAAdjacency: NSObject {
 }
 
 
+/**
+ 
+ == Operatoer welcher zwei AVAAdjacency-Objekte auf Gleichheit prüft.
+ 
+ */
 func ==(lhs: AVAAdjacency, rhs: AVAAdjacency) -> Bool {
     return (lhs.v1 == rhs.v1 && lhs.v2 == rhs.v2) || (lhs.v1 == rhs.v2 && lhs.v2 == rhs.v1)
 }
 
 
+/**
+ 
+ != Operatoer welcher zwei AVAAdjacency-Objekte auf Ungleichheit prüft.
+ 
+ */
 func !=(lhs: AVAAdjacency, rhs: AVAAdjacency) -> Bool {
     return !(lhs == rhs)
 }
 
 
 
+/**
+ 
+ Repräsentiert eine Topologie als Menge adjazenter Knoten.
+ 
+ */
 class AVATopology: NSObject {
     
     
+    /**
+     
+     Die Adjazenzen der Topologie.
+     
+     */
     let adjacencies: [AVAAdjacency]
     
     
+    /**
+     
+     Aller Knoten der Topologie.
+     
+     - important: Es sind nur die Knoten der Adjazenzen enthalten, da isolierte Knoten in einer Topologie nicht erlaubt sind.
+     
+     */
     var vertices: [AVAVertex] {
         get {
             var result: [AVAVertex] = []
@@ -63,13 +102,29 @@ class AVATopology: NSObject {
     }
     
     
-//    var dimension: AVATopologyDimension {
-//        get {
-//            return (self.vertices.count, self.adjacencies.count)
-//        }
-//    }
+    /**
+     
+     Die Dimension, sprich Anzahl an Kanten und Knote , der Topologie.
+     
+     */
+    var dimension: AVATopologyDimension {
+        get {
+            return (self.vertices.count, self.adjacencies.count)
+        }
+    }
     
     
+    /**
+     
+     Gibt alle Knoten zurück, die zu einem gegebenen Knoten adjazent sind.
+     
+     - parameters:
+     
+        - vertex: Der Knoten, dessen adjazente Knoten gesucht sind.
+     
+     - returns: Alle adjazenten Knoten.
+     
+     */
     func adjacentVerticesForVertex(vertex: AVAVertex) -> [AVAVertex] {
         var result: [AVAVertex] = []
         for adjacency in adjacencies {
@@ -96,6 +151,15 @@ class AVATopology: NSObject {
     // MARK: | Initializer
     
     
+    /**
+    
+    Erzeugt eine Topologie aus einem .dot-File.
+    
+    - parameters:
+    
+    - graphPath: Der Inhalt des .dot-Files.
+    
+    */
     init(graph: NSData) {
         var graphString = String(data: graph, encoding: NSUTF8StringEncoding)!
         graphString = graphString.stringByReplacingOccurrencesOfString("\n", withString: ";")
@@ -130,12 +194,31 @@ class AVATopology: NSObject {
     }
     
     
+    /**
+     
+     Erzeugt eine Topologie aus einem .dot-File.
+     
+     - parameters: 
+     
+        - graphPath: Der Pfad zu dem .dot-File.
+     
+     */
     convenience init(graphPath: String) {
         let data = NSData(contentsOfFile: graphPath)!
         self.init(graph: data)
     }
     
     
+    /**
+     
+     Erzeugt eine neue zufällige Topologie mit einer gegeben Dimension.
+     
+     
+     - parameters: 
+     
+        - dimension: Die Dimension der zu erzeugenden Topologie.
+     
+     */
     convenience init(randomWithDimension dimension: AVATopologyDimension) {
         var vertices = [AVAVertex]()
         for (var i = 1; i <= dimension.vertexCount; i++) {

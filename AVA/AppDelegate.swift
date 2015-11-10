@@ -11,24 +11,63 @@ import Cocoa
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate {
 
-    
+    /**
+     * Die NSTextView, in der der lokale Log des Knoten angezeigt werden soll.
+     */
     var loggingTextView: NSTextView?
-    
+
+    /**
+     * Der AVANodeManager des Knoten zur Kommunikation mit den Nachbarn.
+     */
     var nodeManager: AVANodeManager?
     
+    /**
+     * Das setup des Knoten aus den Uebergabe-Parametern.
+     */
     var setup: AVASetup!
+    
+    /**
+     * Die Topologie, die aus dem Setup gelesen wurde.
+     */
     var topology: AVATopology!
+    
+    /**
+     * Wird aufgerufen, sobald alle Uebergabe-Parameter verarbeitet wurden.
+     */
     var onArgumentsProcessed: ((ownPeerName: AVAVertex, isMaster: Bool, topology: AVATopology) -> ())?
+    
+    /**
+     * Wird aufgerufen, wenn sich der Status des NodeManagers aendert.
+     */
     var onNodeStateUpdate: ((state: AVANodeState) -> ())?
     
+    /**
+     * Serielle Dispatch-Queue zum Schreiben der Logs.
+     */
     let loggingQueue: dispatch_queue_t = dispatch_queue_create("ava(\(NSProcessInfo.processInfo().processIdentifier)).app_delegate.logging)", DISPATCH_QUEUE_SERIAL)
     
+    /**
+     * Der Pfad zum Log-File des aktuellen Knoten.
+     */
     lazy var logfilePath: String = "\(self.setup.applicationPackageDirectory)/~\(self.setup.peerName!).dlog"
+    
+    /**
+     * NSOutputStream zum Log-File des aktuellen Knoten.
+     */
     var loggingStream: NSOutputStream?
     
+    /**
+     * Der Service, der vom aktuellen Knonten bereitgestellt wird.
+     */
     var service: AVAService?
+    
+    /**
+     * Hier werde Nachrichten zwischengespeichert, die Eintreffen, bevor der Knoten alle seine Nachbarn verbunden hat. Der Service wird anschliessend mit diesem Buffer gestartet.
+     */
     var messageBuffer = [AVAMessage]()
     
+    
+    // MARK: | NSApplicationDelegate
     
     
     func applicationDidFinishLaunching(aNotification: NSNotification) {
@@ -70,15 +109,16 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             self.nodeManager?.start()
         }
     }
-
-    func applicationWillTerminate(aNotification: NSNotification) {
-        // Insert code here to tear down your application
-    }
     
     
     // MARK: Topology
     
     
+    /**
+    
+     Erstellt eine AVATopology-Instanz aus dem Setup.
+    
+     */
     func buildTopologyFromFile() {
         if let path = self.setup.topologyFilePath {
             self.topology = AVATopology(graphPath: path)
@@ -89,6 +129,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
     
     
+    /**
+     
+     Erstellt eine zufaellige Toptologie mit der Dimension aus dem Setup.
+     
+     */
     func buildRandomTopology() {
         if let dimension = self.setup.randomTopologyDimension {
             self.topology = AVATopology(randomWithDimension: dimension)
@@ -98,7 +143,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
     
-    
+         // MARK: Instantiation
+    /**
+     
+     Sendet eine Terminate-Message an alle Nachbarn und beendet den Prozess mit einer Verzögerung von 1 Sekunde.
+     
+     */
     func terminateTopology() {
         self.nodeManager?.delegate = nil
         self.nodeManager?.broadcastMessage(AVAMessage.terminateMessage(self.setup.peerName!))
@@ -108,9 +158,25 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
     
     
-    // MARK: Instantiation
+
     
     
+    /**
+     
+     Erstellt alle anderen Knoten aus einer gegebenen Topologie.
+    
+     - parameters:
+     
+        - topology: Die AVATopology, die aus dem Setup erstellt wurde.
+     
+        - peerName: Der Name des eigenen Knoten.
+     
+        - topologyFilePath: Der Pfad, unter welchem die Beschreibung der zu erstellenen Topologie liegt.
+     
+        - serviceType: Der Service, welchen die Knoten der Topologie bereitstellen sollen.
+    
+    
+     */
     func instantiateTopology(topology: AVATopology, ownPeerName peerName: String, topologyFilePath: String, withServiceOfType serviceType: AVAServiceType) {
         let vertices = topology.vertices
         if !vertices.contains(peerName) {
@@ -125,6 +191,19 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
     
     
+    /**
+     
+     Instanziiert einen neuen Knoten.
+     
+     - parameters:
+        
+        - vertex: Der Name des Knoten.
+     
+        - topology: Der Pfad zur Beschreibung der Topologie.
+     
+        - serviceType: Der Service, welchen die Knoten der Topologie bereitstellen sollen.
+     
+     */
     func instantiateVertex(vertex: AVAVertex, fromTopology topology: String, withServiceOfType serviceType: AVAServiceType) {
         let task = NSTask()
         task.launchPath = self.setup.applicationPath
@@ -140,6 +219,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     // MARK: Layout
     
     
+    /**
+    
+     Positioniert das Fenster der Anwendung so, dass es schoen aussieht.
+    
+     */
     func layoutWindow(size: CGSize, margin: CGFloat) {
         if let window = NSApplication.sharedApplication().windows.first {
             let visibleScreenFrame = window.screen?.visibleFrame
@@ -158,11 +242,16 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 }
 
 
+/**
+ 
+ Implementiert das AVALogging Protokoll.
+ 
+ */
 extension AppDelegate: AVALogging {
     
     func log(entry: AVALogEntry) {
         dispatch_async(self.loggingQueue) { () -> Void in
-            if let stream = self.loggingStream, log = entry.stringValue() {
+            if let stream = self.loggingStream, log = entry.jsonStringValue() {
                 stream.write("\(log),\n")
             }
         }
@@ -188,6 +277,11 @@ extension AppDelegate: AVALogging {
 }
 
 
+/**
+ 
+ Implementiert das AVANodeManagerDelegate Protokoll.
+ 
+ */
 extension AppDelegate: AVANodeManagerDelegate {
     
     func nodeManager(nodeManager: AVANodeManager, stateUpdated state: AVANodeState) {
@@ -220,7 +314,7 @@ extension AppDelegate: AVANodeManagerDelegate {
         }
     }
     
-    
+
     func nodeManager(nodeManager: AVANodeManager, didReceiveUninterpretableData data: NSData, fromPeer peer: AVAVertex) {
         
     }
@@ -229,6 +323,16 @@ extension AppDelegate: AVANodeManagerDelegate {
 
 extension AppDelegate {
     
+    /**
+     
+     Erstellt den entrechenden Service aus dem Setup.
+     
+     - parameters:
+        - setup: Das AVASetup, welches aus den Uebergabe-Parametern erstellt wurde.
+     
+     - returns: Den entsprechenden AVAService.
+     
+     */
     func serviceFromSetup(setup: AVASetup) -> AVAService {
         switch setup.service! {
         case AVAServiceType.Uebung1:
@@ -240,6 +344,11 @@ extension AppDelegate {
 }
 
 
+/**
+ 
+ Kategorische Erweiterung, die NSOutputStream um eine Methode zum einfachen Schreiben einse Strings erweitert.
+ 
+ */
 extension NSOutputStream {
     
     func write(string: String, encoding: NSStringEncoding = NSUTF8StringEncoding, allowLossyConversion: Bool = true) -> Int {
