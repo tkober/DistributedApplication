@@ -675,18 +675,18 @@
                             <scrollView horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1Zi-Bb-ilS">
                                 <rect key="frame" x="0.0" y="0.0" width="480" height="120"/>
                                 <clipView key="contentView" id="6h1-1w-ZUA">
-                                    <rect key="frame" x="1" y="1" width="478" height="118"/>
+                                    <rect key="frame" x="1" y="1" width="463" height="118"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <textView importsGraphics="NO" findStyle="panel" continuousSpellChecking="YES" allowsUndo="YES" usesRuler="YES" usesFontPanel="YES" verticallyResizable="YES" allowsNonContiguousLayout="YES" quoteSubstitution="YES" dashSubstitution="YES" spellingCorrection="YES" smartInsertDelete="YES" id="yLG-1D-dcl">
-                                            <rect key="frame" x="0.0" y="0.0" width="483" height="118"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="468" height="118"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <animations/>
                                             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                            <size key="minSize" width="478" height="118"/>
+                                            <size key="minSize" width="463" height="118"/>
                                             <size key="maxSize" width="485" height="10000000"/>
                                             <color key="insertionPointColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                            <size key="minSize" width="478" height="118"/>
+                                            <size key="minSize" width="463" height="118"/>
                                             <size key="maxSize" width="485" height="10000000"/>
                                         </textView>
                                     </subviews>
@@ -703,7 +703,7 @@
                                     <animations/>
                                 </scroller>
                                 <scroller key="verticalScroller" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="bHX-OU-5Vd">
-                                    <rect key="frame" x="463" y="1" width="16" height="118"/>
+                                    <rect key="frame" x="464" y="1" width="15" height="118"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <animations/>
                                 </scroller>
@@ -715,7 +715,7 @@
                                     <constraint firstAttribute="height" constant="21" id="nQk-Yo-qz9"/>
                                 </constraints>
                                 <animations/>
-                                <buttonCell key="cell" type="disclosureTriangle" bezelStyle="disclosure" image="A7F773CF-0E65-4889-A8AA-BCD81AA6123E" imagePosition="overlaps" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="meP-VL-YAY">
+                                <buttonCell key="cell" type="disclosureTriangle" bezelStyle="disclosure" image="23A3D938-D2B2-43D2-AE27-9ABC6B0A24F3" imagePosition="overlaps" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="meP-VL-YAY">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -854,18 +854,18 @@
                             <scrollView horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="y5n-Gk-5It">
                                 <rect key="frame" x="0.0" y="0.0" width="393" height="240"/>
                                 <clipView key="contentView" id="Mw2-Ip-ZSw">
-                                    <rect key="frame" x="1" y="1" width="391" height="238"/>
+                                    <rect key="frame" x="1" y="1" width="376" height="238"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <textView importsGraphics="NO" findStyle="panel" continuousSpellChecking="YES" allowsUndo="YES" usesRuler="YES" usesFontPanel="YES" verticallyResizable="YES" allowsNonContiguousLayout="YES" quoteSubstitution="YES" dashSubstitution="YES" spellingCorrection="YES" smartInsertDelete="YES" id="alX-8F-qrx">
-                                            <rect key="frame" x="0.0" y="0.0" width="391" height="238"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="376" height="238"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <animations/>
                                             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                            <size key="minSize" width="391" height="238"/>
+                                            <size key="minSize" width="376" height="238"/>
                                             <size key="maxSize" width="463" height="10000000"/>
                                             <color key="insertionPointColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                            <size key="minSize" width="391" height="238"/>
+                                            <size key="minSize" width="376" height="238"/>
                                             <size key="maxSize" width="463" height="10000000"/>
                                         </textView>
                                     </subviews>
@@ -882,7 +882,7 @@
                                     <animations/>
                                 </scroller>
                                 <scroller key="verticalScroller" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="wzT-VH-HZ5">
-                                    <rect key="frame" x="376" y="1" width="16" height="238"/>
+                                    <rect key="frame" x="377" y="1" width="15" height="238"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <animations/>
                                 </scroller>
@@ -894,7 +894,7 @@
                                     <constraint firstAttribute="height" constant="21" id="CVw-4l-YfM"/>
                                 </constraints>
                                 <animations/>
-                                <buttonCell key="cell" type="disclosureTriangle" bezelStyle="disclosure" image="88535B92-3D84-464A-BB39-BE6B99B607CE" imagePosition="overlaps" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="9Wq-oR-qMu">
+                                <buttonCell key="cell" type="disclosureTriangle" bezelStyle="disclosure" image="4117FF80-E81E-4FDB-B0B9-215A83BC32CF" imagePosition="overlaps" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="9Wq-oR-qMu">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -1202,7 +1202,7 @@
         </scene>
     </scenes>
     <resources>
-        <image name="88535B92-3D84-464A-BB39-BE6B99B607CE" width="1" height="1">
+        <image name="23A3D938-D2B2-43D2-AE27-9ABC6B0A24F3" width="1" height="1">
             <mutableData key="keyedArchiveRepresentation">
 YnBsaXN0MDDUAQIDBAUGPT5YJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3ASAAGGoK4HCBMU
 GR4fIyQrLjE3OlUkbnVsbNUJCgsMDQ4PEBESVk5TU2l6ZVYkY2xhc3NcTlNJbWFnZUZsYWdzVk5TUmVw
@@ -1252,7 +1252,7 @@ AKkAqwCwALMAtQC3ALkAuwDAANcA2QDbCVMJWAljCWwJfwmDCY4JlwmcCaQJpwmsCbsJvwnGCc4J2wng
 CeIJ5AnpCfEJ9An5CgEKBAoWChkKHgAAAAAAAAIBAAAAAAAAAEEAAAAAAAAAAAAAAAAAAAogA
 </mutableData>
         </image>
-        <image name="A7F773CF-0E65-4889-A8AA-BCD81AA6123E" width="1" height="1">
+        <image name="4117FF80-E81E-4FDB-B0B9-215A83BC32CF" width="1" height="1">
             <mutableData key="keyedArchiveRepresentation">
 YnBsaXN0MDDUAQIDBAUGPT5YJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3ASAAGGoK4HCBMU
 GR4fIyQrLjE3OlUkbnVsbNUJCgsMDQ4PEBESVk5TU2l6ZVYkY2xhc3NcTlNJbWFnZUZsYWdzVk5TUmVw

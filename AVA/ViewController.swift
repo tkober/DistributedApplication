@@ -138,12 +138,13 @@ class ViewController: NSViewController {
         self.nameLabel?.stringValue = "Node: \(ownPeerName)\(nameSuffix)"
         self.terminateButton?.hidden = !isMaster
         self.showDistributedLogButton?.hidden = !isMaster
+        self.topology = topology
         
         let tempFilePath = "\(appDelegate.setup.applicationPackageDirectory)/~\(ownPeerName)_\(NSDate().timeIntervalSince1970).render"
         do {
             let dot = GRAPHVIZ.dotFromTopology(topology, vertexDecorator: { (vertex: AVAVertex) -> AVAGraphvizVertexDecoration in
                 return (vertex == ownPeerName ? AVAGraphvizBlue : AVAGraphvizGrey, AVAGraphvizSolid)
-            }, ajacencyDecorator: { (adjacency: AVAAdjacency) -> AVAGraphvizAdjacencyDecoration in
+            }, adjacencyDecorator: { (adjacency: AVAAdjacency) -> AVAGraphvizAdjacencyDecoration in
                 if adjacency.v1 == ownPeerName || adjacency.v2 == ownPeerName {
                     return (AVAGraphvizAdjacencyDirection.Undirected, AVAGraphvizBlue, AVAGraphvizDotted, nil)
                 } else {
@@ -167,7 +168,7 @@ class ViewController: NSViewController {
         do {
             let dot = GRAPHVIZ.dotFromTopology(topology, vertexDecorator: { (vertex: AVAVertex) -> AVAGraphvizVertexDecoration in
                 return (vertex == ownPeerName ? AVAGraphvizBlue : AVAGraphvizGrey, AVAGraphvizSolid)
-            }, ajacencyDecorator: { (adjacency: AVAAdjacency) -> AVAGraphvizAdjacencyDecoration in
+            }, adjacencyDecorator: { (adjacency: AVAAdjacency) -> AVAGraphvizAdjacencyDecoration in
                 if adjacency.v1 == ownPeerName || adjacency.v2 == ownPeerName {
                     let vertex = adjacency.v1 == ownPeerName ? adjacency.v2 : adjacency.v1
                     let style = state.connectedPeers.contains(vertex) ? AVAGraphvizSolid : AVAGraphvizDotted
@@ -197,6 +198,8 @@ class ViewController: NSViewController {
         }
     }
     
+    private var topology: AVATopology!
+    
     
     // MARK: | Storyboard
     
@@ -205,7 +208,7 @@ class ViewController: NSViewController {
         if segue.identifier == SHOW_DISTRIUBTED_LOG_SEGUE_ID {
             let logViewController = segue.destinationController as! AVALogViewController
             let appDelegate = NSApp.delegate as! AppDelegate
-            logViewController.gatherLogs(appDelegate.setup.applicationPackageDirectory)
+            logViewController.gatherLogs(self.topology, inDirecory: appDelegate.setup.applicationPackageDirectory)
         }
     }
 

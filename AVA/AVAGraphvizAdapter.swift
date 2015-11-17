@@ -136,13 +136,13 @@ class AVAGraphvizAdapter: NSObject {
      - returns: Den Inhalt des .dot-Files als String.
     
      */
-    func dotFromTopology(topology: AVATopology, vertexDecorator: AVAGraphvizVertexDecorator, ajacencyDecorator: AVAGraphvizAdjacencyDecorator) -> String {
+    func dotFromTopology(topology: AVATopology, vertexDecorator: AVAGraphvizVertexDecorator, adjacencyDecorator: AVAGraphvizAdjacencyDecorator) -> String {
         var result = "digraph G {"
         for vertex in topology.vertices {
             result += "\n\(vertex) \(self.stringFromVertexDecoration(vertexDecorator(vertex: vertex)))"
         }
         for adjacency in topology.adjacencies {
-            let decoration = ajacencyDecorator(adjacency: adjacency)
+            let decoration = adjacencyDecorator(adjacency: adjacency)
             let from: AVAVertex
             let to: AVAVertex
             if (decoration.direction == .InOrder) {
@@ -257,9 +257,7 @@ class AVAGraphvizAdapter: NSObject {
             }
         }
         if concurrent {
-            dispatch_async(self.renderingQueue) { () -> Void in
-                rendering()
-            }
+            dispatch_async(self.renderingQueue, rendering)
         } else {
             rendering()
         }

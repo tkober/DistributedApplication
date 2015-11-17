@@ -30,18 +30,24 @@ class AVALogViewController: NSViewController {
     // MARK: | Gathering Logs
     
     
-    func gatherLogs(direcory: String, updateUI: Bool = true) {
-        if let logFiles = AVALogViewController.logFilesInDirectory(direcory) {
+    func gatherLogs(forTopology: AVATopology, inDirecory directory: String, updateUI: Bool = true) {
+        if let logFiles = AVALogViewController.logFilesInDirectory(directory) {
             self.logs.removeAll()
+            var validLogs = [String]()
+            for vertex in forTopology.vertices {
+                validLogs.append("~\(vertex).dlog")
+            }
             for logFile in logFiles {
-                let fileContent = String(data: NSData(contentsOfFile: logFile)!, encoding: NSUTF8StringEncoding)!
-                do {
-                    let logs = try NSJSONSerialization.JSONObjectWithData("[\(fileContent)]".dataUsingEncoding(NSUTF8StringEncoding)!, options: NSJSONReadingOptions(rawValue: 0)) as! [[String: AnyObject]]
-                    for log in logs {
-                        self.logs.append(AVALogEntry(json: log))
+                if validLogs.contains(logFile) {
+                    let fileContent = String(data: NSData(contentsOfFile: logFile)!, encoding: NSUTF8StringEncoding)!
+                    do {
+                        let logs = try NSJSONSerialization.JSONObjectWithData("[\(fileContent)]".dataUsingEncoding(NSUTF8StringEncoding)!, options: NSJSONReadingOptions(rawValue: 0)) as! [[String: AnyObject]]
+                        for log in logs {
+                            self.logs.append(AVALogEntry(json: log))
+                        }
+                    } catch {
+                        
                     }
-                } catch {
-                    
                 }
             }
             self.logs.sortInPlace({ (a: AVALogEntry, b: AVALogEntry) -> Bool in
@@ -93,7 +99,7 @@ class AVALogViewController: NSViewController {
         do {
             let dot = GRAPHVIZ.dotFromTopology(topology, vertexDecorator: { (vertex: AVAVertex) -> AVAGraphvizVertexDecoration in
                 return (logEntry.peer == vertex ? logEntry.level.graphvizsColor() :  AVAGraphvizGrey, AVAGraphvizSolid)
-            }, ajacencyDecorator: { (adjacency: AVAAdjacency) -> AVAGraphvizAdjacencyDecoration in
+            }, adjacencyDecorator: { (adjacency: AVAAdjacency) -> AVAGraphvizAdjacencyDecoration in
                 if let remotePeer = logEntry.remotePeer {
                     let logAdjacency = AVAAdjacency(v1: logEntry.peer, v2: remotePeer)
                     if logAdjacency == adjacency {

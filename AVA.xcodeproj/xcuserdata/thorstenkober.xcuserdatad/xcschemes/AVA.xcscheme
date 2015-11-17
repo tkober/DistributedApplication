@@ -68,23 +68,23 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "--topology"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "/Users/thorstenkober/Documents/Studium/9_Semester/AVA/test.topology"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "--randomTopology"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "5"
-            isEnabled = "YES">
+            argument = "24"
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "6"
-            isEnabled = "YES">
+            argument = "25"
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "--peerName"
@@ -115,7 +115,7 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "2"
+            argument = "1"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>
