@@ -71,7 +71,7 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "/Users/thorstenkober/Documents/Studium/9_Semester/AVA/test.topology"
+            argument = "~/Documents/Studium/9_Semester/AVA/test.topology"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument

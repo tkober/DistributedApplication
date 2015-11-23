@@ -300,7 +300,6 @@ class AVAArgumentsParser: NSObject {
                 print("Unkown argument '\(self.currentArgument()!)'")
             }
         }
-        
         return result
     }
     
@@ -326,7 +325,7 @@ class AVAArgumentsParser: NSObject {
                 print("Missing arguments")
                 exit(2)
             }
-            setup.topologyFilePath = self.currentArgument()
+            setup.topologyFilePath = (self.currentArgument()! as NSString).stringByExpandingTildeInPath
         },
         RANDOM_TOPOLOGY_PARAMETER_NAME: {(setup: AVASetup) -> () in
             if (!self.nextArgument()) {
