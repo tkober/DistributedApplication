@@ -238,17 +238,16 @@ class AVAGraphvizAdapter: NSObject {
      */
     func renderPNGFromDOTFile(filePath: String, concurrent: Bool = true, result: AVAGraphvizRenderingCompletion) {
         let rendering: dispatch_block_t = { () -> Void in
-//            let task = NSTask()
-//            task.launchPath = "/usr/local/bin/dot"
-//            task.arguments = ["-Tpng", filePath]
-//            
-//            let pipe = NSPipe()
-//            task.standardOutput = pipe
-//            
-//            task.launch()
-//            
-//            let data = pipe.fileHandleForReading.readDataToEndOfFile()
-            let data = NSData()
+            let task = NSTask()
+            task.launchPath = "/usr/local/bin/dot"
+            task.arguments = ["-Tpng", filePath]
+            
+            let pipe = NSPipe()
+            task.standardOutput = pipe
+            
+            task.launch()
+            
+            let data = pipe.fileHandleForReading.readDataToEndOfFile()
             if concurrent {
                 dispatch_async(dispatch_get_main_queue(), { () -> Void in
                     result(image: NSImage(data: data))
