@@ -9,6 +9,9 @@
 import Foundation
 
 
+let TOPOLOGY_ADJACENCIES = "adjacencies"
+
+
 /**
  
  Repräsentiert zwei adjazente Knoten.

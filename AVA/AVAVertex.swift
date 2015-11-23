@@ -8,6 +8,12 @@
 
 import Foundation
 
+let TOPOLOGY_VERTICES = "vertices"
+
+let TOPOLOGY_VERTEX_NAME = "name"
+let TOPOLOGY_VERTEX_IP = "ip"
+let TOPOLOGY_VERTEX_PORT = "port"
+
 
 typealias AVAVertexName = String
 
@@ -34,7 +40,7 @@ class AVAVertex: NSObject {
     
     
     convenience init(json: AVAJSON) {
-        self.init(name: json["name"] as! AVAVertexName, ip: json["ip"] as! String, port: (json["port"] as! NSNumber).integerValue)
+        self.init(name: json[TOPOLOGY_VERTEX_NAME] as! AVAVertexName, ip: json[TOPOLOGY_VERTEX_IP] as! String, port: (json[TOPOLOGY_VERTEX_PORT] as! NSNumber).integerValue)
     }
     
     

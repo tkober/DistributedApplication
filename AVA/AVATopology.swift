@@ -143,8 +143,8 @@ class AVATopology: NSObject {
         
         
         let json = try NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions(rawValue: 0))
-        let verticesJSON = json["vertices"] as! [AVAJSON]
-        let adjacenciesJSON = json["adjacencies"] as! [[AVAJSON]]
+        let verticesJSON = json[TOPOLOGY_VERTICES] as! [AVAJSON]
+        let adjacenciesJSON = json[TOPOLOGY_ADJACENCIES] as! [[AVAJSON]]
         
         self.vertices = try AVAVertex.verticesFromJSON(verticesJSON)
         
@@ -157,8 +157,6 @@ class AVATopology: NSObject {
                 self.adjacencies.append(adjacency)
             }
         }
-        
-        print("vertices -> \(vertices)")
     }
     
     
