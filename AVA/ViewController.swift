@@ -132,7 +132,7 @@ class ViewController: NSViewController {
     }
     
     
-    func onArgumentProcessing(ownPeerName: AVAVertex, isMaster: Bool, topology: AVATopology) {
+    func onArgumentProcessing(ownPeerName: AVAVertexName, isMaster: Bool, topology: AVATopology) {
         let appDelegate = NSApp.delegate as! AppDelegate
         let nameSuffix = isMaster ? " (Master)": ""
         self.nameLabel?.stringValue = "Node: \(ownPeerName)\(nameSuffix)"
@@ -142,7 +142,7 @@ class ViewController: NSViewController {
         
         let tempFilePath = "\(appDelegate.setup.applicationPackageDirectory)/~\(ownPeerName)_\(NSDate().timeIntervalSince1970).render"
         do {
-            let dot = GRAPHVIZ.dotFromTopology(topology, vertexDecorator: { (vertex: AVAVertex) -> AVAGraphvizVertexDecoration in
+            let dot = GRAPHVIZ.dotFromTopology(topology, vertexDecorator: { (vertex: AVAVertexName) -> AVAGraphvizVertexDecoration in
                 return (vertex == ownPeerName ? AVAGraphvizBlue : AVAGraphvizGrey, AVAGraphvizSolid)
             }, adjacencyDecorator: { (adjacency: AVAAdjacency) -> AVAGraphvizAdjacencyDecoration in
                 if adjacency.v1 == ownPeerName || adjacency.v2 == ownPeerName {
@@ -166,7 +166,7 @@ class ViewController: NSViewController {
         let tempFilePath = "\(appDelegate.setup.applicationPackageDirectory)/~\(ownPeerName)_\(NSDate().timeIntervalSince1970).render"
         
         do {
-            let dot = GRAPHVIZ.dotFromTopology(topology, vertexDecorator: { (vertex: AVAVertex) -> AVAGraphvizVertexDecoration in
+            let dot = GRAPHVIZ.dotFromTopology(topology, vertexDecorator: { (vertex: AVAVertexName) -> AVAGraphvizVertexDecoration in
                 return (vertex == ownPeerName ? AVAGraphvizBlue : AVAGraphvizGrey, AVAGraphvizSolid)
             }, adjacencyDecorator: { (adjacency: AVAAdjacency) -> AVAGraphvizAdjacencyDecoration in
                 if adjacency.v1 == ownPeerName || adjacency.v2 == ownPeerName {

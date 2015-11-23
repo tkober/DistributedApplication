@@ -72,7 +72,7 @@ class AVAUebung1: NSObject, AVAService {
         - peer: Der Sender, vom welchem das Gerücht gehört wurde.
      
      */
-    func handleHeardRumor(rumor: AVARumor, fromPeer peer: AVAVertex) {
+    func handleHeardRumor(rumor: AVARumor, fromPeer peer: AVAVertexName) {
         let rumorIndex = self.rumors.indexOf { (item: AVARumor) -> Bool in
             return item == rumor
         }

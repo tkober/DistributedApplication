@@ -22,7 +22,7 @@ struct AVANodeState {
      Der Name des eigenen Knoten.
      
      */
-    let ownPeer: AVAVertex
+    let ownPeer: AVAVertexName
     
     /**
      
@@ -36,14 +36,14 @@ struct AVANodeState {
      Die Nachbarn, die bereits verbunden sind.
      
      */
-    let connectedPeers: [AVAVertex]
+    let connectedPeers: [AVAVertexName]
     
     /**
      
      Die Nachbar, die noch nicht verbunden sind.
      
      */
-    let disconnectedPeers: [AVAVertex]
+    let disconnectedPeers: [AVAVertexName]
     
     
     /**
@@ -59,17 +59,17 @@ struct AVANodeState {
         - session: Die Session des eigenen Knoten.
      
      */
-    init(topology: AVATopology, ownPeer: AVAVertex, session: MCSession) {
+    init(topology: AVATopology, ownPeer: AVAVertexName, session: MCSession) {
         self.ownPeer = ownPeer
         self.topology = topology
         
-        var connected = [AVAVertex]()
+        var connected = [AVAVertexName]()
         for peer in session.connectedPeers {
             connected.append(peer.displayName)
         }
         self.connectedPeers = connected
         
-        var disconnected = [AVAVertex]()
+        var disconnected = [AVAVertexName]()
         for vertex in topology.adjacentVerticesForVertex(ownPeer) {
             if !self.connectedPeers.contains(vertex) {
                 disconnected.append(vertex)
@@ -127,7 +127,7 @@ protocol AVANodeManagerDelegate {
         - peer: Der Absender der Daten.
      
      */
-    func nodeManager(nodeManager: AVANodeManager, didReceiveUninterpretableData data: NSData, fromPeer peer: AVAVertex)
+    func nodeManager(nodeManager: AVANodeManager, didReceiveUninterpretableData data: NSData, fromPeer peer: AVAVertexName)
 }
 
 
@@ -169,14 +169,14 @@ class AVANodeManager: NSObject {
      Ein Liste mit den Namen der Nachbarn, also den Peers die verbunden werden sollen.
      
      */
-    private let peersToConnect: [AVAVertex]
+    private let peersToConnect: [AVAVertexName]
     
     /**
      
      Die MCSessions-Objekte der Nachbarn mit denen der eigene Knoten verbunden ist.
      
      */
-    private var remoteSessions = [AVAVertex: MCSession]()
+    private var remoteSessions = [AVAVertexName: MCSession]()
     
     
     /**
@@ -283,7 +283,7 @@ class AVANodeManager: NSObject {
      - returns: Einen boolschen Wert, der angibt ob das Senden erfolgreich war.
     
     */
-    func sendMessage(message:AVAMessage, toVertex vertex: AVAVertex) -> Bool {
+    func sendMessage(message:AVAMessage, toVertex vertex: AVAVertexName) -> Bool {
         for connectedPeer in self.session.connectedPeers {
             if connectedPeer.displayName == vertex {
                 return self.sendMessage(message, toPeers: [connectedPeer])

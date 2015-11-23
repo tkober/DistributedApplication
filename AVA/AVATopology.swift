@@ -9,58 +9,12 @@
 import Foundation
 
 
-typealias AVAVertex = String
-
 /**
  
  Ein Tupel, welches die Anzahl an Knoten und Kanten einer Topologie enthält.
  
  */
 typealias AVATopologyDimension = (vertexCount: Int, edgeCount: Int)
-
-
-/**
- 
- Repräsentiert zwei adjazente Knoten.
- 
- */
-class AVAAdjacency: NSObject {
-    
-    let v1: AVAVertex
-    let v2: AVAVertex
-    
-    
-    init(v1: AVAVertex, v2: AVAVertex) {
-        self.v1 = v1
-        self.v2 = v2
-    }
-    
-    
-    override var description: String {
-        return "\(super.description) { \(v1) -- \(v2) }"
-    }
-}
-
-
-/**
- 
- == Operatoer welcher zwei AVAAdjacency-Objekte auf Gleichheit prüft.
- 
- */
-func ==(lhs: AVAAdjacency, rhs: AVAAdjacency) -> Bool {
-    return (lhs.v1 == rhs.v1 && lhs.v2 == rhs.v2) || (lhs.v1 == rhs.v2 && lhs.v2 == rhs.v1)
-}
-
-
-/**
- 
- != Operatoer welcher zwei AVAAdjacency-Objekte auf Ungleichheit prüft.
- 
- */
-func !=(lhs: AVAAdjacency, rhs: AVAAdjacency) -> Bool {
-    return !(lhs == rhs)
-}
-
 
 
 /**
@@ -76,30 +30,15 @@ class AVATopology: NSObject {
      Die Adjazenzen der Topologie.
      
      */
-    let adjacencies: [AVAAdjacency]
+    var adjacencies: [AVAAdjacency]
     
     
     /**
      
      Aller Knoten der Topologie.
      
-     - important: Es sind nur die Knoten der Adjazenzen enthalten, da isolierte Knoten in einer Topologie nicht erlaubt sind.
-     
      */
-    var vertices: [AVAVertex] {
-        get {
-            var result: [AVAVertex] = []
-            for adjacency in self.adjacencies {
-                if !result.contains(adjacency.v1) {
-                    result.append(adjacency.v1)
-                }
-                if !result.contains(adjacency.v2) {
-                    result.append(adjacency.v2)
-                }
-            }
-            return result
-        }
-    }
+    var vertices: [AVAVertex]
     
     
     /**
@@ -125,8 +64,8 @@ class AVATopology: NSObject {
      - returns: Alle adjazenten Knoten.
      
      */
-    func adjacentVerticesForVertex(vertex: AVAVertex) -> [AVAVertex] {
-        var result: [AVAVertex] = []
+    func adjacentVerticesForVertex(vertex: AVAVertexName) -> [AVAVertexName] {
+        var result: [AVAVertexName] = []
         for adjacency in adjacencies {
             if adjacency.v1 == vertex {
                 result.append(adjacency.v2)
@@ -190,8 +129,38 @@ class AVATopology: NSObject {
             
         }
         self.adjacencies = adjacencies
+        self.vertices = [AVAVertex]()
         super.init()
     }
+    
+    
+    
+    init(data: NSData) throws {
+        // Dummy
+        self.adjacencies = [AVAAdjacency]()
+        self.vertices = [AVAVertex]()
+        super.init()
+        
+        
+        let json = try NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions(rawValue: 0))
+        let verticesJSON = json["vertices"] as! [AVAJSON]
+        let adjacenciesJSON = json["adjacencies"] as! [[AVAJSON]]
+        
+        self.vertices = try AVAVertex.verticesFromJSON(verticesJSON)
+        
+        for adjacencyJSON in adjacenciesJSON {
+            let adjacency = AVAAdjacency(json: adjacencyJSON)
+            let alreadyIncluded = self.adjacencies.contains({ (item: AVAAdjacency) -> Bool in
+                return item == adjacency
+            })
+            if !alreadyIncluded {
+                self.adjacencies.append(adjacency)
+            }
+        }
+        
+        print("vertices -> \(vertices)")
+    }
+    
     
     
     /**
@@ -203,9 +172,9 @@ class AVATopology: NSObject {
         - graphPath: Der Pfad zu dem .dot-File.
      
      */
-    convenience init(graphPath: String) {
+    convenience init(graphPath: String) throws {
         let data = NSData(contentsOfFile: graphPath)!
-        self.init(graph: data)
+        try self.init(data: data)
     }
     
     
@@ -220,14 +189,14 @@ class AVATopology: NSObject {
      
      */
     convenience init(randomWithDimension dimension: AVATopologyDimension) {
-        var vertices = [AVAVertex]()
+        var vertices = [AVAVertexName]()
         for (var i = 1; i <= dimension.vertexCount; i++) {
             vertices.append("\(i)")
         }
         var adjacencies = [AVAAdjacency]()
         
         var j = 0
-        var v1: AVAVertex
+        var v1: AVAVertexName
         while (adjacencies.count < dimension.edgeCount) {
             v1 = vertices[j]
             var v2 = v1

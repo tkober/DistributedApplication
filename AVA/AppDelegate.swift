@@ -34,7 +34,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     /**
      * Wird aufgerufen, sobald alle Uebergabe-Parameter verarbeitet wurden.
      */
-    var onArgumentsProcessed: ((ownPeerName: AVAVertex, isMaster: Bool, topology: AVATopology) -> ())?
+    var onArgumentsProcessed: ((ownPeerName: AVAVertexName, isMaster: Bool, topology: AVATopology) -> ())?
     
     /**
      * Wird aufgerufen, wenn sich der Status des NodeManagers aendert.
@@ -121,7 +121,15 @@ class AppDelegate: NSObject, NSApplicationDelegate {
      */
     func buildTopologyFromFile() {
         if let path = self.setup.topologyFilePath {
-            self.topology = AVATopology(graphPath: path)
+            do {
+                self.topology = try AVATopology(graphPath: path)
+            } catch AVAVertexError.ambiguousVertexDefinition(let vertex) {
+                print("Ambiguous definition of vertex \(vertex)")
+                exit(5)
+            } catch {
+                print("Unable to process input topology")
+                exit(2)
+            }
         } else {
             print("Missing parameter --topology")
             exit(2)
@@ -179,15 +187,18 @@ class AppDelegate: NSObject, NSApplicationDelegate {
      */
     func instantiateTopology(topology: AVATopology, ownPeerName peerName: String, topologyFilePath: String, withServiceOfType serviceType: AVAServiceType) {
         let vertices = topology.vertices
-        if !vertices.contains(peerName) {
-            print("Own peer name is not included in the typology")
-            exit(3)
-        }
         for vertex in vertices {
-            if vertex != peerName {
-                instantiateVertex(vertex, fromTopology: topologyFilePath, withServiceOfType: serviceType)
+            if vertex.name == peerName {
+                for vertex in vertices {
+                    if vertex != peerName {
+                        instantiateVertex(vertex, fromTopology: topologyFilePath, withServiceOfType: serviceType)
+                    }
+                }
+                return
             }
         }
+        print("Own peer name is not included in the typology")
+        exit(3)
     }
     
     
@@ -207,12 +218,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     func instantiateVertex(vertex: AVAVertex, fromTopology topology: String, withServiceOfType serviceType: AVAServiceType) {
         let task = NSTask()
         task.launchPath = self.setup.applicationPath
-        task.arguments = ["--topology", topology, "--peerName", vertex]
+        task.arguments = ["--topology", topology, "--peerName", vertex.name]
         task.arguments?.appendContentsOf(serviceType.nodeInstantiationParametersFromSetup(self.setup))
         dispatch_async(dispatch_queue_create("peer_\(vertex)_instantiate", DISPATCH_QUEUE_SERIAL)) { () -> Void in
             task.launch()
         }
-        self.log(AVALogEntry(level: AVALogLevel.Debug, event: AVAEvent.Processing, peer: self.setup.peerName!, description: "Instantiated peer '\(vertex)'", remotePeer: vertex))
+        self.log(AVALogEntry(level: AVALogLevel.Debug, event: AVAEvent.Processing, peer: self.setup.peerName!, description: "Instantiated peer '\(vertex)'", remotePeer: vertex.name))
     }
     
     
@@ -228,7 +239,17 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         if let window = NSApplication.sharedApplication().windows.first {
             let visibleScreenFrame = window.screen?.visibleFrame
             let windowesPerRow = UInt(floor((visibleScreenFrame?.size.width)! / (size.width + margin)))
-            let index = UInt(self.topology.vertices.sort().indexOf(self.setup.peerName!)!)
+            
+            let verticesSorted = self.topology.vertices.sort({ (a: AVAVertex, b: AVAVertex) -> Bool in
+                return a.name > b.name
+            })
+            var index: UInt = 0
+            for var i = 0; i < verticesSorted.count; i++ {
+                if self.setup.peerName! == verticesSorted[i].name {
+                    index = UInt(i)
+                    break
+                }
+            }
             let row = index / windowesPerRow
             let col = index % windowesPerRow
             let x = (margin+size.width)*CGFloat(col) + visibleScreenFrame!.origin.x
@@ -315,7 +336,7 @@ extension AppDelegate: AVANodeManagerDelegate {
     }
     
 
-    func nodeManager(nodeManager: AVANodeManager, didReceiveUninterpretableData data: NSData, fromPeer peer: AVAVertex) {
+    func nodeManager(nodeManager: AVANodeManager, didReceiveUninterpretableData data: NSData, fromPeer peer: AVAVertexName) {
         
     }
 }

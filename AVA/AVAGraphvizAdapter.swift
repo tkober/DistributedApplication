@@ -52,7 +52,7 @@ typealias AVAGraphvizVertexDecoration = (color: AVAGraphvizColor, style: AVAGrap
  - returns: Eine AVAGraphvizVertexDecoration, die beschreibt, wie Graphviz den gegebenen Knoten darstellen soll.
  
  */
-typealias AVAGraphvizVertexDecorator = (vertex: AVAVertex) -> AVAGraphvizVertexDecoration
+typealias AVAGraphvizVertexDecorator = (vertex: AVAVertexName) -> AVAGraphvizVertexDecoration
 
 
 /**
@@ -139,12 +139,12 @@ class AVAGraphvizAdapter: NSObject {
     func dotFromTopology(topology: AVATopology, vertexDecorator: AVAGraphvizVertexDecorator, adjacencyDecorator: AVAGraphvizAdjacencyDecorator) -> String {
         var result = "digraph G {"
         for vertex in topology.vertices {
-            result += "\n\(vertex) \(self.stringFromVertexDecoration(vertexDecorator(vertex: vertex)))"
+            result += "\n\(vertex.name) \(self.stringFromVertexDecoration(vertexDecorator(vertex: vertex.name)))"
         }
         for adjacency in topology.adjacencies {
             let decoration = adjacencyDecorator(adjacency: adjacency)
-            let from: AVAVertex
-            let to: AVAVertex
+            let from: AVAVertexName
+            let to: AVAVertexName
             if (decoration.direction == .InOrder) {
                 from = adjacency.v1
                 to = adjacency.v2
@@ -238,16 +238,17 @@ class AVAGraphvizAdapter: NSObject {
      */
     func renderPNGFromDOTFile(filePath: String, concurrent: Bool = true, result: AVAGraphvizRenderingCompletion) {
         let rendering: dispatch_block_t = { () -> Void in
-            let task = NSTask()
-            task.launchPath = "/usr/local/bin/dot"
-            task.arguments = ["-Tpng", filePath]
-            
-            let pipe = NSPipe()
-            task.standardOutput = pipe
-            
-            task.launch()
-            
-            let data = pipe.fileHandleForReading.readDataToEndOfFile()
+//            let task = NSTask()
+//            task.launchPath = "/usr/local/bin/dot"
+//            task.arguments = ["-Tpng", filePath]
+//            
+//            let pipe = NSPipe()
+//            task.standardOutput = pipe
+//            
+//            task.launch()
+//            
+//            let data = pipe.fileHandleForReading.readDataToEndOfFile()
+            let data = NSData()
             if concurrent {
                 dispatch_async(dispatch_get_main_queue(), { () -> Void in
                     result(image: NSImage(data: data))

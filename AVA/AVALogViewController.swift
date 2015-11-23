@@ -97,7 +97,7 @@ class AVALogViewController: NSViewController {
         let tempFilePath = "\(appDelegate.setup.applicationPackageDirectory)/~\(ownPeerName)_\(NSDate().timeIntervalSince1970).render"
         
         do {
-            let dot = GRAPHVIZ.dotFromTopology(topology, vertexDecorator: { (vertex: AVAVertex) -> AVAGraphvizVertexDecoration in
+            let dot = GRAPHVIZ.dotFromTopology(topology, vertexDecorator: { (vertex: AVAVertexName) -> AVAGraphvizVertexDecoration in
                 return (logEntry.peer == vertex ? logEntry.level.graphvizsColor() :  AVAGraphvizGrey, AVAGraphvizSolid)
             }, adjacencyDecorator: { (adjacency: AVAAdjacency) -> AVAGraphvizAdjacencyDecoration in
                 if let remotePeer = logEntry.remotePeer {

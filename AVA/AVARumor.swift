@@ -46,7 +46,7 @@ class AVARumor: NSObject, AVAJSONConvertable {
      Alle Knoten, von denen Dieses Gerücht gehört wurde.
      
      */
-    var heardFrom = [AVAVertex]()
+    var heardFrom = [AVAVertexName]()
     
     /**
      

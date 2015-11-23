@@ -267,7 +267,7 @@ class AVALogEntry: NSObject {
         - timestamp: Der Zeitpunkt, zu welchem das Ereignis auftrat. Der Default wert ist die aktuelle Zeit.
      
      */
-    init(level: AVALogLevel, event: AVAEvent, peer: String, description: String, remotePeer: String? = nil, message: AVAMessage? = nil, timestamp: NSTimeInterval = NSDate().timeIntervalSince1970) {
+    init(level: AVALogLevel, event: AVAEvent, peer: String, description: String, remotePeer: AVAVertexName? = nil, message: AVAMessage? = nil, timestamp: NSTimeInterval = NSDate().timeIntervalSince1970) {
         self.level = level
         self.event = event
         self.peer = peer
