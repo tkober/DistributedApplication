@@ -265,40 +265,40 @@ class AVAGraphvizAdapter: NSObject {
 }
 
 
-extension AVAGraphvizAdapter {
-    
-    
-    /**
-     
-     Erzeugt aus einer Adjazenz-Liste ein .dot-File zur Weitergabe der Topologie an andere Knoten.
-     
-     - parameters: Die Adjazenz-Liste.
-     
-     - returns: Das .dot-File als NSData.
-     
-     */
-    func graphvizFileFromAdjacencies(adjacencies: [AVAAdjacency]) -> NSData {
-        var graphString = "graph g {"
-        for adjacency in adjacencies {
-            graphString += "\n\(adjacency.v1) -- \(adjacency.v2)"
-        }
-        graphString += "\n}"
-        return graphString.dataUsingEncoding(NSUTF8StringEncoding)!
-    }
-    
-    
-    /**
-     
-     Erzeugt ein .dot-File zur Weitergabe einer gegebenen Topologie an andere Knoten.
-     
-     - parameters:
-        
-        - topology: Die AVATopology, die weitergegeben werden soll.
-     
-     - returns: Das .dot-File als NSData.
-     
-     */
-    func graphvizFileFromTopology(topology: AVATopology) -> NSData {
-        return self.graphvizFileFromAdjacencies(topology.adjacencies)
-    }
-}
+//extension AVAGraphvizAdapter {
+//    
+//    
+//    /**
+//     
+//     Erzeugt aus einer Adjazenz-Liste ein .dot-File zur Weitergabe der Topologie an andere Knoten.
+//     
+//     - parameters: Die Adjazenz-Liste.
+//     
+//     - returns: Das .dot-File als NSData.
+//     
+//     */
+//    func graphvizFileFromAdjacencies(adjacencies: [AVAAdjacency]) -> NSData {
+//        var graphString = "graph g {"
+//        for adjacency in adjacencies {
+//            graphString += "\n\(adjacency.v1) -- \(adjacency.v2)"
+//        }
+//        graphString += "\n}"
+//        return graphString.dataUsingEncoding(NSUTF8StringEncoding)!
+//    }
+//    
+//    
+//    /**
+//     
+//     Erzeugt ein .dot-File zur Weitergabe einer gegebenen Topologie an andere Knoten.
+//     
+//     - parameters:
+//        
+//        - topology: Die AVATopology, die weitergegeben werden soll.
+//     
+//     - returns: Das .dot-File als NSData.
+//     
+//     */
+//    func graphvizFileFromTopology(topology: AVATopology) -> NSData {
+//        return self.graphvizFileFromAdjacencies(topology.adjacencies)
+//    }
+//}

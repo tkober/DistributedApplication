@@ -9,6 +9,9 @@
 import Foundation
 
 
+let START_PORT: Int = 5000
+
+
 /**
  
  Ein Tupel, welches die Anzahl an Knoten und Kanten einer Topologie enthält.
@@ -90,59 +93,11 @@ class AVATopology: NSObject {
     // MARK: | Initializer
     
     
-    /**
-    
-    Erzeugt eine Topologie aus einem .dot-File.
-    
-    - parameters:
-    
-    - graphPath: Der Inhalt des .dot-Files.
-    
-    */
-    init(graph: NSData) {
-        var graphString = String(data: graph, encoding: NSUTF8StringEncoding)!
-        graphString = graphString.stringByReplacingOccurrencesOfString("\n", withString: ";")
-        
-        graphString = graphString.stringByReplacingOccurrencesOfString(" ", withString: "")
-        var adjacencies = [AVAAdjacency]()
-        
-        var regex: NSRegularExpression
-        do {
-            try regex = NSRegularExpression(pattern: "(.*)(\\{)(.+)(\\})(.*)", options: NSRegularExpressionOptions(rawValue: 0))
-            let match = regex.firstMatchInString(graphString, options: NSMatchingOptions(rawValue: 0), range: NSMakeRange(0, graphString.characters.count))!
-            graphString = (graphString as NSString).substringWithRange(match.rangeAtIndex(3))
-            
-            try regex = NSRegularExpression(pattern: "([a-zA-Z0-9]+)(--)([a-zA-Z0-9]+)", options: NSRegularExpressionOptions(rawValue: 0))
-            
-            regex.enumerateMatchesInString(graphString, options: NSMatchingOptions(rawValue: 0), range: NSMakeRange(0, graphString.characters.count), usingBlock: { (match: NSTextCheckingResult?, flags: NSMatchingFlags, _) -> Void in
-                let lhs = (graphString as NSString).substringWithRange(match!.rangeAtIndex(1))
-                let rhs = (graphString as NSString).substringWithRange(match!.rangeAtIndex(3))
-                let adjacency = AVAAdjacency(v1: lhs, v2: rhs)
-                let alreadyIncluded = adjacencies.contains({ (item: AVAAdjacency) -> Bool in
-                    return item == adjacency
-                })
-                if !alreadyIncluded {
-                    adjacencies.append(adjacency)
-                }
-            })
-        } catch {
-            
-        }
-        self.adjacencies = adjacencies
-        self.vertices = [AVAVertex]()
-        super.init()
-    }
-    
-    
-    
-    init(data: NSData) throws {
-        // Dummy
+    init(json: AVAJSON) throws {
         self.adjacencies = [AVAAdjacency]()
         self.vertices = [AVAVertex]()
         super.init()
         
-        
-        let json = try NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions(rawValue: 0))
         let verticesJSON = json[TOPOLOGY_VERTICES] as! [AVAJSON]
         let adjacenciesJSON = json[TOPOLOGY_ADJACENCIES] as! [[AVAJSON]]
         
@@ -160,20 +115,17 @@ class AVATopology: NSObject {
     }
     
     
+    convenience init(data: NSData) throws {
+        let json = try NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions(rawValue: 0))
+        try self.init(json: json)
+    }
     
-    /**
-     
-     Erzeugt eine Topologie aus einem .dot-File.
-     
-     - parameters: 
-     
-        - graphPath: Der Pfad zu dem .dot-File.
-     
-     */
-    convenience init(graphPath: String) throws {
-        let data = NSData(contentsOfFile: graphPath)!
+    
+    convenience init(jsonPath: String) throws {
+        let data = NSData(contentsOfFile: jsonPath)!
         try self.init(data: data)
     }
+
     
     
     /**
@@ -186,20 +138,20 @@ class AVATopology: NSObject {
         - dimension: Die Dimension der zu erzeugenden Topologie.
      
      */
-    convenience init(randomWithDimension dimension: AVATopologyDimension) {
-        var vertices = [AVAVertexName]()
+    convenience init(randomWithDimension dimension: AVATopologyDimension) throws {
+        var vertices = [AVAVertex]()
         for (var i = 1; i <= dimension.vertexCount; i++) {
-            vertices.append("\(i)")
+            vertices.append(AVAVertex(name: "\(i)", ip: "localhost", port: START_PORT+i))
         }
         var adjacencies = [AVAAdjacency]()
         
         var j = 0
         var v1: AVAVertexName
         while (adjacencies.count < dimension.edgeCount) {
-            v1 = vertices[j]
+            v1 = vertices[j].name
             var v2 = v1
             while (v1 == v2) {
-                v2 = vertices[Int(arc4random_uniform(UInt32(vertices.count)))]
+                v2 = vertices[Int(arc4random_uniform(UInt32(vertices.count)))].name
             }
             let newAdjacency = AVAAdjacency(v1: v1, v2: v2)
             let alreadyIncluded = adjacencies.contains({ (item: AVAAdjacency) -> Bool in
@@ -211,6 +163,35 @@ class AVATopology: NSObject {
                 j = j % dimension.vertexCount
             }
         }
-        self.init(graph: GRAPHVIZ.graphvizFileFromAdjacencies(adjacencies))
+        
+        let topologyJSON = AVATopology.jsonFromVertices(vertices, adjacencies: adjacencies)
+        try self.init(json: topologyJSON)
+    }
+    
+    
+    // MARK: | Export
+    
+    
+    private static func jsonFromVertices(vertices: [AVAVertex], adjacencies: [AVAAdjacency]) -> NSDictionary {
+        var verticesJSON = [[String: AnyObject]]()
+        for vertex in vertices {
+            verticesJSON.append(vertex.toJSON())
+        }
+        
+        var adjacenciesJSON = [[String]]()
+        for adjacency in adjacencies {
+            adjacenciesJSON.append(adjacency.toJSON())
+        }
+        
+        return [
+            TOPOLOGY_VERTICES: verticesJSON,
+            TOPOLOGY_ADJACENCIES: adjacenciesJSON
+        ]
+    }
+    
+    
+    func toData() throws -> NSData {
+        let topologyJSON = AVATopology.jsonFromVertices(self.vertices, adjacencies: self.adjacencies)
+        return try NSJSONSerialization.dataWithJSONObject(topologyJSON, options: NSJSONWritingOptions(rawValue: 0))
     }
 }

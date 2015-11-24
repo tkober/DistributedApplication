@@ -35,7 +35,7 @@ class AVALogViewController: NSViewController {
             self.logs.removeAll()
             var validLogs = [String]()
             for vertex in forTopology.vertices {
-                validLogs.append("~\(vertex).dlog")
+                validLogs.append("~\(vertex.name).dlog")
             }
             for logFile in logFiles {
                 if validLogs.contains(logFile) {

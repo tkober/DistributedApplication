@@ -87,7 +87,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             if self.setup.randomTopology {
                 self.buildRandomTopology()
                 topologyFilePath = "\(self.setup.applicationPackageDirectory)/~random.topology"
-                GRAPHVIZ.graphvizFileFromTopology(self.topology).writeToFile(topologyFilePath, atomically: true)
+                do {
+                    try self.topology.toData().writeToFile(topologyFilePath, atomically: true)
+                } catch {
+                    exit(6)
+                }
             } else {
                 topologyFilePath = self.setup.topologyFilePath!
                 self.buildTopologyFromFile()
@@ -122,7 +126,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     func buildTopologyFromFile() {
         if let path = self.setup.topologyFilePath {
             do {
-                self.topology = try AVATopology(graphPath: path)
+                self.topology = try AVATopology(jsonPath: path)
             } catch AVAVertexError.ambiguousVertexDefinition(let vertex) {
                 print("Ambiguous definition of vertex \(vertex)")
                 exit(5)
@@ -144,7 +148,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
      */
     func buildRandomTopology() {
         if let dimension = self.setup.randomTopologyDimension {
-            self.topology = AVATopology(randomWithDimension: dimension)
+            do {
+                self.topology = try AVATopology(randomWithDimension: dimension)
+            } catch {
+                
+            }
         } else {
             print("Missing parameter --randomTopologySize")
             exit(2)
@@ -223,7 +231,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         dispatch_async(dispatch_queue_create("peer_\(vertex)_instantiate", DISPATCH_QUEUE_SERIAL)) { () -> Void in
             task.launch()
         }
-        self.log(AVALogEntry(level: AVALogLevel.Debug, event: AVAEvent.Processing, peer: self.setup.peerName!, description: "Instantiated peer '\(vertex)'", remotePeer: vertex.name))
+        self.log(AVALogEntry(level: AVALogLevel.Debug, event: AVAEvent.Processing, peer: self.setup.peerName!, description: "Instantiated peer '\(vertex.name)'", remotePeer: vertex.name))
     }
     
     

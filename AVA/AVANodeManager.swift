@@ -437,6 +437,7 @@ extension AVANodeManager : MCSessionDelegate {
         case .NotConnected:
             event = AVAEvent.Disconnect
             level = AVALogLevel.Error
+            self.serviceBrowser.invitePeer(peerID, toSession: self.session, withContext: nil, timeout: 20)
             break;
         }
         

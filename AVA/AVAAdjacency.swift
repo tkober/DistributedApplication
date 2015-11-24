@@ -39,6 +39,11 @@ class AVAAdjacency: NSObject {
     override var description: String {
         return "\(super.description) { \(v1) -- \(v2) }"
     }
+    
+    
+    func toJSON() -> [String] {
+        return [self.v1, self.v2]
+    }
 }
 
 

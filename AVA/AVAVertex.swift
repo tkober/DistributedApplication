@@ -77,6 +77,15 @@ class AVAVertex: NSObject {
         result += "\n}"
         return result
     }
+    
+    
+    func toJSON() -> [String: AnyObject] {
+        return [
+            TOPOLOGY_VERTEX_NAME: self.name,
+            TOPOLOGY_VERTEX_IP: self.ip,
+            TOPOLOGY_VERTEX_PORT: NSNumber(integer: self.port)
+        ];
+    }
 }
 
 
