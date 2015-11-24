@@ -192,6 +192,6 @@ class AVATopology: NSObject {
     
     func toData() throws -> NSData {
         let topologyJSON = AVATopology.jsonFromVertices(self.vertices, adjacencies: self.adjacencies)
-        return try NSJSONSerialization.dataWithJSONObject(topologyJSON, options: NSJSONWritingOptions(rawValue: 0))
+        return try NSJSONSerialization.dataWithJSONObject(topologyJSON, options: NSJSONWritingOptions.PrettyPrinted)
     }
 }
