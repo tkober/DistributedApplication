@@ -190,7 +190,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         for vertex in vertices {
             if vertex.name == peerName {
                 for vertex in vertices {
-                    if vertex != peerName {
+                    if vertex.name != peerName {
                         instantiateVertex(vertex, fromTopology: topologyFilePath, withServiceOfType: serviceType)
                     }
                 }
@@ -241,7 +241,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             let windowesPerRow = UInt(floor((visibleScreenFrame?.size.width)! / (size.width + margin)))
             
             let verticesSorted = self.topology.vertices.sort({ (a: AVAVertex, b: AVAVertex) -> Bool in
-                return a.name > b.name
+                return a.name < b.name
             })
             var index: UInt = 0
             for var i = 0; i < verticesSorted.count; i++ {
