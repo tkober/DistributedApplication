@@ -111,6 +111,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             self.nodeManager = AVANodeManager(topology: self.topology, ownPeerName: self.setup.peerName!, logger: self)
             self.nodeManager?.delegate = self
             self.nodeManager?.start()
+            
+            if self.setup.isMaster {
+                self.nodeManager?.test()
+            }
         }
     }
     

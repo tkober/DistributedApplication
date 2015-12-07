@@ -148,21 +148,10 @@ class AVANodeManager: NSObject {
     
     /**
      
-     Das eigene Peer.
+     Die Socket Konfiguration des eigenen Knotens aus der Topologie.
      
      */
-    let myPeerId: MCPeerID
-    
-    
-    /**
-     
-     Der Name des Bonjour-Service mit dem Advertising betrieben wird.
-     
-     */
-    private let AVA_SERVICE_TYPE = "ava"
-    
-    private let serviceAdvertiser : MCNearbyServiceAdvertiser
-    private let serviceBrowser : MCNearbyServiceBrowser
+    let ownVertex: AVAVertex
     
     /**
      
@@ -170,26 +159,6 @@ class AVANodeManager: NSObject {
      
      */
     private let peersToConnect: [AVAVertexName]
-    
-    /**
-     
-     Die MCSessions-Objekte der Nachbarn mit denen der eigene Knoten verbunden ist.
-     
-     */
-    private var remoteSessions = [AVAVertexName: MCSession]()
-    
-    
-    /**
-     
-     Die eigene MCSession mit der sich die Nachbarn verbinden sollen.
-     
-     */
-    lazy var session: MCSession = {
-        let session = MCSession(peer: self.myPeerId, securityIdentity: nil, encryptionPreference: MCEncryptionPreference.Required)
-        session.delegate = self
-        return session
-    }()
-    
     
     /**
      
@@ -222,20 +191,16 @@ class AVANodeManager: NSObject {
     init(topology: AVATopology, ownPeerName: String, logger: AVALogging) {
         self.topology = topology
         self.logger = logger
-        self.myPeerId = MCPeerID(displayName: ownPeerName)
         self.peersToConnect = topology.adjacentVerticesForVertex(ownPeerName)
-        
-        self.serviceAdvertiser = MCNearbyServiceAdvertiser(peer: myPeerId, discoveryInfo: nil, serviceType: AVA_SERVICE_TYPE)
-        self.serviceBrowser = MCNearbyServiceBrowser(peer: myPeerId, serviceType: AVA_SERVICE_TYPE)
+        self.ownVertex = self.topology.vertextForName(ownPeerName)!
+        self.serverSocket = AVAServerSocket(vertex: ownVertex)
         
         super.init()
+        self.serverSocket.delegate = self
     }
     
     
-    deinit {
-        self.serviceAdvertiser.stopAdvertisingPeer()
-        self.serviceBrowser.stopBrowsingForPeers()
-    }
+    var serverSocket: AVAServerSocket
     
     
     /**
@@ -244,11 +209,8 @@ class AVANodeManager: NSObject {
      
      */
     func start() {
-        self.serviceAdvertiser.delegate = self
-        self.serviceAdvertiser.startAdvertisingPeer()
-        
-        self.serviceBrowser.delegate = self
-        self.serviceBrowser.startBrowsingForPeers()
+        serverSocket.setup()
+        serverSocket.start()
     }
     
     
@@ -260,9 +222,10 @@ class AVANodeManager: NSObject {
     Der aktuelle Status des AVANodeManagers
     
     */
-    var state: AVANodeState {
+    var state: AVANodeState? {
         get {
-            return AVANodeState(topology: self.topology, ownPeer: self.myPeerId.displayName, session: session)
+            // TODO: Implement
+            return nil
         }
     }
     
@@ -284,11 +247,12 @@ class AVANodeManager: NSObject {
     
     */
     func sendMessage(message:AVAMessage, toVertex vertex: AVAVertexName) -> Bool {
-        for connectedPeer in self.session.connectedPeers {
-            if connectedPeer.displayName == vertex {
-                return self.sendMessage(message, toPeers: [connectedPeer])
-            }
-        }
+//        for connectedPeer in self.session.connectedPeers {
+//            if connectedPeer.displayName == vertex {
+//                return self.sendMessage(message, toPeers: [connectedPeer])
+//            }
+//        }
+        // TODO: Implement
         return false
     }
     
@@ -307,24 +271,26 @@ class AVANodeManager: NSObject {
      
      */
     func sendMessage(message: AVAMessage, toPeers peers: [MCPeerID]) -> Bool {
-        for peer in peers {
-            if !self.session.connectedPeers.contains(peer) {
-                return false
-            }
-        }
-        if let messageData = message.jsonData() {
-            do {
-                try self.session.sendData(messageData, toPeers: peers, withMode: MCSessionSendDataMode.Unreliable)
-                for peer in peers {
-                    self.logger.log(AVALogEntry(level: AVALogLevel.Debug, event: AVAEvent.DataSent, peer: self.myPeerId.displayName, description: "Sent message (\(messageData.length) bytes) to \(peer.displayName)", remotePeer: peer.displayName, message: message))
-                }
-                return true
-            } catch {
-                return false
-            }
-        } else {
-            return false
-        }
+//        for peer in peers {
+//            if !self.session.connectedPeers.contains(peer) {
+//                return false
+//            }
+//        }
+//        if let messageData = message.jsonData() {
+//            do {
+//                try self.session.sendData(messageData, toPeers: peers, withMode: MCSessionSendDataMode.Unreliable)
+//                for peer in peers {
+//                    self.logger.log(AVALogEntry(level: AVALogLevel.Debug, event: AVAEvent.DataSent, peer: self.myPeerId.displayName, description: "Sent message (\(messageData.length) bytes) to \(peer.displayName)", remotePeer: peer.displayName, message: message))
+//                }
+//                return true
+//            } catch {
+//                return false
+//            }
+//        } else {
+//            return false
+//        }
+        // TODO: Implement
+        return false
     }
     
     
@@ -340,7 +306,9 @@ class AVANodeManager: NSObject {
      
      */
     func broadcastMessage(message: AVAMessage) -> Bool {
-        return self.sendMessage(message, toPeers: self.session.connectedPeers)
+//        return self.sendMessage(message, toPeers: self.session.connectedPeers)
+        // TODO: Implement
+        return false
     }
     
     
@@ -358,138 +326,77 @@ class AVANodeManager: NSObject {
      
      */
     func broadcastMessage(message: AVAMessage, exceptingPeers: [MCPeerID]) -> Bool {
-        var peers = [MCPeerID]()
-        for peer in self.session.connectedPeers {
-            if !exceptingPeers.contains(peer) {
-                peers.append(peer)
+//        var peers = [MCPeerID]()
+//        for peer in self.session.connectedPeers {
+//            if !exceptingPeers.contains(peer) {
+//                peers.append(peer)
+//            }
+//        }
+//        return self.sendMessage(message, toPeers: peers)
+        // TODO: Implement
+        return false
+    }
+    
+
+    
+    
+    
+    private var inputStream: NSInputStream!
+    private var outputStream: NSOutputStream!
+    
+    
+    func test() {
+        
+        var readStream:  Unmanaged<CFReadStream>?
+        var writeStream: Unmanaged<CFWriteStream>?
+        
+        CFStreamCreatePairWithSocketToHost(nil, "localhost", 5000, &readStream, &writeStream)
+        
+        
+        self.inputStream = readStream!.takeRetainedValue()
+        self.outputStream = writeStream!.takeRetainedValue()
+        
+        self.inputStream.delegate = self
+        self.outputStream.delegate = self
+        
+        self.inputStream.scheduleInRunLoop(NSRunLoop.currentRunLoop(), forMode: NSDefaultRunLoopMode)
+        self.outputStream.scheduleInRunLoop(NSRunLoop.currentRunLoop(), forMode: NSDefaultRunLoopMode)
+        
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(2 * Double(NSEC_PER_SEC))), dispatch_get_main_queue()) { () -> Void in
+            self.inputStream.open()
+            self.outputStream.open()
+        }
+    }
+ 
+    
+    var helloWorldSent = false
+}
+
+
+
+extension AVANodeManager: AVASocketDelegate {
+    
+}
+
+
+
+extension AVANodeManager: NSStreamDelegate {
+    
+    
+    func stream(aStream: NSStream, handleEvent eventCode: NSStreamEvent) {
+        let status = aStream.streamStatus
+//        print("aStream -> \(aStream) status -> \(status) eventCode -> \(eventCode.stringValue())")
+        
+        if eventCode == NSStreamEvent.HasSpaceAvailable {
+            
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(2 * Double(NSEC_PER_SEC))), dispatch_get_main_queue()) { () -> Void in
+                let stream = aStream as! NSOutputStream
+                stream.write("Hello from \(self.ownVertex.name)")
             }
         }
-        return self.sendMessage(message, toPeers: peers)
-    }
-    
-}
-
-
-extension AVANodeManager : MCNearbyServiceAdvertiserDelegate {
-    
-    func advertiser(advertiser: MCNearbyServiceAdvertiser, didNotStartAdvertisingPeer error: NSError) {
-        print("\(__FUNCTION__)")
-        print("error -> \(error)")
-    }
-    
-    
-    func advertiser(advertiser: MCNearbyServiceAdvertiser, didReceiveInvitationFromPeer peerID: MCPeerID, withContext context: NSData?, invitationHandler: ((Bool, MCSession) -> Void)) {
-        let logEntry = AVALogEntry(level: .Debug, event: .InvitationReceived, peer: self.myPeerId.displayName, description: "Received Invitation from peer \(peerID.displayName)", remotePeer: peerID.displayName)
-        self.logger.log(logEntry)
-        if (self.peersToConnect.contains(peerID.displayName)) {
-            let session = MCSession(peer: self.myPeerId)
-            session.delegate = self
-            self.remoteSessions[peerID.displayName] = session
-            invitationHandler(true, session)
-        }
-    }
-    
-}
-
-
-extension AVANodeManager : MCNearbyServiceBrowserDelegate {
-    
-    func browser(browser: MCNearbyServiceBrowser, didNotStartBrowsingForPeers error: NSError) {
-        print("\(__FUNCTION__)")
-        print("error -> \(error)")
-    }
-    
-    
-    func browser(browser: MCNearbyServiceBrowser, foundPeer peerID: MCPeerID, withDiscoveryInfo info: [String : String]?) {
-        let logEntry = AVALogEntry(level: .Debug, event: .Discovery, peer: self.myPeerId.displayName, description: "Discovered peer \(peerID.displayName)", remotePeer: peerID.displayName)
-        self.logger.log(logEntry)
-        if self.peersToConnect.contains(peerID.displayName) {
-            browser.invitePeer(peerID, toSession: self.session, withContext: nil, timeout: 20)
-        }
-    }
-    
-    
-    func browser(browser: MCNearbyServiceBrowser, lostPeer peerID: MCPeerID) {
     }
 }
 
 
-extension AVANodeManager : MCSessionDelegate {
-    
-    func session(session: MCSession, peer peerID: MCPeerID, didChangeState state: MCSessionState) {
-        if session != self.session {
-            return
-        }
-        
-        let event: AVAEvent
-        let level: AVALogLevel
-        switch (state) {
-        case .Connecting:
-            event = AVAEvent.Connecting
-            level = AVALogLevel.Debug
-            break;
-            
-        case .Connected:
-            event = AVAEvent.Connect
-            level = AVALogLevel.Info
-            break;
-            
-        case .NotConnected:
-            event = AVAEvent.Disconnect
-            level = AVALogLevel.Error
-            self.serviceBrowser.invitePeer(peerID, toSession: self.session, withContext: nil, timeout: 20)
-            break;
-        }
-        
-        let logEntry = AVALogEntry(level: level, event: event, peer: self.myPeerId.displayName, description: "Peer '\(peerID.displayName)' changed status to \(state.stringValue())", remotePeer: peerID.displayName)
-        self.logger.log(logEntry)
-        self.delegate?.nodeManager(self, stateUpdated: self.state)
-    }
-    
-    
-    func session(session: MCSession, didReceiveData data: NSData, fromPeer peerID: MCPeerID) {
-        do {
-            let message = try AVAMessage(data: data)
-            let logEntry = AVALogEntry(level: .Info, event: .DataReceived, peer: self.myPeerId.displayName, description: "Received message (\(data.length) bytes) from \(peerID.displayName)", remotePeer: peerID.displayName, message: message)
-            self.logger.log(logEntry)
-            self.delegate?.nodeManager(self, didReceiveMessage: message)
-        } catch {
-            let logEntry = AVALogEntry(level: .Warning, event: .DataReceived, peer: self.myPeerId.displayName, description: "Received uninterpretable data (\(data.length) bytes) from \(peerID.displayName)", remotePeer: peerID.displayName)
-            self.logger.log(logEntry)
-            self.delegate?.nodeManager(self, didReceiveUninterpretableData: data, fromPeer: peerID.displayName)
-        }
-    }
-    
-    
-    func session(session: MCSession, didReceiveStream stream: NSInputStream, withName streamName: String, fromPeer peerID: MCPeerID) {
-        print("\(__FUNCTION__)")
-    }
-    
-    
-    func session(session: MCSession, didFinishReceivingResourceWithName resourceName: String, fromPeer peerID: MCPeerID, atURL localURL: NSURL, withError error: NSError?) {
-        print("\(__FUNCTION__)")
-    }
-    
-    
-    func session(session: MCSession, didStartReceivingResourceWithName resourceName: String, fromPeer peerID: MCPeerID, withProgress progress: NSProgress) {
-        print("\(__FUNCTION__)")
-    }
-}
 
 
-extension MCSessionState {
-    
-    func stringValue() -> String {
-        switch(self) {
-        case .NotConnected:
-            return "NotConnected"
-            
-        case .Connecting:
-            return "Connecting"
-            
-        case .Connected:
-            return "Connected"
-        }
-    }
-    
-}

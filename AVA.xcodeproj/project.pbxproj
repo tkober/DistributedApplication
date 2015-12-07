@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		DCE000481C03251C00EDF1FD /* AVAVertex.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCE000471C03251C00EDF1FD /* AVAVertex.swift */; };
 		DCE0004B1C0339A800EDF1FD /* AVAAdjacency.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCE0004A1C0339A800EDF1FD /* AVAAdjacency.swift */; };
+		F135276A1C0B5AB200786C24 /* AVASocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = F13527691C0B5AB200786C24 /* AVASocket.swift */; };
+		F13699F11C04DBB400D71D38 /* AVASockets.c in Sources */ = {isa = PBXBuildFile; fileRef = F13699EF1C04DBB400D71D38 /* AVASockets.c */; };
 		F146FD431BD97AD70028B4E1 /* AVAGraphvizAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F146FD421BD97AD70028B4E1 /* AVAGraphvizAdapter.swift */; };
 		F14F06FD1BE0B7B400BA4C6A /* AVARumor.swift in Sources */ = {isa = PBXBuildFile; fileRef = F14F06FC1BE0B7B400BA4C6A /* AVARumor.swift */; };
 		F15C07CB1BD75CCF00EB41D8 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F15C07CA1BD75CCF00EB41D8 /* AppDelegate.swift */; };
@@ -28,6 +30,10 @@
 /* Begin PBXFileReference section */
 		DCE000471C03251C00EDF1FD /* AVAVertex.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AVAVertex.swift; sourceTree = "<group>"; };
 		DCE0004A1C0339A800EDF1FD /* AVAAdjacency.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AVAAdjacency.swift; sourceTree = "<group>"; };
+		F13527691C0B5AB200786C24 /* AVASocket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AVASocket.swift; sourceTree = "<group>"; };
+		F13699EE1C04DBB400D71D38 /* AVA-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "AVA-Bridging-Header.h"; sourceTree = "<group>"; };
+		F13699EF1C04DBB400D71D38 /* AVASockets.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = AVASockets.c; sourceTree = "<group>"; };
+		F13699F01C04DBB400D71D38 /* AVASockets.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AVASockets.h; sourceTree = "<group>"; };
 		F146FD421BD97AD70028B4E1 /* AVAGraphvizAdapter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AVAGraphvizAdapter.swift; sourceTree = "<group>"; };
 		F14F06FC1BE0B7B400BA4C6A /* AVARumor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AVARumor.swift; sourceTree = "<group>"; };
 		F15C07C71BD75CCF00EB41D8 /* AVA.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AVA.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -57,6 +63,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		F13699EB1C04D23900D71D38 /* Sockets */ = {
+			isa = PBXGroup;
+			children = (
+				F13527691C0B5AB200786C24 /* AVASocket.swift */,
+				F13699F01C04DBB400D71D38 /* AVASockets.h */,
+				F13699EF1C04DBB400D71D38 /* AVASockets.c */,
+			);
+			name = Sockets;
+			sourceTree = "<group>";
+		};
 		F146FD411BD97ABF0028B4E1 /* Grahviz */ = {
 			isa = PBXGroup;
 			children = (
@@ -84,6 +100,7 @@
 		F15C07C91BD75CCF00EB41D8 /* AVA */ = {
 			isa = PBXGroup;
 			children = (
+				F13699EE1C04DBB400D71D38 /* AVA-Bridging-Header.h */,
 				F15C07CA1BD75CCF00EB41D8 /* AppDelegate.swift */,
 				F1B3F2C91BDD79A4009C0E7B /* Service */,
 				F146FD411BD97ABF0028B4E1 /* Grahviz */,
@@ -104,6 +121,7 @@
 			children = (
 				F1E816651BDAE5C400F03284 /* Message */,
 				F15C07DA1BD75CF200EB41D8 /* AVANodeManager.swift */,
+				F13699EB1C04D23900D71D38 /* Sockets */,
 			);
 			name = Networking;
 			sourceTree = "<group>";
@@ -211,6 +229,7 @@
 		F15C07BF1BD75CCF00EB41D8 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				LastSwiftUpdateCheck = 0710;
 				LastUpgradeCheck = 0700;
 				ORGANIZATIONNAME = "Thorsten Kober";
 				TargetAttributes = {
@@ -264,10 +283,12 @@
 				F15C07CD1BD75CCF00EB41D8 /* ViewController.swift in Sources */,
 				F14F06FD1BE0B7B400BA4C6A /* AVARumor.swift in Sources */,
 				F15C07DE1BD7A4B000EB41D8 /* AVALogging.swift in Sources */,
+				F13699F11C04DBB400D71D38 /* AVASockets.c in Sources */,
 				F15C07CB1BD75CCF00EB41D8 /* AppDelegate.swift in Sources */,
 				F146FD431BD97AD70028B4E1 /* AVAGraphvizAdapter.swift in Sources */,
 				F161EDE91BD856E6008131C3 /* AVATopology.swift in Sources */,
 				F1B3F2CB1BDD79B3009C0E7B /* AVAService.swift in Sources */,
+				F135276A1C0B5AB200786C24 /* AVASocket.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -369,11 +390,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = AVA/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = kober.thorsten.AVA;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "AVA/AVA-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
 		};
@@ -381,11 +405,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = AVA/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = kober.thorsten.AVA;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "AVA/AVA-Bridging-Header.h";
 			};
 			name = Release;
 		};

@@ -9,7 +9,7 @@
 import Foundation
 
 
-let START_PORT: Int = 5000
+let START_PORT: UInt16 = 5000
 
 
 /**
@@ -90,6 +90,19 @@ class AVATopology: NSObject {
     }
     
     
+    // Querying Vertices
+    
+    
+    func vertextForName(name: AVAVertexName) -> AVAVertex? {
+        for vertex in self.vertices {
+            if vertex.name == name {
+                return vertex
+            }
+        }
+        return nil
+    }
+    
+    
     // MARK: | Initializer
     
     
@@ -141,7 +154,7 @@ class AVATopology: NSObject {
     convenience init(randomWithDimension dimension: AVATopologyDimension) throws {
         var vertices = [AVAVertex]()
         for (var i = 1; i <= dimension.vertexCount; i++) {
-            vertices.append(AVAVertex(name: "\(i)", ip: "localhost", port: START_PORT+i))
+            vertices.append(AVAVertex(name: "\(i)", ip: "localhost", port: START_PORT+UInt16(i)))
         }
         var adjacencies = [AVAAdjacency]()
         

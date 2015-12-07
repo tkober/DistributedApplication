@@ -29,10 +29,10 @@ class AVAVertex: NSObject {
     
     var ip: String
     
-    var port: Int
+    var port: UInt16
     
     
-    init(name: AVAVertexName, ip: String, port: Int) {
+    init(name: AVAVertexName, ip: String, port: UInt16) {
         self.name = name
         self.ip = ip
         self.port = port
@@ -40,7 +40,7 @@ class AVAVertex: NSObject {
     
     
     convenience init(json: AVAJSON) {
-        self.init(name: json[TOPOLOGY_VERTEX_NAME] as! AVAVertexName, ip: json[TOPOLOGY_VERTEX_IP] as! String, port: (json[TOPOLOGY_VERTEX_PORT] as! NSNumber).integerValue)
+        self.init(name: json[TOPOLOGY_VERTEX_NAME] as! AVAVertexName, ip: json[TOPOLOGY_VERTEX_IP] as! String, port: (json[TOPOLOGY_VERTEX_PORT] as! NSNumber).unsignedShortValue)
     }
     
     
@@ -83,7 +83,7 @@ class AVAVertex: NSObject {
         return [
             TOPOLOGY_VERTEX_NAME: self.name,
             TOPOLOGY_VERTEX_IP: self.ip,
-            TOPOLOGY_VERTEX_PORT: NSNumber(integer: self.port)
+            TOPOLOGY_VERTEX_PORT: NSNumber(unsignedShort: self.port)
         ];
     }
 }
