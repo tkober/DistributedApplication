@@ -15,6 +15,9 @@
 #include <arpa/inet.h>
 
 
+extern int POSIXSocketBufferSize;
+
+
 typedef void(^POSIXServerSocketAcceptCallback)(char *address, in_port_t port);
 typedef void(^POSIXServerSocketReadCallback)(char *data, ssize_t length);
 

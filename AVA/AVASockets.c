@@ -9,6 +9,9 @@
 #include "AVASockets.h"
 
 
+int POSIXSocketBufferSize = 1024;
+
+
 extern void start_reading_posix_socket(int socket_fd, POSIXServerSocketReadCallback readCallback);
 
 
@@ -61,11 +64,11 @@ void start_posix_server_socket(int socket_fd, int backlog, POSIXServerSocketAcce
 
 void start_reading_posix_socket(int socket_fd, POSIXServerSocketReadCallback readCallback)
 {
-    char buffer[256];
+    char buffer[POSIXSocketBufferSize];
     while (1) {
         ssize_t n;
-        bzero(buffer, 256);
-        n = read(socket_fd, buffer, 255);
+        bzero(buffer, POSIXSocketBufferSize);
+        n = read(socket_fd, buffer, POSIXSocketBufferSize-1);
         if (n > 0) {
             char *data = malloc(sizeof(char) * n);
             memcpy(data, buffer, n+1);

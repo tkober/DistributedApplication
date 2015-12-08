@@ -336,40 +336,22 @@ class AVANodeManager: NSObject {
         // TODO: Implement
         return false
     }
-    
 
     
     
-    
-    private var inputStream: NSInputStream!
-    private var outputStream: NSOutputStream!
-    
+    private var socketStream: AVASocketStream!
+
     
     func test() {
         
-        var readStream:  Unmanaged<CFReadStream>?
-        var writeStream: Unmanaged<CFWriteStream>?
-        
-        CFStreamCreatePairWithSocketToHost(nil, "localhost", 5000, &readStream, &writeStream)
-        
-        
-        self.inputStream = readStream!.takeRetainedValue()
-        self.outputStream = writeStream!.takeRetainedValue()
-        
-        self.inputStream.delegate = self
-        self.outputStream.delegate = self
-        
-        self.inputStream.scheduleInRunLoop(NSRunLoop.currentRunLoop(), forMode: NSDefaultRunLoopMode)
-        self.outputStream.scheduleInRunLoop(NSRunLoop.currentRunLoop(), forMode: NSDefaultRunLoopMode)
+        let vertex = self.topology.vertextForName(self.topology.adjacentVerticesForVertex(self.ownVertex.name).first!)!
+        self.socketStream = AVASocketStream(vertex: vertex)
+        self.socketStream.delegate = self
         
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(2 * Double(NSEC_PER_SEC))), dispatch_get_main_queue()) { () -> Void in
-            self.inputStream.open()
-            self.outputStream.open()
+            self.socketStream.open()
         }
     }
- 
-    
-    var helloWorldSent = false
 }
 
 
@@ -379,24 +361,32 @@ extension AVANodeManager: AVASocketDelegate {
 }
 
 
-
-extension AVANodeManager: NSStreamDelegate {
+extension AVANodeManager: AVASocketStreamDelegate {
     
     
-    func stream(aStream: NSStream, handleEvent eventCode: NSStreamEvent) {
-        let status = aStream.streamStatus
-//        print("aStream -> \(aStream) status -> \(status) eventCode -> \(eventCode.stringValue())")
+    func socketStreamDidConnection(stream: AVASocketStream) {
         
-        if eventCode == NSStreamEvent.HasSpaceAvailable {
-            
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(2 * Double(NSEC_PER_SEC))), dispatch_get_main_queue()) { () -> Void in
-                let stream = aStream as! NSOutputStream
-                stream.write("Hello from \(self.ownVertex.name)")
-            }
+    }
+    
+    
+    func socketStreamIsReadyToSend(stream: AVASocketStream) {
+        let text = "{\"timestamp\":1447207157.864569,\"payload\":{\"rumorText\":\"Hallo_Welt\"},\"sender\":\"2\",\"type\":1}" as NSString
+        
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(2 * Double(NSEC_PER_SEC))), dispatch_get_main_queue()) { () -> Void in
+            stream.writeData(text.dataUsingEncoding(NSUTF8StringEncoding)!)
         }
     }
+    
+    
+    func socketStreamDidDisconnect(stream: AVASocketStream) {
+        
+    }
+    
+    
+    func socketStreamFailed(stream: AVASocketStream, status: NSStreamStatus, error: NSError?) {
+        
+    }
 }
-
 
 
 
