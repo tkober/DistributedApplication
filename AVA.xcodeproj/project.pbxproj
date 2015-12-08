@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		DC613D291C16C95200380987 /* AVASocketStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC613D281C16C95200380987 /* AVASocketStream.swift */; };
 		DCE000481C03251C00EDF1FD /* AVAVertex.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCE000471C03251C00EDF1FD /* AVAVertex.swift */; };
 		DCE0004B1C0339A800EDF1FD /* AVAAdjacency.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCE0004A1C0339A800EDF1FD /* AVAAdjacency.swift */; };
 		F135276A1C0B5AB200786C24 /* AVAServerSocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = F13527691C0B5AB200786C24 /* AVAServerSocket.swift */; };
@@ -28,6 +29,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		DC613D281C16C95200380987 /* AVASocketStream.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AVASocketStream.swift; sourceTree = "<group>"; };
 		DCE000471C03251C00EDF1FD /* AVAVertex.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AVAVertex.swift; sourceTree = "<group>"; };
 		DCE0004A1C0339A800EDF1FD /* AVAAdjacency.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AVAAdjacency.swift; sourceTree = "<group>"; };
 		F13527691C0B5AB200786C24 /* AVAServerSocket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AVAServerSocket.swift; sourceTree = "<group>"; };
@@ -63,6 +65,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		DC613D271C16C93E00380987 /* SocketStream */ = {
+			isa = PBXGroup;
+			children = (
+				DC613D281C16C95200380987 /* AVASocketStream.swift */,
+			);
+			name = SocketStream;
+			sourceTree = "<group>";
+		};
 		F13699EB1C04D23900D71D38 /* Sockets */ = {
 			isa = PBXGroup;
 			children = (
@@ -121,6 +131,7 @@
 			children = (
 				F1E816651BDAE5C400F03284 /* Message */,
 				F15C07DA1BD75CF200EB41D8 /* AVANodeManager.swift */,
+				DC613D271C16C93E00380987 /* SocketStream */,
 				F13699EB1C04D23900D71D38 /* Sockets */,
 			);
 			name = Networking;
@@ -273,6 +284,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DC613D291C16C95200380987 /* AVASocketStream.swift in Sources */,
 				F19D22C41BE03C31006CB5F8 /* AVAUebung1.swift in Sources */,
 				F1E816671BDAE5CF00F03284 /* AVAMessage.swift in Sources */,
 				F1C697601BE8B53B0022D8F6 /* AVALogViewController.swift in Sources */,
