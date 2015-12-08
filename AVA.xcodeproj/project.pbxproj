@@ -9,7 +9,7 @@
 /* Begin PBXBuildFile section */
 		DCE000481C03251C00EDF1FD /* AVAVertex.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCE000471C03251C00EDF1FD /* AVAVertex.swift */; };
 		DCE0004B1C0339A800EDF1FD /* AVAAdjacency.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCE0004A1C0339A800EDF1FD /* AVAAdjacency.swift */; };
-		F135276A1C0B5AB200786C24 /* AVASocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = F13527691C0B5AB200786C24 /* AVASocket.swift */; };
+		F135276A1C0B5AB200786C24 /* AVAServerSocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = F13527691C0B5AB200786C24 /* AVAServerSocket.swift */; };
 		F13699F11C04DBB400D71D38 /* AVASockets.c in Sources */ = {isa = PBXBuildFile; fileRef = F13699EF1C04DBB400D71D38 /* AVASockets.c */; };
 		F146FD431BD97AD70028B4E1 /* AVAGraphvizAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F146FD421BD97AD70028B4E1 /* AVAGraphvizAdapter.swift */; };
 		F14F06FD1BE0B7B400BA4C6A /* AVARumor.swift in Sources */ = {isa = PBXBuildFile; fileRef = F14F06FC1BE0B7B400BA4C6A /* AVARumor.swift */; };
@@ -30,7 +30,7 @@
 /* Begin PBXFileReference section */
 		DCE000471C03251C00EDF1FD /* AVAVertex.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AVAVertex.swift; sourceTree = "<group>"; };
 		DCE0004A1C0339A800EDF1FD /* AVAAdjacency.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AVAAdjacency.swift; sourceTree = "<group>"; };
-		F13527691C0B5AB200786C24 /* AVASocket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AVASocket.swift; sourceTree = "<group>"; };
+		F13527691C0B5AB200786C24 /* AVAServerSocket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AVAServerSocket.swift; sourceTree = "<group>"; };
 		F13699EE1C04DBB400D71D38 /* AVA-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "AVA-Bridging-Header.h"; sourceTree = "<group>"; };
 		F13699EF1C04DBB400D71D38 /* AVASockets.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = AVASockets.c; sourceTree = "<group>"; };
 		F13699F01C04DBB400D71D38 /* AVASockets.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AVASockets.h; sourceTree = "<group>"; };
@@ -66,7 +66,7 @@
 		F13699EB1C04D23900D71D38 /* Sockets */ = {
 			isa = PBXGroup;
 			children = (
-				F13527691C0B5AB200786C24 /* AVASocket.swift */,
+				F13527691C0B5AB200786C24 /* AVAServerSocket.swift */,
 				F13699F01C04DBB400D71D38 /* AVASockets.h */,
 				F13699EF1C04DBB400D71D38 /* AVASockets.c */,
 			);
@@ -288,7 +288,7 @@
 				F146FD431BD97AD70028B4E1 /* AVAGraphvizAdapter.swift in Sources */,
 				F161EDE91BD856E6008131C3 /* AVATopology.swift in Sources */,
 				F1B3F2CB1BDD79B3009C0E7B /* AVAService.swift in Sources */,
-				F135276A1C0B5AB200786C24 /* AVASocket.swift in Sources */,
+				F135276A1C0B5AB200786C24 /* AVAServerSocket.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
