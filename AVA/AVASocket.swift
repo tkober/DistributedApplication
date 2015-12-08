@@ -15,7 +15,7 @@ protocol AVASocketDelegate: class {
 
 
 
-class AVASocket: NSObject {
+class AVAServerSocket: NSObject {
     
     
     var delegate: AVASocketDelegate!
@@ -39,7 +39,7 @@ class AVASocket: NSObject {
     
     
     func setup() {
-        preconditionFailure("Override \(__FUNCTION__) in subclass")
+        self.socket = setup_posix_server_socket(self.vertex.port)
     }
     
     
@@ -61,16 +61,6 @@ class AVASocket: NSObject {
     
     func invalidate() {
     }
-}
-
-
-
-class AVAServerSocket: AVASocket {
-    
-    override func setup() {
-        self.socket = setup_posix_server_socket(self.vertex.port)
-    }
-    
 }
 
 
