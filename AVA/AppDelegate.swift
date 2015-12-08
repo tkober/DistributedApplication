@@ -111,10 +111,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             self.nodeManager = AVANodeManager(topology: self.topology, ownPeerName: self.setup.peerName!, logger: self)
             self.nodeManager?.delegate = self
             self.nodeManager?.start()
-            
-            if self.setup.isMaster {
-                self.nodeManager?.test()
-            }
         }
     }
     
@@ -320,7 +316,9 @@ extension AppDelegate: AVANodeManagerDelegate {
     func nodeManager(nodeManager: AVANodeManager, stateUpdated state: AVANodeState) {
         if state.disconnectedPeers.count == 0 {
             if let service = self.service {
-                service.startWithBufferedMessage(self.messageBuffer)
+                if !service.isRunning {
+                    service.startWithBufferedMessage(self.messageBuffer)
+                }
             }
         }
         if let update = self.onNodeStateUpdate {

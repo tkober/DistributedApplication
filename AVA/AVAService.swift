@@ -52,6 +52,14 @@ protocol AVAService: class {
      
      */
     init(setup: AVASetup)
+    
+    
+    /**
+     
+     Gibt an ob der Service aktuell ausgeführt wird
+     
+     */
+    var isRunning: Bool { get }
 }
 
 

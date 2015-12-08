@@ -112,6 +112,7 @@ class AVAUebung1: NSObject, AVAService {
     
     
     func startWithBufferedMessage(messages: [AVAMessage]) {
+        self.isRunning = true
         if self.setup!.isMaster {
             let rumor = AVARumor(rumor: self.setup!.rumor!)
             self.logger.log(AVALogEntry(level: AVALogLevel.Warning, event: AVAEvent.Processing, peer: self.setup!.peerName! , description: "Start spreading rumor '\(self.setup!.rumor!)'"))
@@ -140,4 +141,6 @@ class AVAUebung1: NSObject, AVAService {
         }
     }
     
+    
+    var isRunning = false
 }

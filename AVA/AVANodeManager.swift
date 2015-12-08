@@ -10,6 +10,9 @@ import Foundation
 import MultipeerConnectivity
 
 
+typealias AVABroadcastResult = [AVAVertexName: Bool]
+
+
 /**
  
  Repräsentiert den Status des eigenen Knoten, sprich welche Nachbarn bereits verbunden sind.
@@ -22,7 +25,7 @@ struct AVANodeState {
      Der Name des eigenen Knoten.
      
      */
-    let ownPeer: AVAVertexName
+    let ownVertexName: AVAVertexName
     
     /**
      
@@ -54,27 +57,24 @@ struct AVANodeState {
      
         - topology: Die Topologie, für welche ein Status erzeugt werden soll.
      
-        - ownPeer: Der Name des eigenen Knoten.
+        - ownVertexName: Der Name des eigenen Knoten.
      
         - session: Die Session des eigenen Knoten.
      
      */
-    init(topology: AVATopology, ownPeer: AVAVertexName, session: MCSession) {
-        self.ownPeer = ownPeer
+    init(topology: AVATopology, ownVertexName: AVAVertexName, streams: [AVASocketStream]) {
+        self.ownVertexName = ownVertexName
         self.topology = topology
-        
         var connected = [AVAVertexName]()
-        for peer in session.connectedPeers {
-            connected.append(peer.displayName)
-        }
-        self.connectedPeers = connected
-        
         var disconnected = [AVAVertexName]()
-        for vertex in topology.adjacentVerticesForVertex(ownPeer) {
-            if !self.connectedPeers.contains(vertex) {
-                disconnected.append(vertex)
+        for stream in streams {
+            if stream.status == NSStreamStatus.Open {
+                connected.append(stream.vertex.name)
+            } else {
+                disconnected.append(stream.vertex.name)
             }
         }
+        self.connectedPeers = connected
         self.disconnectedPeers = disconnected
     }
 }
@@ -158,7 +158,7 @@ class AVANodeManager: NSObject {
      Ein Liste mit den Namen der Nachbarn, also den Peers die verbunden werden sollen.
      
      */
-    private let peersToConnect: [AVAVertexName]
+    private let verticesToConnect: [AVAVertexName]
     
     /**
      
@@ -191,7 +191,7 @@ class AVANodeManager: NSObject {
     init(topology: AVATopology, ownPeerName: String, logger: AVALogging) {
         self.topology = topology
         self.logger = logger
-        self.peersToConnect = topology.adjacentVerticesForVertex(ownPeerName)
+        self.verticesToConnect = topology.adjacentVerticesForVertex(ownPeerName)
         self.ownVertex = self.topology.vertextForName(ownPeerName)!
         self.serverSocket = AVAServerSocket(vertex: ownVertex)
         
@@ -203,6 +203,9 @@ class AVANodeManager: NSObject {
     var serverSocket: AVAServerSocket
     
     
+    var socketStreams = [AVASocketStream]()
+    
+    
     /**
      
      Startet den AVANodeManager.
@@ -211,6 +214,15 @@ class AVANodeManager: NSObject {
     func start() {
         serverSocket.setup()
         serverSocket.start()
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(2 * Double(NSEC_PER_SEC))), dispatch_get_main_queue()) { () -> Void in
+            for vertexName in self.verticesToConnect {
+                let vertex = self.topology.vertextForName(vertexName)!
+                let socketStream = AVASocketStream(vertex: vertex)
+                socketStream.delegate = self
+                self.socketStreams.append(socketStream)
+                socketStream.open()
+            }
+        }
     }
     
     
@@ -224,8 +236,7 @@ class AVANodeManager: NSObject {
     */
     var state: AVANodeState? {
         get {
-            // TODO: Implement
-            return nil
+            return AVANodeState(topology: self.topology, ownVertexName: self.ownVertex.name, streams: self.socketStreams)
         }
     }
     
@@ -247,12 +258,16 @@ class AVANodeManager: NSObject {
     
     */
     func sendMessage(message:AVAMessage, toVertex vertex: AVAVertexName) -> Bool {
-//        for connectedPeer in self.session.connectedPeers {
-//            if connectedPeer.displayName == vertex {
-//                return self.sendMessage(message, toPeers: [connectedPeer])
-//            }
-//        }
-        // TODO: Implement
+        for stream in self.socketStreams {
+            if stream.vertex.name == vertex {
+                let bla = stream.status
+                if let messageData = message.jsonData() {
+                    return stream.writeData(messageData)
+                } else {
+                    return false
+                }
+            }
+        }
         return false
     }
     
@@ -265,32 +280,17 @@ class AVANodeManager: NSObject {
      
         - message: Die Nachtricht die gesendet werden soll.
      
-        - peers: Die Knoten, an welche die Nachricht gesendet werden soll.
+        - vertices: Die Knoten, an welche die Nachricht gesendet werden soll.
      
-     - returns: Einen boolschen Wert, der angibt ob das Senden erfolgreich war.
+     - returns: Einen AVABroadcastResult, welches angibt ob das Senden erfolgreich war.
      
      */
-    func sendMessage(message: AVAMessage, toPeers peers: [MCPeerID]) -> Bool {
-//        for peer in peers {
-//            if !self.session.connectedPeers.contains(peer) {
-//                return false
-//            }
-//        }
-//        if let messageData = message.jsonData() {
-//            do {
-//                try self.session.sendData(messageData, toPeers: peers, withMode: MCSessionSendDataMode.Unreliable)
-//                for peer in peers {
-//                    self.logger.log(AVALogEntry(level: AVALogLevel.Debug, event: AVAEvent.DataSent, peer: self.myPeerId.displayName, description: "Sent message (\(messageData.length) bytes) to \(peer.displayName)", remotePeer: peer.displayName, message: message))
-//                }
-//                return true
-//            } catch {
-//                return false
-//            }
-//        } else {
-//            return false
-//        }
-        // TODO: Implement
-        return false
+    func sendMessage(message: AVAMessage, toVertices vertices: [AVAVertexName]) -> AVABroadcastResult {
+        var result = AVABroadcastResult()
+        for vertex in vertices {
+            result[vertex] = self.sendMessage(message, toVertex: vertex)
+        }
+        return result
     }
     
     
@@ -302,13 +302,11 @@ class AVANodeManager: NSObject {
      
         - message: Die Nachtricht die gesendet werden soll.
      
-     - returns: Einen boolschen Wert, der angibt ob das Senden erfolgreich war.
+     - returns: Einen AVABroadcastResult, welches angibt ob das Senden erfolgreich war.
      
      */
-    func broadcastMessage(message: AVAMessage) -> Bool {
-//        return self.sendMessage(message, toPeers: self.session.connectedPeers)
-        // TODO: Implement
-        return false
+    func broadcastMessage(message: AVAMessage) -> AVABroadcastResult {
+        return self.sendMessage(message, toVertices: self.verticesToConnect)
     }
     
     
@@ -320,37 +318,19 @@ class AVANodeManager: NSObject {
      
         - message: Die Nachtricht die gesendet werden soll.
      
-        - exceptingPeers: Die Knoten, an welche die Nachricht nicht gesendet werden soll.
+        - exceptingVertices: Die Knoten, an welche die Nachricht nicht gesendet werden soll.
      
-     - returns: Einen boolschen Wert, der angibt ob das Senden erfolgreich war.
+     - returns: Einen AVABroadcastResult, welches angibt ob das Senden erfolgreich war.
      
      */
-    func broadcastMessage(message: AVAMessage, exceptingPeers: [MCPeerID]) -> Bool {
-//        var peers = [MCPeerID]()
-//        for peer in self.session.connectedPeers {
-//            if !exceptingPeers.contains(peer) {
-//                peers.append(peer)
-//            }
-//        }
-//        return self.sendMessage(message, toPeers: peers)
-        // TODO: Implement
-        return false
-    }
-
-    
-    
-    private var socketStream: AVASocketStream!
-
-    
-    func test() {
-        
-        let vertex = self.topology.vertextForName(self.topology.adjacentVerticesForVertex(self.ownVertex.name).first!)!
-        self.socketStream = AVASocketStream(vertex: vertex)
-        self.socketStream.delegate = self
-        
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(2 * Double(NSEC_PER_SEC))), dispatch_get_main_queue()) { () -> Void in
-            self.socketStream.open()
+    func broadcastMessage(message: AVAMessage, exceptingVertices: [AVAVertexName]) -> AVABroadcastResult {
+        var receivers = [AVAVertexName]()
+        for vertex in self.verticesToConnect {
+            if exceptingVertices.contains(vertex) {
+                receivers.append(vertex)
+            }
         }
+        return self.sendMessage(message, toVertices: receivers)
     }
 }
 
@@ -365,26 +345,23 @@ extension AVANodeManager: AVASocketStreamDelegate {
     
     
     func socketStreamDidConnection(stream: AVASocketStream) {
-        
+        self.logger.log(AVALogEntry(level: AVALogLevel.Debug, event: AVAEvent.Connect, peer: self.ownVertex.name, description: "Connected vertex '\(stream.vertex.name)'", remotePeer: stream.vertex.name))
     }
     
     
     func socketStreamIsReadyToSend(stream: AVASocketStream) {
-        let text = "{\"timestamp\":1447207157.864569,\"payload\":{\"rumorText\":\"Hallo_Welt\"},\"sender\":\"2\",\"type\":1}" as NSString
-        
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(2 * Double(NSEC_PER_SEC))), dispatch_get_main_queue()) { () -> Void in
-            stream.writeData(text.dataUsingEncoding(NSUTF8StringEncoding)!)
-        }
+        self.delegate?.nodeManager(self, stateUpdated: self.state!)
     }
     
     
     func socketStreamDidDisconnect(stream: AVASocketStream) {
-        
+        self.logger.log(AVALogEntry(level: AVALogLevel.Error, event: AVAEvent.Disconnect, peer: self.ownVertex.name, description: "Lost connection to vertex '\(stream.vertex.name)'", remotePeer: stream.vertex.name))
+        self.delegate?.nodeManager(self, stateUpdated: self.state!)
     }
     
     
     func socketStreamFailed(stream: AVASocketStream, status: NSStreamStatus, error: NSError?) {
-        
+        self.logger.log(AVALogEntry(level: AVALogLevel.Error, event: AVAEvent.Processing, peer: self.ownVertex.name, description: "Error occurred in stream to vertex '\(stream.vertex.name)'", remotePeer: stream.vertex.name))
     }
 }
 

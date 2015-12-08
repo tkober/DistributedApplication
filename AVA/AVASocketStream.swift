@@ -68,6 +68,13 @@ class AVASocketStream: NSObject {
     var delegate: AVASocketStreamDelegate?
     
     
+    var status: NSStreamStatus {
+        get {
+            return self.outputStream.streamStatus
+        }
+    }
+    
+    
     // MARK: | Initializer
     
     
@@ -113,8 +120,8 @@ class AVASocketStream: NSObject {
     // MARK: | Writing
     
     
-    func writeData(data: NSData) {
-        self.outputStream.write(UnsafePointer<UInt8>(data.bytes), maxLength: data.length)
+    func writeData(data: NSData) -> Bool {
+        return self.outputStream.write(UnsafePointer<UInt8>(data.bytes), maxLength: data.length) >= 0
     }
     
     
@@ -128,6 +135,9 @@ class AVASocketStream: NSObject {
 extension AVASocketStream: NSStreamDelegate {
 
     func stream(aStream: NSStream, handleEvent eventCode: NSStreamEvent) {
+        if aStream is NSInputStream {
+            return
+        }
         switch eventCode {
             
         case NSStreamEvent.None:
