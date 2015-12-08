@@ -64,36 +64,6 @@ class AVAServerSocket: NSObject {
 }
 
 
-extension CFSocketCallBackType {
-    
-    func stringValue() -> String {
-        switch self {
-        case CFSocketCallBackType.NoCallBack:
-            return "NoCallBack"
-            
-        case CFSocketCallBackType.ReadCallBack:
-            return "ReadCallBack"
-            
-        case CFSocketCallBackType.AcceptCallBack:
-            return "AcceptCallBack"
-            
-        case CFSocketCallBackType.DataCallBack:
-            return "DataCallBack"
-            
-        case CFSocketCallBackType.ConnectCallBack:
-            return "ConnectCallBack"
-            
-        case CFSocketCallBackType.WriteCallBack:
-            return "WriteCallBack"
-            
-        default:
-            return "Unkown"
-        }
-    }
-}
-
-
-
 extension NSStreamEvent {
     
     func stringValue() -> String {
