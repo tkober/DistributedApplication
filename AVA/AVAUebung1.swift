@@ -88,11 +88,7 @@ class AVAUebung1: NSObject, AVAService {
             self.rumors.append(rumor)
             // Weitersagen
             let message = AVAMessage(type: AVAMessageType.ApplicationData, sender: self.setup!.peerName!, payload: rumor.toJSON())
-            let peerID = self.nodeManager.state!.connectedPeers.filter({ (item: AVAVertexName) -> Bool in
-                return item == peer
-            })
-            // TODO: Adjust
-//            self.nodeManager.broadcastMessage(message, exceptingPeers: peerID)
+            self.nodeManager.broadcastMessage(message, exceptingVertices: [peer])
         }
         if heardRumor.heardFrom.count >= self.setup?.rumorCountToAcceptance! && !heardRumor.accepted {
             self.logger.log(AVALogEntry(level: AVALogLevel.Success, event: AVAEvent.Processing, peer: self.setup!.peerName!, description: "Peer '\(self.setup!.peerName!)' accepted rumor '\(rumor.rumorText)'"))

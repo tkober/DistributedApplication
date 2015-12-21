@@ -336,8 +336,8 @@ extension AppDelegate: AVANodeManagerDelegate {
             break
             
         case .ApplicationData:
-            if let service = self.service {
-                service.nodeManager(nodeManager, didReceiveApplicationDataMessage: message)
+            if self.service!.isRunning {
+                self.service!.nodeManager(nodeManager, didReceiveApplicationDataMessage: message)
             } else {
                 self.messageBuffer.append(message)
             }
@@ -346,7 +346,7 @@ extension AppDelegate: AVANodeManagerDelegate {
     }
     
 
-    func nodeManager(nodeManager: AVANodeManager, didReceiveUninterpretableData data: NSData, fromPeer peer: AVAVertexName) {
+    func nodeManager(nodeManager: AVANodeManager, didReceiveUninterpretableData data: NSData) {
         
     }
 }

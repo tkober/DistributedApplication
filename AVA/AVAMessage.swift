@@ -71,7 +71,7 @@ class AVAMessage: NSObject {
      Der Absender der Nachricht.
      
      */
-    let sender: String
+    let sender: AVAVertexName
     
     
     /**
@@ -80,6 +80,17 @@ class AVAMessage: NSObject {
      
      */
     var payload: AVAJSON?
+    
+    
+    var size: Int {
+        get {
+            if let data = self.jsonData() {
+                return data.length
+            } else {
+                return 0
+            }
+        }
+    }
     
     
     // MARK: | Initializer

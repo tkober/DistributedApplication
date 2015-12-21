@@ -128,6 +128,19 @@ class AVASocketStream: NSObject {
     private var inputStream: NSInputStream!
     private var outputStream: NSOutputStream!
     
+    
+    // MARK: | Connections
+    
+    
+    var connected: Bool {
+        get {
+            return self._connected
+        }
+    }
+    
+    
+    private var _connected = false
+    
 }
 
 
@@ -144,6 +157,7 @@ extension AVASocketStream: NSStreamDelegate {
             break
             
         case NSStreamEvent.OpenCompleted:
+            self._connected = true
             self.delegate?.socketStreamDidConnection(self)
             
         case NSStreamEvent.HasBytesAvailable:
@@ -156,6 +170,7 @@ extension AVASocketStream: NSStreamDelegate {
             self.delegate?.socketStreamFailed(self, status: aStream.streamStatus, error: aStream.streamError)
             
         case NSStreamEvent.EndEncountered:
+            self._connected = false
             self.delegate?.socketStreamDidDisconnect(self)
             
         default:

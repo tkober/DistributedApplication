@@ -67,13 +67,13 @@ class AVATopology: NSObject {
      - returns: Alle adjazenten Knoten.
      
      */
-    func adjacentVerticesForVertex(vertex: AVAVertexName) -> [AVAVertexName] {
-        var result: [AVAVertexName] = []
+    func adjacentVerticesForVertex(vertex: AVAVertexName) -> [AVAVertex] {
+        var result: [AVAVertex] = []
         for adjacency in adjacencies {
             if adjacency.v1 == vertex {
-                result.append(adjacency.v2)
+                result.append(self.vertextForName(adjacency.v2)!)
             } else if adjacency.v2 == vertex {
-                result.append(adjacency.v1)
+                result.append(self.vertextForName(adjacency.v1)!)
             }
         }
         return result

@@ -68,7 +68,7 @@ struct AVANodeState {
         var connected = [AVAVertexName]()
         var disconnected = [AVAVertexName]()
         for stream in streams {
-            if stream.status == NSStreamStatus.Open {
+            if stream.connected {
                 connected.append(stream.vertex.name)
             } else {
                 disconnected.append(stream.vertex.name)
@@ -124,10 +124,8 @@ protocol AVANodeManagerDelegate {
      
         - data: Die empfangenen Daten.
      
-        - peer: Der Absender der Daten.
-     
      */
-    func nodeManager(nodeManager: AVANodeManager, didReceiveUninterpretableData data: NSData, fromPeer peer: AVAVertexName)
+    func nodeManager(nodeManager: AVANodeManager, didReceiveUninterpretableData data: NSData)
 }
 
 
@@ -158,7 +156,19 @@ class AVANodeManager: NSObject {
      Ein Liste mit den Namen der Nachbarn, also den Peers die verbunden werden sollen.
      
      */
-    private let verticesToConnect: [AVAVertexName]
+    private let verticesToConnect: [AVAVertex]
+    
+    
+    private var vertexNamesToConnect: [AVAVertexName] {
+        get {
+            var result = [AVAVertexName]()
+            for vertex in self.verticesToConnect {
+                result.append(vertex.name)
+            }
+            return result
+        }
+    }
+    
     
     /**
      
@@ -215,9 +225,9 @@ class AVANodeManager: NSObject {
         serverSocket.setup()
         serverSocket.start()
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(2 * Double(NSEC_PER_SEC))), dispatch_get_main_queue()) { () -> Void in
-            for vertexName in self.verticesToConnect {
-                let vertex = self.topology.vertextForName(vertexName)!
-                let socketStream = AVASocketStream(vertex: vertex)
+            for vertex in self.verticesToConnect {
+                let vertexName = self.topology.vertextForName(vertex.name)!
+                let socketStream = AVASocketStream(vertex: vertexName)
                 socketStream.delegate = self
                 self.socketStreams.append(socketStream)
                 socketStream.open()
@@ -260,9 +270,16 @@ class AVANodeManager: NSObject {
     func sendMessage(message:AVAMessage, toVertex vertex: AVAVertexName) -> Bool {
         for stream in self.socketStreams {
             if stream.vertex.name == vertex {
-                let bla = stream.status
                 if let messageData = message.jsonData() {
-                    return stream.writeData(messageData)
+                    let result = stream.writeData(messageData)
+                    let logEntry: AVALogEntry
+                    if result {
+                        logEntry = AVALogEntry(level: AVALogLevel.Debug, event: AVAEvent.DataSent, peer: self.ownVertex.name, description: "Sent message (\(message.size) bytes) to '\(vertex)'", remotePeer: vertex, message: message)
+                    } else {
+                        logEntry = AVALogEntry(level: AVALogLevel.Warning, event: AVAEvent.DataSent, peer: self.ownVertex.name, description: "Failed to send message (\(message.size) bytes) to '\(vertex)'", remotePeer: vertex, message: message)
+                    }
+                    self.logger.log(logEntry)
+                    return result
                 } else {
                     return false
                 }
@@ -306,7 +323,7 @@ class AVANodeManager: NSObject {
      
      */
     func broadcastMessage(message: AVAMessage) -> AVABroadcastResult {
-        return self.sendMessage(message, toVertices: self.verticesToConnect)
+        return self.sendMessage(message, toVertices: self.vertexNamesToConnect)
     }
     
     
@@ -325,8 +342,8 @@ class AVANodeManager: NSObject {
      */
     func broadcastMessage(message: AVAMessage, exceptingVertices: [AVAVertexName]) -> AVABroadcastResult {
         var receivers = [AVAVertexName]()
-        for vertex in self.verticesToConnect {
-            if exceptingVertices.contains(vertex) {
+        for vertex in self.vertexNamesToConnect {
+            if !exceptingVertices.contains(vertex) {
                 receivers.append(vertex)
             }
         }
@@ -336,7 +353,26 @@ class AVANodeManager: NSObject {
 
 
 
-extension AVANodeManager: AVASocketDelegate {
+extension AVANodeManager: AVAServerSocketDelegate {
+    
+    func serverSocket(socket: AVAServerSocket, acceptedConnection connection: AVASocketConnectionInfo) {
+        let logEntry = AVALogEntry(level: AVALogLevel.Debug, event: AVAEvent.Processing, peer: self.ownVertex.name, description: "Accepted connection from \(connection.address):\(connection.port)")
+        self.logger.log(logEntry)
+    }
+    
+    
+    func serverSocket(socket: AVAServerSocket, readData data: NSData) {
+        do {
+            let message = try AVAMessage(data: data)
+            let logEntry = AVALogEntry(level: AVALogLevel.Info, event: AVAEvent.DataReceived, peer: self.ownVertex.name, description: "Received message (\(data.length) bytes) from '\(message.sender)' ", remotePeer: message.sender, message: message)
+            self.logger.log(logEntry)
+            self.delegate?.nodeManager(self, didReceiveMessage: message)
+        } catch {
+            let logEntry = AVALogEntry(level: AVALogLevel.Warning, event: AVAEvent.DataReceived, peer: self.ownVertex.name, description: "Received uninterpretable data (\(data.length) bytes)")
+            self.logger.log(logEntry)
+            self.delegate?.nodeManager(self, didReceiveUninterpretableData: data)
+        }
+    }
     
 }
 

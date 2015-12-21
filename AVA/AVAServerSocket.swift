@@ -9,8 +9,15 @@
 import Foundation
 
 
-protocol AVASocketDelegate: class {
+typealias AVASocketConnectionInfo = (address: String, port: in_port_t)
+
+
+
+protocol AVAServerSocketDelegate: class {
     
+    func serverSocket(socket: AVAServerSocket, acceptedConnection connection: AVASocketConnectionInfo)
+    
+    func serverSocket(socket: AVAServerSocket, readData data: NSData)
 }
 
 
@@ -18,7 +25,7 @@ protocol AVASocketDelegate: class {
 class AVAServerSocket: NSObject {
     
     
-    var delegate: AVASocketDelegate!
+    var delegate: AVAServerSocketDelegate!
     
     
     var vertex: AVAVertex
@@ -49,11 +56,13 @@ class AVAServerSocket: NSObject {
     func start() {
         
         start_posix_server_socket(self.socket, 5, { (address: UnsafeMutablePointer<Int8>, port: in_port_t) -> Void in
-            print("Accepted: \(String.fromCString(address)):\(port)")
+            
+            let connectionInfo: AVASocketConnectionInfo = (String.fromCString(address)!, port)
+            self.delegate.serverSocket(self, acceptedConnection: connectionInfo)
+            
         }) { (data: UnsafeMutablePointer<Int8>, length: Int) -> Void in
-            let message = String(data: NSData(bytes: data, length: length), encoding: NSUTF8StringEncoding)
-            print("Read \(length) bytes")
-            print("message -> \(message)")
+            
+            self.delegate.serverSocket(self, readData: NSData(bytes: data, length: length))
             free(data)
         }
     }
