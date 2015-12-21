@@ -15,7 +15,7 @@
 		F146FD431BD97AD70028B4E1 /* AVAGraphvizAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F146FD421BD97AD70028B4E1 /* AVAGraphvizAdapter.swift */; };
 		F14F06FD1BE0B7B400BA4C6A /* AVARumor.swift in Sources */ = {isa = PBXBuildFile; fileRef = F14F06FC1BE0B7B400BA4C6A /* AVARumor.swift */; };
 		F15C07CB1BD75CCF00EB41D8 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F15C07CA1BD75CCF00EB41D8 /* AppDelegate.swift */; };
-		F15C07CD1BD75CCF00EB41D8 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F15C07CC1BD75CCF00EB41D8 /* ViewController.swift */; };
+		F15C07CD1BD75CCF00EB41D8 /* NodeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F15C07CC1BD75CCF00EB41D8 /* NodeViewController.swift */; };
 		F15C07CF1BD75CCF00EB41D8 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F15C07CE1BD75CCF00EB41D8 /* Assets.xcassets */; };
 		F15C07D21BD75CCF00EB41D8 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F15C07D01BD75CCF00EB41D8 /* Main.storyboard */; };
 		F15C07DB1BD75CF200EB41D8 /* AVANodeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F15C07DA1BD75CF200EB41D8 /* AVANodeManager.swift */; };
@@ -40,7 +40,7 @@
 		F14F06FC1BE0B7B400BA4C6A /* AVARumor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AVARumor.swift; sourceTree = "<group>"; };
 		F15C07C71BD75CCF00EB41D8 /* AVA.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AVA.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F15C07CA1BD75CCF00EB41D8 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		F15C07CC1BD75CCF00EB41D8 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		F15C07CC1BD75CCF00EB41D8 /* NodeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NodeViewController.swift; sourceTree = "<group>"; };
 		F15C07CE1BD75CCF00EB41D8 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F15C07D11BD75CCF00EB41D8 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		F15C07D31BD75CCF00EB41D8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -181,12 +181,12 @@
 			name = Service;
 			sourceTree = "<group>";
 		};
-		F1C6975C1BE8B46A0022D8F6 /* State */ = {
+		F1C6975C1BE8B46A0022D8F6 /* Node */ = {
 			isa = PBXGroup;
 			children = (
-				F15C07CC1BD75CCF00EB41D8 /* ViewController.swift */,
+				F15C07CC1BD75CCF00EB41D8 /* NodeViewController.swift */,
 			);
-			name = State;
+			name = Node;
 			sourceTree = "<group>";
 		};
 		F1C6975D1BE8B47F0022D8F6 /* DistributetLog */ = {
@@ -201,7 +201,7 @@
 			isa = PBXGroup;
 			children = (
 				F1C6975D1BE8B47F0022D8F6 /* DistributetLog */,
-				F1C6975C1BE8B46A0022D8F6 /* State */,
+				F1C6975C1BE8B46A0022D8F6 /* Node */,
 			);
 			name = ViewControllers;
 			sourceTree = "<group>";
@@ -292,7 +292,7 @@
 				F15C07DB1BD75CF200EB41D8 /* AVANodeManager.swift in Sources */,
 				F161EDE61BD81FF3008131C3 /* AVAArgumentsParser.swift in Sources */,
 				DCE000481C03251C00EDF1FD /* AVAVertex.swift in Sources */,
-				F15C07CD1BD75CCF00EB41D8 /* ViewController.swift in Sources */,
+				F15C07CD1BD75CCF00EB41D8 /* NodeViewController.swift in Sources */,
 				F14F06FD1BE0B7B400BA4C6A /* AVARumor.swift in Sources */,
 				F15C07DE1BD7A4B000EB41D8 /* AVALogging.swift in Sources */,
 				F13699F11C04DBB400D71D38 /* AVASockets.c in Sources */,

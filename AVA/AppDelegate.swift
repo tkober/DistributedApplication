@@ -101,7 +101,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             self.buildTopologyFromFile()
         }
         
-        self.layoutWindow(CGSizeMake(350, 450), margin: 20)
+        self.layoutWindow(CGSizeMake(350, 150), margin: 20)
         
         if let onArgumentsProcessed = self.onArgumentsProcessed {
             onArgumentsProcessed(ownPeerName: self.setup.peerName!, isMaster: self.setup.isMaster, topology: self.topology)
