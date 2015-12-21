@@ -224,7 +224,7 @@ class AVANodeManager: NSObject {
     func start() {
         serverSocket.setup()
         serverSocket.start()
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(2 * Double(NSEC_PER_SEC))), dispatch_get_main_queue()) { () -> Void in
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(5 * Double(NSEC_PER_SEC))), dispatch_get_main_queue()) { () -> Void in
             for vertex in self.verticesToConnect {
                 let vertexName = self.topology.vertextForName(vertex.name)!
                 let socketStream = AVASocketStream(vertex: vertexName)
@@ -397,7 +397,7 @@ extension AVANodeManager: AVASocketStreamDelegate {
     
     
     func socketStreamFailed(stream: AVASocketStream, status: NSStreamStatus, error: NSError?) {
-        self.logger.log(AVALogEntry(level: AVALogLevel.Error, event: AVAEvent.Processing, peer: self.ownVertex.name, description: "Error occurred in stream to vertex '\(stream.vertex.name)'", remotePeer: stream.vertex.name))
+        self.logger.log(AVALogEntry(level: AVALogLevel.Error, event: AVAEvent.Processing, peer: self.ownVertex.name, description: "Error occurred in stream to vertex '\(stream.vertex.name)'. error -> '\(error)'", remotePeer: stream.vertex.name))
     }
 }
 

@@ -68,7 +68,7 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "--topology"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "~/Documents/Studium/9_Semester/AVA/test.topology"
@@ -79,11 +79,11 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "5"
+            argument = "48"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "6"
+            argument = "50"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument

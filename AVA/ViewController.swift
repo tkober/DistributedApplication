@@ -121,7 +121,7 @@ class ViewController: NSViewController {
         self.graphImageView?.layer?.backgroundColor = NSColor.whiteColor().CGColor
         
         self.updateLocalLog()
-        self.clearGraphImage()
+//        self.clearGraphImage()
         
         let appDelegate = NSApp.delegate as! AppDelegate
         let loggingTextView = logScrollView.contentView.documentView as? NSTextView
@@ -186,16 +186,16 @@ class ViewController: NSViewController {
     
     
     func renderAndUpdateGraphImage(tempFilePath: String) {
-        GRAPHVIZ.renderPNGFromDOTFile(tempFilePath) { (image) -> () in
-            if let graphImage = image {
-                self.updateGraphImage(graphImage)
-            }
-            do {
-                try NSFileManager.defaultManager().removeItemAtPath(tempFilePath)
-            } catch {
-                
-            }
-        }
+//        GRAPHVIZ.renderPNGFromDOTFile(tempFilePath) { (image) -> () in
+//            if let graphImage = image {
+//                self.updateGraphImage(graphImage)
+//            }
+//            do {
+//                try NSFileManager.defaultManager().removeItemAtPath(tempFilePath)
+//            } catch {
+//                
+//            }
+//        }
     }
     
     private var topology: AVATopology!
