@@ -74,32 +74,52 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let arguments = NSProcessInfo.processInfo().arguments
         self.setup = AVAArgumentsParser.sharedInstance.parseArguments(arguments)
         
+        if (self.setup.isObserver) {
+            self.runAsObserver()
+        } else {
+            self.runAsNode()
+        }
+    }
+    
+    
+    // MARK: | Run Mode
+    
+    
+    func runAsObserver() {
+        self.setup.peerName = OBSERVER_NAME
+        var topologyFilePath: String
+        
+        if self.setup.randomTopology {
+            self.buildRandomTopology()
+            topologyFilePath = "\(self.setup.applicationPackageDirectory)/~random.topology"
+            do {
+                try self.topology.toData().writeToFile(topologyFilePath, atomically: true)
+            } catch {
+                exit(6)
+            }
+        } else {
+            topologyFilePath = self.setup.topologyFilePath!
+            self.buildTopologyFromFile()
+        }
+        self.instantiateTopology(self.topology, ownPeerName: self.setup.peerName!, topologyFilePath: topologyFilePath, withServiceOfType: self.setup.service)
+        
+    }
+    
+    
+    func runAsNode() {
         if self.setup.peerName == nil {
             print("Missing parameter --peerName")
             exit(2)
+        }
+        if self.setup.peerName == OBSERVER_NAME {
+            print("Invalid value for parameter --peerName:")
+            print("'\(OBSERVER_NAME)' is prohibited as a node name")
         }
         
         self.setupLogger()
         self.service = self.serviceFromSetup(self.setup)
         
-        if self.setup.isObserver {
-            var topologyFilePath: String
-            if self.setup.randomTopology {
-                self.buildRandomTopology()
-                topologyFilePath = "\(self.setup.applicationPackageDirectory)/~random.topology"
-                do {
-                    try self.topology.toData().writeToFile(topologyFilePath, atomically: true)
-                } catch {
-                    exit(6)
-                }
-            } else {
-                topologyFilePath = self.setup.topologyFilePath!
-                self.buildTopologyFromFile()
-            }
-            self.instantiateTopology(self.topology, ownPeerName: self.setup.peerName!, topologyFilePath: topologyFilePath, withServiceOfType: self.setup.service)
-        } else {
-            self.buildTopologyFromFile()
-        }
+        self.buildTopologyFromFile()
         
         self.layoutWindow(CGSizeMake(350, 150), margin: 20)
         

@@ -789,7 +789,7 @@
                                     <constraint firstAttribute="width" constant="21" id="AQc-m1-ZOb"/>
                                     <constraint firstAttribute="height" constant="21" id="CVw-4l-YfM"/>
                                 </constraints>
-                                <buttonCell key="cell" type="disclosureTriangle" bezelStyle="disclosure" image="67CBBEEA-70A7-447B-A386-2DE554FB64C6" imagePosition="overlaps" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="9Wq-oR-qMu">
+                                <buttonCell key="cell" type="disclosureTriangle" bezelStyle="disclosure" image="29D50558-21F7-43A6-A653-17ACAF7E7F41" imagePosition="overlaps" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="9Wq-oR-qMu">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -819,7 +819,7 @@
                             <scrollView autohidesScrollers="YES" horizontalLineScroll="19" horizontalPageScroll="10" verticalLineScroll="19" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="SqF-sE-xsf">
                                 <rect key="frame" x="0.0" y="277" width="774" height="252"/>
                                 <clipView key="contentView" id="xEi-nY-MZV">
-                                    <rect key="frame" x="1" y="0.0" width="772" height="236"/>
+                                    <rect key="frame" x="1" y="0.0" width="772" height="251"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" columnSelection="YES" multipleSelection="NO" autosaveColumns="NO" rowSizeStyle="automatic" headerView="bcm-eE-lVg" viewBased="YES" id="pcJ-iB-d2N">
@@ -1032,7 +1032,7 @@
                                 <constraints>
                                     <constraint firstAttribute="height" constant="252" id="odg-I8-oUL"/>
                                 </constraints>
-                                <scroller key="horizontalScroller" verticalHuggingPriority="750" doubleValue="0.20000000000000001" horizontal="YES" id="baX-Jc-H9q">
+                                <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="0.20000000000000001" horizontal="YES" id="baX-Jc-H9q">
                                     <rect key="frame" x="1" y="236" width="772" height="15"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                 </scroller>
@@ -1077,7 +1077,7 @@
         </scene>
     </scenes>
     <resources>
-        <image name="67CBBEEA-70A7-447B-A386-2DE554FB64C6" width="1" height="1">
+        <image name="29D50558-21F7-43A6-A653-17ACAF7E7F41" width="1" height="1">
             <mutableData key="keyedArchiveRepresentation">
 YnBsaXN0MDDUAQIDBAUGPT5YJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3ASAAGGoK4HCBMU
 GR4fIyQrLjE3OlUkbnVsbNUJCgsMDQ4PEBESVk5TU2l6ZVYkY2xhc3NcTlNJbWFnZUZsYWdzVk5TUmVw

@@ -9,7 +9,10 @@
 import Foundation
 
 
-let START_PORT: UInt16 = 5000
+let OBSERVER_NAME = "Observer"
+let OBSERVER_PORT: UInt16 = 5000
+
+let NODE_START_PORT: UInt16 = OBSERVER_PORT+1
 
 
 /**
@@ -106,18 +109,12 @@ class AVATopology: NSObject {
     // MARK: | Initializer
     
     
-    init(json: AVAJSON) throws {
+    private init(vertices: [AVAVertex], adjacencies: [AVAAdjacency]) {
+        self.vertices = vertices
         self.adjacencies = [AVAAdjacency]()
-        self.vertices = [AVAVertex]()
         super.init()
-        
-        let verticesJSON = json[TOPOLOGY_VERTICES] as! [AVAJSON]
-        let adjacenciesJSON = json[TOPOLOGY_ADJACENCIES] as! [[AVAJSON]]
-        
-        self.vertices = try AVAVertex.verticesFromJSON(verticesJSON)
-        
-        for adjacencyJSON in adjacenciesJSON {
-            let adjacency = AVAAdjacency(json: adjacencyJSON)
+    
+        for adjacency in adjacencies {
             let alreadyIncluded = self.adjacencies.contains({ (item: AVAAdjacency) -> Bool in
                 return item == adjacency
             })
@@ -125,6 +122,21 @@ class AVATopology: NSObject {
                 self.adjacencies.append(adjacency)
             }
         }
+    }
+    
+    
+    convenience init(json: AVAJSON) throws {
+        let verticesJSON = json[TOPOLOGY_VERTICES] as! [AVAJSON]
+        let adjacenciesJSON = json[TOPOLOGY_ADJACENCIES] as! [[AVAJSON]]
+        
+        let vertices = try AVAVertex.verticesFromJSON(verticesJSON)
+        var adjacencies = [AVAAdjacency]()
+        
+        for adjacencyJSON in adjacenciesJSON {
+            adjacencies.append(AVAAdjacency(json: adjacencyJSON))
+        }
+        
+        self.init(vertices: vertices, adjacencies: adjacencies)
     }
     
     
@@ -152,9 +164,11 @@ class AVATopology: NSObject {
      
      */
     convenience init(randomWithDimension dimension: AVATopologyDimension) throws {
+        
+        // Nodes
         var vertices = [AVAVertex]()
         for (var i = 1; i <= dimension.vertexCount; i++) {
-            vertices.append(AVAVertex(name: "\(i)", ip: "localhost", port: START_PORT+UInt16(i)))
+            vertices.append(AVAVertex(name: "\(i)", ip: "localhost", port: NODE_START_PORT+UInt16(i)))
         }
         var adjacencies = [AVAAdjacency]()
         
@@ -177,12 +191,39 @@ class AVATopology: NSObject {
             }
         }
         
+        // Observer
+        let observerVertex = AVAVertex(name: OBSERVER_NAME, ip: "localhost", port: OBSERVER_PORT)
+        for vertex in vertices {
+            adjacencies.append(AVAAdjacency(v1: observerVertex.name, v2: vertex.name))
+        }
+        vertices.append(observerVertex)
+        
         let topologyJSON = AVATopology.jsonFromVertices(vertices, adjacencies: adjacencies)
         try self.init(json: topologyJSON)
     }
     
     
     // MARK: | Export
+    
+    
+    func topologyExcludingObserver() -> AVATopology {
+        var vertices = [AVAVertex]()
+        var adjacencies = [AVAAdjacency]()
+        
+        for vertex in self.vertices {
+            if vertex.name != OBSERVER_NAME {
+                vertices.append(vertex)
+            }
+        }
+        
+        for adjacency in self.adjacencies {
+            if adjacency.v1 != OBSERVER_NAME && adjacency.v2 != OBSERVER_NAME {
+                adjacencies.append(adjacency)
+            }
+        }
+        
+        return AVATopology(vertices: vertices, adjacencies: adjacencies)
+    }
     
     
     private static func jsonFromVertices(vertices: [AVAVertex], adjacencies: [AVAAdjacency]) -> NSDictionary {

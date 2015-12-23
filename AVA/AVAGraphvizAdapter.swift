@@ -137,11 +137,12 @@ class AVAGraphvizAdapter: NSObject {
     
      */
     func dotFromTopology(topology: AVATopology, vertexDecorator: AVAGraphvizVertexDecorator, adjacencyDecorator: AVAGraphvizAdjacencyDecorator) -> String {
+        let topologyToRender = topology.topologyExcludingObserver()
         var result = "digraph G {"
-        for vertex in topology.vertices {
+        for vertex in topologyToRender.vertices {
             result += "\n\(vertex.name) \(self.stringFromVertexDecoration(vertexDecorator(vertex: vertex.name)))"
         }
-        for adjacency in topology.adjacencies {
+        for adjacency in topologyToRender.adjacencies {
             let decoration = adjacencyDecorator(adjacency: adjacency)
             let from: AVAVertexName
             let to: AVAVertexName
