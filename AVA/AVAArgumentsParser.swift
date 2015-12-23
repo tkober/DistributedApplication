@@ -48,7 +48,7 @@ enum AVAServiceType: UInt {
 }
 
 
-private let MASTER_PARAMETER_NAME = "--master"
+private let OBSERVER_PARAMETER_NAME = "--observer"
 private let TOPOLOGY_PARAMETER_NAME = "--topology"
 private let RANDOM_TOPOLOGY_PARAMETER_NAME = "--randomTopology"
 private let PEER_NAME_PARAMETER_NAME = "--peerName"
@@ -73,10 +73,10 @@ class AVASetup: NSObject {
     
     /**
      
-     Gibt an, ob dieser Knoten Master ist.
+     Gibt an, ob dieser Knoten Beobachter ist.
      
      */
-    var isMaster = false
+    var isObserver = false
     
     /**
      
@@ -177,7 +177,7 @@ class AVASetup: NSObject {
         result += "\n\tapplicationPath -> \(applicationPath)"
         result += "\n\tapplicationPackagePath -> \(applicationPackagePath)"
         result += "\napplicationPackageDirectory -> \(applicationPackageDirectory)"
-        result += "\n\tisMaster -> \(isMaster)"
+        result += "\n\tisObserver -> \(isObserver)"
         result += "\n\trandomTopology -> \(randomTopology)"
         result += "\n\trandomTopologySize -> \(randomTopologyDimension)"
         result += "\n\ttopologyFilePath -> \(topologyFilePath)"
@@ -317,8 +317,8 @@ class AVAArgumentsParser: NSObject {
      
      */
     private lazy var parsingRules: AVAArgumentParserRules = [
-        MASTER_PARAMETER_NAME: {(setup: AVASetup) -> () in
-            setup.isMaster = true
+        OBSERVER_PARAMETER_NAME: {(setup: AVASetup) -> () in
+            setup.isObserver = true
         },
         TOPOLOGY_PARAMETER_NAME: {(setup: AVASetup) -> () in
             if (!self.nextArgument()) {

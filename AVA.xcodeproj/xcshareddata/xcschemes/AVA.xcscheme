@@ -63,7 +63,7 @@
       </BuildableProductRunnable>
       <CommandLineArguments>
          <CommandLineArgument
-            argument = "--master"
+            argument = "--observer"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument

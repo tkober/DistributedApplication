@@ -82,7 +82,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         self.setupLogger()
         self.service = self.serviceFromSetup(self.setup)
         
-        if self.setup.isMaster {
+        if self.setup.isObserver {
             var topologyFilePath: String
             if self.setup.randomTopology {
                 self.buildRandomTopology()
@@ -104,7 +104,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         self.layoutWindow(CGSizeMake(350, 150), margin: 20)
         
         if let onArgumentsProcessed = self.onArgumentsProcessed {
-            onArgumentsProcessed(ownPeerName: self.setup.peerName!, isMaster: self.setup.isMaster, topology: self.topology)
+            onArgumentsProcessed(ownPeerName: self.setup.peerName!, isMaster: self.setup.isObserver, topology: self.topology)
         }
         
         if self.setup.peerName != nil {
