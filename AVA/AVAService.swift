@@ -25,7 +25,7 @@ protocol AVAService: class {
         - messages: Die Messages, die empfangen wurden, bevor alle Nachbarn verbunden wurden. Die Orndung entspricht der Reihenfolge des Eintreffenes.
      
      */
-    func startWithBufferedMessage(messages: [AVAMessage])
+    func initializeWithBufferedMessage(messages: [AVAMessage])
     
     
     /**
@@ -46,7 +46,7 @@ protocol AVAService: class {
      
      Erstellt eine neue Instanz aus mit den Informationen aus dem gegebenen Setup.
      
-     - parameters
+     - parameters:
      
         - setup: Das AVASetup aus den Übergabe-Parametern.
      
@@ -60,6 +60,16 @@ protocol AVAService: class {
      
      */
     var isRunning: Bool { get }
+    
+    
+    /**
+     
+     Wird auf dem Knoten aufgerufen, der mit der Bearbeitung der eigentlichen Anwendung beginnen soll.
+     
+     - important: Diese Methode darf auf maximal einem Knoten aufgerufen werden.
+     
+     */
+    func start()
 }
 
 

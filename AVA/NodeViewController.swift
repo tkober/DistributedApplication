@@ -10,6 +10,9 @@ import Cocoa
 
 
 class NodeViewController: NSViewController {
+    
+    
+    static let STORYBOARD_ID = "NodeViewController"
 
     
     // MARK: | IB Outlets

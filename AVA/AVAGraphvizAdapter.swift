@@ -136,8 +136,8 @@ class AVAGraphvizAdapter: NSObject {
      - returns: Den Inhalt des .dot-Files als String.
     
      */
-    func dotFromTopology(topology: AVATopology, vertexDecorator: AVAGraphvizVertexDecorator, adjacencyDecorator: AVAGraphvizAdjacencyDecorator) -> String {
-        let topologyToRender = topology.topologyExcludingObserver()
+    func dotFromTopology(topology: AVATopology, vertexDecorator: AVAGraphvizVertexDecorator, renderObserver: Bool = true, adjacencyDecorator: AVAGraphvizAdjacencyDecorator) -> String {
+        let topologyToRender = renderObserver ? topology : topology.topologyExcludingObserver()
         var result = "digraph G {"
         for vertex in topologyToRender.vertices {
             result += "\n\(vertex.name) \(self.stringFromVertexDecoration(vertexDecorator(vertex: vertex.name)))"

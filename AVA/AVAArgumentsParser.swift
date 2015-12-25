@@ -97,14 +97,14 @@ class AVASetup: NSObject {
      Der Pfad, unter welchem eine Beschreibung der Topologie als .dot-File zu finden ist.
      
      */
-    var topologyFilePath: String?
+    var topologyFilePath: String!
     
     /**
      
      Der Name des Knoten.
      
      */
-    var peerName: String?
+    var peerName: String!
     
     /**
      

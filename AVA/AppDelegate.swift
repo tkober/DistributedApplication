@@ -67,6 +67,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var messageBuffer = [AVAMessage]()
     
     
+    lazy var initialWindow: NSWindow = NSApplication.sharedApplication().windows.first!
+    
+    
+    lazy var storyboard: NSStoryboard = NSStoryboard(name: "Main", bundle: nil)
+    
+    
     // MARK: | NSApplicationDelegate
     
     
@@ -75,9 +81,20 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         self.setup = AVAArgumentsParser.sharedInstance.parseArguments(arguments)
         
         if (self.setup.isObserver) {
-            self.runAsObserver()
+            self.setupAsObserver()
         } else {
-            self.runAsNode()
+            self.setupAsNode()
+        }
+        self.setupLogger()
+        
+        if let onArgumentsProcessed = self.onArgumentsProcessed {
+            onArgumentsProcessed(ownPeerName: self.setup.peerName!, isMaster: self.setup.isObserver, topology: self.topology)
+        }
+        
+        if self.setup.peerName != nil {
+            self.nodeManager = AVANodeManager(topology: self.topology, ownPeerName: self.setup.peerName!, logger: self)
+            self.nodeManager?.delegate = self
+            self.nodeManager?.start()
         }
     }
     
@@ -85,7 +102,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     // MARK: | Run Mode
     
     
-    func runAsObserver() {
+    func setupAsObserver() {
         self.setup.peerName = OBSERVER_NAME
         var topologyFilePath: String
         
@@ -101,12 +118,15 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             topologyFilePath = self.setup.topologyFilePath!
             self.buildTopologyFromFile()
         }
+        
+        self.initialWindow.contentViewController = self.storyboard.instantiateControllerWithIdentifier(ObserverViewController.STORYBOARD_ID) as? NSViewController
+        
         self.instantiateTopology(self.topology, ownPeerName: self.setup.peerName!, topologyFilePath: topologyFilePath, withServiceOfType: self.setup.service)
         
     }
     
     
-    func runAsNode() {
+    func setupAsNode() {
         if self.setup.peerName == nil {
             print("Missing parameter --peerName")
             exit(2)
@@ -116,22 +136,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             print("'\(OBSERVER_NAME)' is prohibited as a node name")
         }
         
-        self.setupLogger()
         self.service = self.serviceFromSetup(self.setup)
         
         self.buildTopologyFromFile()
-        
+
+        self.initialWindow.contentViewController = self.storyboard.instantiateControllerWithIdentifier(NodeViewController.STORYBOARD_ID) as? NSViewController
+
         self.layoutWindow(CGSizeMake(350, 150), margin: 20)
-        
-        if let onArgumentsProcessed = self.onArgumentsProcessed {
-            onArgumentsProcessed(ownPeerName: self.setup.peerName!, isMaster: self.setup.isObserver, topology: self.topology)
-        }
-        
-        if self.setup.peerName != nil {
-            self.nodeManager = AVANodeManager(topology: self.topology, ownPeerName: self.setup.peerName!, logger: self)
-            self.nodeManager?.delegate = self
-            self.nodeManager?.start()
-        }
     }
     
     
@@ -268,7 +279,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             let visibleScreenFrame = window.screen?.visibleFrame
             let windowesPerRow = UInt(floor((visibleScreenFrame?.size.width)! / (size.width + margin)))
             
-            let verticesSorted = self.topology.vertices.sort({ (a: AVAVertex, b: AVAVertex) -> Bool in
+            let topology = self.topology.topologyExcludingObserver()
+            let verticesSorted = topology.vertices.sort({ (a: AVAVertex, b: AVAVertex) -> Bool in
                 return a.name < b.name
             })
             var index: UInt = 0
@@ -285,6 +297,35 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             let frame = CGRect(x: x, y: y, width: size.width, height: size.height)
             window.setFrame(frame, display: true, animate: false)
             window.makeKeyAndOrderFront(self)
+        }
+    }
+    
+    
+    // MARK: | Service Startup
+    
+    
+    func handleStandbyMessage(message: AVAMessage) {
+        let logEntry: AVALogEntry
+        if self.setup.isObserver {
+            self.topology.vertextForName(message.sender)?.hasRepotedStandby = true
+            logEntry = AVALogEntry(level: AVALogLevel.Info, event: AVAEvent.Processing, peer: self.setup.peerName, description: "Node '\(message.sender)' reported standby. (\(self.topology.verticesInStandby().count)/\(self.topology.vertices.count - 1))", remotePeer: message.sender, message: message)
+        } else {
+            logEntry = AVALogEntry(level: AVALogLevel.Error, event: AVAEvent.Processing, peer: self.setup.peerName, description: "Received Standby message from '\(message.sender)'", remotePeer: message.sender, message: message)
+            
+        }
+        self.log(logEntry)
+    }
+    
+    
+    func startServiceIfNecessary() {
+        if !self.setup.isObserver {
+            if let service = self.service {
+                if !service.isRunning {
+                    let logEntry = AVALogEntry(level: AVALogLevel.Info, event: AVAEvent.Processing, peer: self.setup.peerName, description: "Node '\(self.setup.peerName)' is now providing the configured service")
+                    self.log(logEntry)
+                    service.initializeWithBufferedMessage(self.messageBuffer)
+                }
+            }
         }
     }
 
@@ -335,10 +376,12 @@ extension AppDelegate: AVANodeManagerDelegate {
     
     func nodeManager(nodeManager: AVANodeManager, stateUpdated state: AVANodeState) {
         if state.disconnectedPeers.count == 0 {
-            if let service = self.service {
-                if !service.isRunning {
-                    service.startWithBufferedMessage(self.messageBuffer)
-                }
+            
+            if self.setup.isObserver {
+                
+            } else {
+                self.startServiceIfNecessary()
+                nodeManager.sendMessage(AVAMessage.standbyMessage(self.setup.peerName), toVertex: OBSERVER_NAME)
             }
         }
         if let update = self.onNodeStateUpdate {
@@ -353,6 +396,10 @@ extension AppDelegate: AVANodeManagerDelegate {
         switch message.type {
         case .Terminate:
             self.terminateTopology()
+            break
+            
+        case .Standby:
+            self.handleStandbyMessage(message)
             break
             
         case .ApplicationData:

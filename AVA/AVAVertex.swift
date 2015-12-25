@@ -31,6 +31,8 @@ class AVAVertex: NSObject {
     
     var port: UInt16
     
+    var hasRepotedStandby = false
+    
     
     init(name: AVAVertexName, ip: String, port: UInt16) {
         self.name = name

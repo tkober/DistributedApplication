@@ -22,6 +22,7 @@
 		F15C07DE1BD7A4B000EB41D8 /* AVALogging.swift in Sources */ = {isa = PBXBuildFile; fileRef = F15C07DD1BD7A4B000EB41D8 /* AVALogging.swift */; };
 		F161EDE61BD81FF3008131C3 /* AVAArgumentsParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = F161EDE51BD81FF3008131C3 /* AVAArgumentsParser.swift */; };
 		F161EDE91BD856E6008131C3 /* AVATopology.swift in Sources */ = {isa = PBXBuildFile; fileRef = F161EDE81BD856E6008131C3 /* AVATopology.swift */; };
+		F16B55861C2AD6CA00B4EF04 /* ObserverViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F16B55851C2AD6CA00B4EF04 /* ObserverViewController.swift */; };
 		F19D22C41BE03C31006CB5F8 /* AVAUebung1.swift in Sources */ = {isa = PBXBuildFile; fileRef = F19D22C31BE03C31006CB5F8 /* AVAUebung1.swift */; };
 		F1B3F2CB1BDD79B3009C0E7B /* AVAService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1B3F2CA1BDD79B3009C0E7B /* AVAService.swift */; };
 		F1C697601BE8B53B0022D8F6 /* AVALogViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1C6975F1BE8B53B0022D8F6 /* AVALogViewController.swift */; };
@@ -48,6 +49,7 @@
 		F15C07DD1BD7A4B000EB41D8 /* AVALogging.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AVALogging.swift; sourceTree = "<group>"; };
 		F161EDE51BD81FF3008131C3 /* AVAArgumentsParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AVAArgumentsParser.swift; sourceTree = "<group>"; };
 		F161EDE81BD856E6008131C3 /* AVATopology.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AVATopology.swift; sourceTree = "<group>"; };
+		F16B55851C2AD6CA00B4EF04 /* ObserverViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ObserverViewController.swift; sourceTree = "<group>"; };
 		F19D22C31BE03C31006CB5F8 /* AVAUebung1.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AVAUebung1.swift; sourceTree = "<group>"; };
 		F1B3F2CA1BDD79B3009C0E7B /* AVAService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AVAService.swift; sourceTree = "<group>"; };
 		F1C6975F1BE8B53B0022D8F6 /* AVALogViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AVALogViewController.swift; sourceTree = "<group>"; };
@@ -163,6 +165,14 @@
 			name = Topology;
 			sourceTree = "<group>";
 		};
+		F16B55841C2AD6A300B4EF04 /* Observer */ = {
+			isa = PBXGroup;
+			children = (
+				F16B55851C2AD6CA00B4EF04 /* ObserverViewController.swift */,
+			);
+			name = Observer;
+			sourceTree = "<group>";
+		};
 		F19D22C21BE03C12006CB5F8 /* Uebung1 */ = {
 			isa = PBXGroup;
 			children = (
@@ -200,6 +210,7 @@
 		F1C6975E1BE8B4920022D8F6 /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
+				F16B55841C2AD6A300B4EF04 /* Observer */,
 				F1C6975D1BE8B47F0022D8F6 /* DistributetLog */,
 				F1C6975C1BE8B46A0022D8F6 /* Node */,
 			);
@@ -298,6 +309,7 @@
 				F13699F11C04DBB400D71D38 /* AVASockets.c in Sources */,
 				F15C07CB1BD75CCF00EB41D8 /* AppDelegate.swift in Sources */,
 				F146FD431BD97AD70028B4E1 /* AVAGraphvizAdapter.swift in Sources */,
+				F16B55861C2AD6CA00B4EF04 /* ObserverViewController.swift in Sources */,
 				F161EDE91BD856E6008131C3 /* AVATopology.swift in Sources */,
 				F1B3F2CB1BDD79B3009C0E7B /* AVAService.swift in Sources */,
 				F135276A1C0B5AB200786C24 /* AVAServerSocket.swift in Sources */,

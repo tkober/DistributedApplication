@@ -141,6 +141,8 @@ class AVASocketStream: NSObject {
     
     private var _connected = false
     
+    private var _hasSpaceCalledAfterDidConnect = false
+    
 }
 
 
@@ -164,13 +166,17 @@ extension AVASocketStream: NSStreamDelegate {
             break
             
         case NSStreamEvent.HasSpaceAvailable:
-            self.delegate?.socketStreamIsReadyToSend(self)
+            if !self._hasSpaceCalledAfterDidConnect {
+                self._hasSpaceCalledAfterDidConnect = true
+                self.delegate?.socketStreamIsReadyToSend(self)
+            }
             
         case NSStreamEvent.ErrorOccurred:
             self.delegate?.socketStreamFailed(self, status: aStream.streamStatus, error: aStream.streamError)
             
         case NSStreamEvent.EndEncountered:
             self._connected = false
+            self._hasSpaceCalledAfterDidConnect = false
             self.delegate?.socketStreamDidDisconnect(self)
             
         default:

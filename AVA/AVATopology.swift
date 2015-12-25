@@ -106,6 +106,17 @@ class AVATopology: NSObject {
     }
     
     
+    func verticesInStandby() -> [AVAVertex] {
+        var result = [AVAVertex]()
+        for vertex in self.vertices {
+            if vertex.hasRepotedStandby {
+                result.append(vertex)
+            }
+        }
+        return result
+    }
+    
+    
     // MARK: | Initializer
     
     

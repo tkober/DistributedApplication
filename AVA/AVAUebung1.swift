@@ -107,17 +107,10 @@ class AVAUebung1: NSObject, AVAService {
     }
     
     
-    func startWithBufferedMessage(messages: [AVAMessage]) {
+    func initializeWithBufferedMessage(messages: [AVAMessage]) {
         self.isRunning = true
-        if self.setup!.isObserver {
-            let rumor = AVARumor(rumor: self.setup!.rumor!)
-            self.logger.log(AVALogEntry(level: AVALogLevel.Warning, event: AVAEvent.Processing, peer: self.setup!.peerName! , description: "Start spreading rumor '\(self.setup!.rumor!)'"))
-            let message = AVAMessage(type: AVAMessageType.ApplicationData, sender: self.setup!.peerName!, payload: rumor.toJSON())
-            self.nodeManager.broadcastMessage(message)
-        } else {
-            for message in messages {
-                self.nodeManager(self.nodeManager, didReceiveApplicationDataMessage: message)
-            }
+        for message in messages {
+            self.nodeManager(self.nodeManager, didReceiveApplicationDataMessage: message)
         }
     }
     
@@ -135,6 +128,14 @@ class AVAUebung1: NSObject, AVAService {
         } else {
             self.logger.log(AVALogEntry(level: AVALogLevel.Warning, event: AVAEvent.Processing, peer: self.setup!.peerName!, description: "Received application data do not contain any payload"))
         }
+    }
+    
+    
+    func start() {
+        let rumor = AVARumor(rumor: self.setup!.rumor!)
+        self.logger.log(AVALogEntry(level: AVALogLevel.Warning, event: AVAEvent.Processing, peer: self.setup!.peerName! , description: "Start spreading rumor '\(self.setup!.rumor!)'"))
+        let message = AVAMessage(type: AVAMessageType.ApplicationData, sender: self.setup!.peerName!, payload: rumor.toJSON())
+        self.nodeManager.broadcastMessage(message)
     }
     
     

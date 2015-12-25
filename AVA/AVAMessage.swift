@@ -26,6 +26,12 @@ enum AVAMessageType: Int {
      */
     case Terminate = 0;
     
+    /**
+     
+     Wird an den Beobachter gesendet sobald ein Knoten eine Verbindug zu allen seinen Nachbarn aus der Topologie aufgebaut hat.
+     
+     */
+    case Standby;
     
     /**
      
@@ -168,6 +174,23 @@ class AVAMessage: NSObject {
      */
     static func terminateMessage(sender: String) -> AVAMessage {
         return AVAMessage(type: AVAMessageType.Terminate, sender: sender)
+    }
+    
+    
+    /**
+     
+     Erzeugt eine Standby-Message für einen gegeben Sender.
+     
+     - parameters:
+     
+     - sender: Der Absender der Nachricht.
+     
+     - returns: Die erzeugte Nachricht.
+     
+     */
+
+    static func standbyMessage(sender: String) -> AVAMessage {
+        return AVAMessage(type: AVAMessageType.Standby, sender: sender)
     }
     
     
