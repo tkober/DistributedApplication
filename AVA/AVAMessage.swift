@@ -35,6 +35,13 @@ enum AVAMessageType: Int {
     
     /**
      
+     Wird von dem Beobachter an den Knoten gesendetet, der beginnen soll.
+     
+     */
+    case Initialize;
+    
+    /**
+     
      Die Nachricht enthält Daten die für den Service des Knoten bestimmt sind.
      
      */
@@ -191,6 +198,23 @@ class AVAMessage: NSObject {
 
     static func standbyMessage(sender: String) -> AVAMessage {
         return AVAMessage(type: AVAMessageType.Standby, sender: sender)
+    }
+    
+    
+    /**
+     
+     Erzeugt eine Initialize-Message für einen gegeben Sender.
+     
+     - parameters:
+     
+     - sender: Der Absender der Nachricht.
+     
+     - returns: Die erzeugte Nachricht.
+     
+     */
+    
+    static func initializeMessage(sender: String) -> AVAMessage {
+        return AVAMessage(type: AVAMessageType.Initialize, sender: sender)
     }
     
     

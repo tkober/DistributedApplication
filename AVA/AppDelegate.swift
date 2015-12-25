@@ -317,6 +317,16 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
     
     
+    func handleInitializationMessage(message: AVAMessage) {
+        if !self.setup.isObserver {
+            self.service?.start()
+        } else {
+            let logEntry = AVALogEntry(level: AVALogLevel.Error, event: AVAEvent.Processing, peer: self.setup.peerName, description: "Received Initialization message from '\(message.sender)'", remotePeer: message.sender, message: message)
+            self.log(logEntry)
+        }
+    }
+    
+    
     func startServiceIfNecessary() {
         if !self.setup.isObserver {
             if let service = self.service {
@@ -401,6 +411,10 @@ extension AppDelegate: AVANodeManagerDelegate {
         case .Standby:
             self.handleStandbyMessage(message)
             break
+            
+        case .Initialize:
+            self.handleInitializationMessage(message)
+            break;
             
         case .ApplicationData:
             if self.service!.isRunning {

@@ -41,6 +41,8 @@ class ObserverViewController: NSViewController {
     @IBOutlet private weak var graphImageView: NSImageView?
     @IBOutlet private weak var terminateButton: NSButton?
     @IBOutlet private weak var showDistributedLogButton: NSButton?
+    @IBOutlet private weak var startButton: NSButton?
+    @IBOutlet private weak var initializationNodeTextField: NSTextField?
     
     
     
@@ -64,6 +66,24 @@ class ObserverViewController: NSViewController {
     @IBAction private func terminateButtonPressed(sender: NSButton) {
         let appDelegate = NSApp.delegate as! AppDelegate
         appDelegate.terminateTopology()
+    }
+    
+    
+    @IBAction private func startButtonPresed(sender: NSButton) {
+        if self.topology.verticesInStandby().count == self.topology.vertices.count - 1 {
+            if let vertexName = self.initializationNodeTextField?.stringValue {
+                let appDelegate = NSApp.delegate as! AppDelegate
+                if let vertex = self.topology.vertextForName(vertexName) {
+                    let logEntry = AVALogEntry(level: AVALogLevel.Success, event: AVAEvent.Processing, peer: OBSERVER_NAME, description: "Started initialization with node '\(vertex.name)'", remotePeer: vertex.name)
+                    appDelegate.log(logEntry)
+                    let message = AVAMessage.initializeMessage(OBSERVER_NAME)
+                    appDelegate.nodeManager?.sendMessage(message, toVertex: vertex.name)
+                } else {
+                    let logEntry = AVALogEntry(level: AVALogLevel.Error, event: AVAEvent.Processing, peer: OBSERVER_NAME, description: "Initilization failed due to invalid node '\(vertexName)'")
+                    appDelegate.log(logEntry)
+                }
+            }
+        }
     }
     
     

@@ -305,7 +305,9 @@ class AVANodeManager: NSObject {
     func sendMessage(message: AVAMessage, toVertices vertices: [AVAVertexName]) -> AVABroadcastResult {
         var result = AVABroadcastResult()
         for vertex in vertices {
-            result[vertex] = self.sendMessage(message, toVertex: vertex)
+            if vertex != OBSERVER_NAME {
+                result[vertex] = self.sendMessage(message, toVertex: vertex)
+            }
         }
         return result
     }
