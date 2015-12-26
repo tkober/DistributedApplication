@@ -138,13 +138,23 @@ class AVATopology: NSObject {
     
     convenience init(json: AVAJSON) throws {
         let verticesJSON = json[TOPOLOGY_VERTICES] as! [AVAJSON]
-        let adjacenciesJSON = json[TOPOLOGY_ADJACENCIES] as! [[AVAJSON]]
         
         let vertices = try AVAVertex.verticesFromJSON(verticesJSON)
         var adjacencies = [AVAAdjacency]()
         
-        for adjacencyJSON in adjacenciesJSON {
-            adjacencies.append(AVAAdjacency(json: adjacencyJSON))
+        if json[TOPOLOGY_COMPLETE_GRAPH] != nil && ((json[TOPOLOGY_COMPLETE_GRAPH])! as! NSNumber).boolValue {
+            for var i = 0; i < vertices.count-1; i++ {
+                for var j = i+1; j < vertices.count; j++ {
+                    let v1 = vertices[i]
+                    let v2 = vertices[j]
+                    adjacencies.append(AVAAdjacency(v1: v1.name, v2: v2.name))
+                }
+            }
+        } else {
+            let adjacenciesJSON = json[TOPOLOGY_ADJACENCIES] as! [[AVAJSON]]
+            for adjacencyJSON in adjacenciesJSON {
+                adjacencies.append(AVAAdjacency(json: adjacencyJSON))
+            }
         }
         
         self.init(vertices: vertices, adjacencies: adjacencies)
@@ -179,7 +189,7 @@ class AVATopology: NSObject {
         // Nodes
         var vertices = [AVAVertex]()
         for (var i = 1; i <= dimension.vertexCount; i++) {
-            vertices.append(AVAVertex(name: "\(i)", ip: "localhost", port: NODE_START_PORT+UInt16(i)))
+            vertices.append(AVAVertex(name: "\(i)", ip: "localhost", port: NODE_START_PORT+UInt16(i), attributes: nil))
         }
         var adjacencies = [AVAAdjacency]()
         
@@ -203,7 +213,7 @@ class AVATopology: NSObject {
         }
         
         // Observer
-        let observerVertex = AVAVertex(name: OBSERVER_NAME, ip: "localhost", port: OBSERVER_PORT)
+        let observerVertex = AVAVertex(name: OBSERVER_NAME, ip: "localhost", port: OBSERVER_PORT, attributes: nil)
         for vertex in vertices {
             adjacencies.append(AVAAdjacency(v1: observerVertex.name, v2: vertex.name))
         }

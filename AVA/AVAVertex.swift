@@ -9,10 +9,12 @@
 import Foundation
 
 let TOPOLOGY_VERTICES = "vertices"
+let TOPOLOGY_COMPLETE_GRAPH = "complete_graph"
 
 let TOPOLOGY_VERTEX_NAME = "name"
 let TOPOLOGY_VERTEX_IP = "ip"
 let TOPOLOGY_VERTEX_PORT = "port"
+let TOPOLOGY_VERTEX_ATTRIBUTES = "attributes"
 
 
 typealias AVAVertexName = String
@@ -33,16 +35,19 @@ class AVAVertex: NSObject {
     
     var hasRepotedStandby = false
     
+    var attributes: AVAJSON?
     
-    init(name: AVAVertexName, ip: String, port: UInt16) {
+    
+    init(name: AVAVertexName, ip: String, port: UInt16, attributes: AVAJSON?) {
         self.name = name
         self.ip = ip
         self.port = port
+        self.attributes = attributes
     }
     
     
     convenience init(json: AVAJSON) {
-        self.init(name: json[TOPOLOGY_VERTEX_NAME] as! AVAVertexName, ip: json[TOPOLOGY_VERTEX_IP] as! String, port: (json[TOPOLOGY_VERTEX_PORT] as! NSNumber).unsignedShortValue)
+        self.init(name: json[TOPOLOGY_VERTEX_NAME] as! AVAVertexName, ip: json[TOPOLOGY_VERTEX_IP] as! String, port: (json[TOPOLOGY_VERTEX_PORT] as! NSNumber).unsignedShortValue, attributes: json[TOPOLOGY_VERTEX_ATTRIBUTES])
     }
     
     
