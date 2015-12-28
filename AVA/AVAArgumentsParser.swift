@@ -23,6 +23,13 @@ enum AVAServiceType: UInt {
      */
     case Uebung1 = 1
     
+    /**
+     
+     Service für die Übung 1.
+     
+     */
+    case Uebung2 = 2
+    
     
     /**
      
@@ -42,6 +49,10 @@ enum AVAServiceType: UInt {
             result.appendContentsOf([RUMOR_PARAMETER_NAME, setup.rumor!, RUMOR_COUNT_TO_ACCAPTENCE_PARAMETER_NAME, "\(setup.rumorCountToAcceptance!)"])
             break
             
+        case .Uebung2:
+            result.appendContentsOf([NODES_TO_CONTACT_COUNT_NAME, "\(setup.nodesToContactCount!)", STAKE_NAME, "\(setup.stake!)"])
+            break
+            
         }
         return result
     }
@@ -55,6 +66,8 @@ private let PEER_NAME_PARAMETER_NAME = "--peerName"
 private let RUMOR_PARAMETER_NAME = "--rumor"
 private let RUMOR_COUNT_TO_ACCAPTENCE_PARAMETER_NAME = "--rumorCountToAcceptance"
 private let SERVICE_PARAMETER_NAME = "--service"
+private let NODES_TO_CONTACT_COUNT_NAME = "--nodesToContact"
+private let STAKE_NAME = "--stake"
 
 
 /**
@@ -122,6 +135,20 @@ class AVASetup: NSObject {
     
     /**
      
+     Die Anzahl an Knoten, die ein Leader kontaktieren soll.
+     
+     */
+    var nodesToContactCount: Int?
+    
+    /**
+     
+     Der Einsatz, um den im Follower-Leader-Spiel gespielt wird.
+     
+     */
+    var stake: Double?
+    
+    /**
+     
      Der Service, den der Knoten bereitstellen soll.
      
      */
@@ -184,6 +211,8 @@ class AVASetup: NSObject {
         result += "\n\tpeerName -> \(peerName)"
         result += "\n\trumor -> \(rumor)"
         result += "\n\trumorCountToAcceptance -> \(rumorCountToAcceptance)"
+        result += "\n\tnodesToContactCount -> \(nodesToContactCount)"
+        result += "\n\tstake -> \(stake)"
         result += "\n\tservice -> \(service)"
         result += "\n}"
         return result
@@ -373,6 +402,19 @@ class AVAArgumentsParser: NSObject {
             }
             setup.service = AVAServiceType(rawValue: UInt(self.currentArgument()!)!)
         },
-        
+        NODES_TO_CONTACT_COUNT_NAME: {(setup: AVASetup) -> () in
+            if (!self.nextArgument()) {
+                print("Missing arguments")
+                exit(2)
+            }
+            setup.nodesToContactCount = Int(self.currentArgument()!)
+        },
+        STAKE_NAME: {(setup: AVASetup) -> () in
+            if (!self.nextArgument()) {
+                print("Missing arguments")
+                exit(2)
+            }
+            setup.stake = Double(self.currentArgument()!)
+        }
     ]
 }

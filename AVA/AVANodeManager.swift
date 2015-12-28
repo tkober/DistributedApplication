@@ -253,6 +253,9 @@ class AVANodeManager: NSObject {
     
     // MARK: | Messaging
     
+
+    private lazy var messagingQueue: dispatch_queue_t = dispatch_queue_create("ava.node_manager.messaging_queue", DISPATCH_QUEUE_SERIAL)
+
     
     /**
     
@@ -271,15 +274,23 @@ class AVANodeManager: NSObject {
         for stream in self.socketStreams {
             if stream.vertex.name == vertex {
                 if let messageData = message.jsonData() {
-                    let result = stream.writeData(messageData)
-                    let logEntry: AVALogEntry
-                    if result {
-                        logEntry = AVALogEntry(level: AVALogLevel.Debug, event: AVAEvent.DataSent, peer: self.ownVertex.name, description: "Sent message (\(message.size) bytes) to '\(vertex)'", remotePeer: vertex, message: message)
-                    } else {
-                        logEntry = AVALogEntry(level: AVALogLevel.Warning, event: AVAEvent.DataSent, peer: self.ownVertex.name, description: "Failed to send message (\(message.size) bytes) to '\(vertex)'", remotePeer: vertex, message: message)
-                    }
-                    self.logger.log(logEntry)
-                    return result
+                    let data = NSMutableData(data: messageData)
+                    data.appendData(";".dataUsingEncoding(NSUTF8StringEncoding)!)
+                    dispatch_async(self.messagingQueue, { () -> Void in
+                        usleep(100)
+                        while stream.status == NSStreamStatus.Writing {
+                            usleep(10)
+                        }
+                        let result = stream.writeData(data)
+                        let logEntry: AVALogEntry
+                        if result {
+                            logEntry = AVALogEntry(level: AVALogLevel.Debug, event: AVAEvent.DataSent, peer: self.ownVertex.name, description: "Sent message (\(messageData.length) bytes) to '\(vertex)'", remotePeer: vertex, message: message)
+                        } else {
+                            logEntry = AVALogEntry(level: AVALogLevel.Warning, event: AVAEvent.DataSent, peer: self.ownVertex.name, description: "Failed to send message (\(messageData.length) bytes) to '\(vertex)'", remotePeer: vertex, message: message)
+                        }
+                        self.logger.log(logEntry)
+                    })
+                    return true
                 } else {
                     return false
                 }
@@ -363,16 +374,39 @@ extension AVANodeManager: AVAServerSocketDelegate {
     }
     
     
+//    func serverSocket(socket: AVAServerSocket, readData data: NSData) {
+//        do {
+//            let message = try AVAMessage(data: data)
+//            let logEntry = AVALogEntry(level: AVALogLevel.Info, event: AVAEvent.DataReceived, peer: self.ownVertex.name, description: "Received message (\(data.length) bytes) from '\(message.sender)' ", remotePeer: message.sender, message: message)
+//            self.logger.log(logEntry)
+//            self.delegate?.nodeManager(self, didReceiveMessage: message)
+//        } catch {
+//            let logEntry = AVALogEntry(level: AVALogLevel.Warning, event: AVAEvent.DataReceived, peer: self.ownVertex.name, description: "Received uninterpretable data (\(data.length) bytes)")
+//            self.logger.log(logEntry)
+//            self.delegate?.nodeManager(self, didReceiveUninterpretableData: data)
+//        }
+//    }
+    
+    
     func serverSocket(socket: AVAServerSocket, readData data: NSData) {
-        do {
-            let message = try AVAMessage(data: data)
-            let logEntry = AVALogEntry(level: AVALogLevel.Info, event: AVAEvent.DataReceived, peer: self.ownVertex.name, description: "Received message (\(data.length) bytes) from '\(message.sender)' ", remotePeer: message.sender, message: message)
-            self.logger.log(logEntry)
-            self.delegate?.nodeManager(self, didReceiveMessage: message)
-        } catch {
-            let logEntry = AVALogEntry(level: AVALogLevel.Warning, event: AVAEvent.DataReceived, peer: self.ownVertex.name, description: "Received uninterpretable data (\(data.length) bytes)")
-            self.logger.log(logEntry)
-            self.delegate?.nodeManager(self, didReceiveUninterpretableData: data)
+        if let messages = String(data: data, encoding: NSUTF8StringEncoding)?.componentsSeparatedByString(";") {
+            for messageString in messages {
+                if messageString != "" {
+                    if let messageData = messageString.dataUsingEncoding(NSUTF8StringEncoding) {
+                        do {
+                            let message = try AVAMessage(data: messageData)
+                            let logEntry = AVALogEntry(level: AVALogLevel.Info, event: AVAEvent.DataReceived, peer: self.ownVertex.name, description: "Received message (\(messageData.length) bytes) from '\(message.sender)' ", remotePeer: message.sender, message: message)
+                            self.logger.log(logEntry)
+                            self.delegate?.nodeManager(self, didReceiveMessage: message)
+                        } catch {
+                            print("Warning: uninterpretable data")
+                            let logEntry = AVALogEntry(level: AVALogLevel.Warning, event: AVAEvent.DataReceived, peer: self.ownVertex.name, description: "Received uninterpretable data (\(messageData.length) bytes)")
+                            self.logger.log(logEntry)
+                            self.delegate?.nodeManager(self, didReceiveUninterpretableData: messageData)
+                        }
+                    }
+                }
+            }
         }
     }
     

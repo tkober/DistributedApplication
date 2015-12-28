@@ -54,7 +54,7 @@ void start_posix_server_socket(int socket_fd, int backlog, POSIXServerSocketAcce
                 acceptCallback(address, client_address.sin_port);
             });
             
-            dispatch_async(dispatch_queue_create("SOCKET_QUEUE", DISPATCH_QUEUE_SERIAL), ^{
+            dispatch_async(dispatch_queue_create("ava.server_socket.read_queue", DISPATCH_QUEUE_SERIAL), ^{
                 start_reading_posix_socket(new_socket_fd, readCallback);
             });
         }
@@ -70,12 +70,12 @@ void start_reading_posix_socket(int socket_fd, POSIXServerSocketReadCallback rea
         bzero(buffer, POSIXSocketBufferSize);
         n = read(socket_fd, buffer, POSIXSocketBufferSize-1);
         if (n > 0) {
-            char *data = malloc(sizeof(char) * n);
-            memcpy(data, buffer, n+1);
-            dispatch_async(dispatch_get_main_queue(), ^{
-                readCallback(data, n);
-            });
-            
+//            char *data = malloc(sizeof(char) * n);
+//            memcpy(data, buffer, n+1);
+//            dispatch_async(dispatch_queue_create("", DISPATCH_QUEUE_SERIAL), ^{
+                readCallback(buffer, n);
+//            });
+//            free(data);
         }
     }
 }

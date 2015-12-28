@@ -10,6 +10,8 @@
 		DC613D291C16C95200380987 /* AVASocketStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC613D281C16C95200380987 /* AVASocketStream.swift */; };
 		DCE000481C03251C00EDF1FD /* AVAVertex.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCE000471C03251C00EDF1FD /* AVAVertex.swift */; };
 		DCE0004B1C0339A800EDF1FD /* AVAAdjacency.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCE0004A1C0339A800EDF1FD /* AVAAdjacency.swift */; };
+		F126F5181C2FC35800DC3748 /* AVAUebung2.swift in Sources */ = {isa = PBXBuildFile; fileRef = F126F5171C2FC35800DC3748 /* AVAUebung2.swift */; };
+		F126F51A1C2FC94B00DC3748 /* AVALeaderFollowerInstance.swift in Sources */ = {isa = PBXBuildFile; fileRef = F126F5191C2FC94B00DC3748 /* AVALeaderFollowerInstance.swift */; };
 		F135276A1C0B5AB200786C24 /* AVAServerSocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = F13527691C0B5AB200786C24 /* AVAServerSocket.swift */; };
 		F13699F11C04DBB400D71D38 /* AVASockets.c in Sources */ = {isa = PBXBuildFile; fileRef = F13699EF1C04DBB400D71D38 /* AVASockets.c */; };
 		F146FD431BD97AD70028B4E1 /* AVAGraphvizAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F146FD421BD97AD70028B4E1 /* AVAGraphvizAdapter.swift */; };
@@ -33,6 +35,8 @@
 		DC613D281C16C95200380987 /* AVASocketStream.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AVASocketStream.swift; sourceTree = "<group>"; };
 		DCE000471C03251C00EDF1FD /* AVAVertex.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AVAVertex.swift; sourceTree = "<group>"; };
 		DCE0004A1C0339A800EDF1FD /* AVAAdjacency.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AVAAdjacency.swift; sourceTree = "<group>"; };
+		F126F5171C2FC35800DC3748 /* AVAUebung2.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AVAUebung2.swift; sourceTree = "<group>"; };
+		F126F5191C2FC94B00DC3748 /* AVALeaderFollowerInstance.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AVALeaderFollowerInstance.swift; sourceTree = "<group>"; };
 		F13527691C0B5AB200786C24 /* AVAServerSocket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AVAServerSocket.swift; sourceTree = "<group>"; };
 		F13699EE1C04DBB400D71D38 /* AVA-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "AVA-Bridging-Header.h"; sourceTree = "<group>"; };
 		F13699EF1C04DBB400D71D38 /* AVASockets.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = AVASockets.c; sourceTree = "<group>"; };
@@ -73,6 +77,15 @@
 				DC613D281C16C95200380987 /* AVASocketStream.swift */,
 			);
 			name = SocketStream;
+			sourceTree = "<group>";
+		};
+		F126F5161C2FBC6300DC3748 /* Uebung2 */ = {
+			isa = PBXGroup;
+			children = (
+				F126F5171C2FC35800DC3748 /* AVAUebung2.swift */,
+				F126F5191C2FC94B00DC3748 /* AVALeaderFollowerInstance.swift */,
+			);
+			name = Uebung2;
 			sourceTree = "<group>";
 		};
 		F13699EB1C04D23900D71D38 /* Sockets */ = {
@@ -187,6 +200,7 @@
 			children = (
 				F1B3F2CA1BDD79B3009C0E7B /* AVAService.swift */,
 				F19D22C21BE03C12006CB5F8 /* Uebung1 */,
+				F126F5161C2FBC6300DC3748 /* Uebung2 */,
 			);
 			name = Service;
 			sourceTree = "<group>";
@@ -303,7 +317,9 @@
 				F15C07DB1BD75CF200EB41D8 /* AVANodeManager.swift in Sources */,
 				F161EDE61BD81FF3008131C3 /* AVAArgumentsParser.swift in Sources */,
 				DCE000481C03251C00EDF1FD /* AVAVertex.swift in Sources */,
+				F126F51A1C2FC94B00DC3748 /* AVALeaderFollowerInstance.swift in Sources */,
 				F15C07CD1BD75CCF00EB41D8 /* NodeViewController.swift in Sources */,
+				F126F5181C2FC35800DC3748 /* AVAUebung2.swift in Sources */,
 				F14F06FD1BE0B7B400BA4C6A /* AVARumor.swift in Sources */,
 				F15C07DE1BD7A4B000EB41D8 /* AVALogging.swift in Sources */,
 				F13699F11C04DBB400D71D38 /* AVASockets.c in Sources */,

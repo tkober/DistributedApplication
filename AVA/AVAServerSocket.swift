@@ -34,6 +34,9 @@ class AVAServerSocket: NSObject {
     var socket: Int32!
     
     
+    private lazy var processingQueue: dispatch_queue_t = dispatch_queue_create("ava.server_socket.processing_queue", DISPATCH_QUEUE_SERIAL)
+    
+    
     // MARK: | Initializer
     
     
@@ -55,15 +58,17 @@ class AVAServerSocket: NSObject {
     
     func start() {
         
-        start_posix_server_socket(self.socket, 5, { (address: UnsafeMutablePointer<Int8>, port: in_port_t) -> Void in
+        start_posix_server_socket(self.socket, 50, { (address: UnsafeMutablePointer<Int8>, port: in_port_t) -> Void in
             
             let connectionInfo: AVASocketConnectionInfo = (String.fromCString(address)!, port)
             self.delegate.serverSocket(self, acceptedConnection: connectionInfo)
             
         }) { (data: UnsafeMutablePointer<Int8>, length: Int) -> Void in
-            
-            self.delegate.serverSocket(self, readData: NSData(bytes: data, length: length))
-            free(data)
+            let readData = NSData(bytes: data, length: length)
+            dispatch_async(self.processingQueue, { () -> Void in
+                self.delegate.serverSocket(self, readData: readData)
+//                free(data)
+            })
         }
     }
     
