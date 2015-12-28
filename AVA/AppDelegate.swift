@@ -350,16 +350,16 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 extension AppDelegate: AVALogging {
     
     func log(entry: AVALogEntry) {
-//        dispatch_async(self.loggingQueue) { () -> Void in
-//            if let stream = self.loggingStream, log = entry.jsonStringValue() {
-//                stream.write("\(log),\n")
-//            }
-//        }
-//        dispatch_async(dispatch_get_main_queue()) { () -> Void in
-//            let attributedString = NSAttributedString(string: "[\(entry.event.stringValue())]: \(entry.entryDescription)\n", attributes: entry.level.attributes())
-//            self.loggingTextView?.textStorage?.appendAttributedString(attributedString)
-//            self.loggingTextView?.scrollRangeToVisible(NSMakeRange((self.loggingTextView?.string?.characters.count)!, 0))
-//        }
+        dispatch_async(self.loggingQueue) { () -> Void in
+            if let stream = self.loggingStream, log = entry.jsonStringValue() {
+                stream.write("\(log),\n")
+            }
+        }
+        dispatch_async(dispatch_get_main_queue()) { () -> Void in
+            let attributedString = NSAttributedString(string: "[\(entry.event.stringValue())]: \(entry.entryDescription)\n", attributes: entry.level.attributes())
+            self.loggingTextView?.textStorage?.appendAttributedString(attributedString)
+            self.loggingTextView?.scrollRangeToVisible(NSMakeRange((self.loggingTextView?.string?.characters.count)!, 0))
+        }
     }
     
     

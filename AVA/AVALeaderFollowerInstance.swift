@@ -84,10 +84,13 @@ class AVALeaderFollowerInstance: NSObject, AVAJSONConvertable {
     
     private static let LEADER_STRATEGY_KEY = "strategy"
     private static let RESULT_KEY = "result"
+    private static let HALT_KEY = "halt"
     
     let leaderStrategy: AVALeaderStrategy
     
     var result: AVALeaderFollowerInstanceResult?
+    
+    var halt = false
     
     
     // MARK: | Initializer
@@ -111,7 +114,12 @@ class AVALeaderFollowerInstance: NSObject, AVAJSONConvertable {
                         throw AVALeaderFollowerInstanceError.invalidResultValue
                     }
                 }
-                self.init(leaderStrategy: strategy, result: result)
+                if let halt = ((json as! NSDictionary)[AVALeaderFollowerInstance.HALT_KEY] as? NSNumber) {
+                    self.init(leaderStrategy: strategy, result: result)
+                    self.halt = halt.boolValue
+                } else {
+                    throw AVALeaderFollowerInstanceError.invalidPayload
+                }
             } else {
                 throw AVALeaderFollowerInstanceError.invalidStrategyValue
             }
@@ -122,7 +130,10 @@ class AVALeaderFollowerInstance: NSObject, AVAJSONConvertable {
     
     
     func toJSON() -> AVAJSON {
-        var json: [String: AnyObject] = [AVALeaderFollowerInstance.LEADER_STRATEGY_KEY: NSNumber(integer: self.leaderStrategy.rawValue)]
+        var json: [String: AnyObject] = [
+            AVALeaderFollowerInstance.LEADER_STRATEGY_KEY: NSNumber(integer: self.leaderStrategy.rawValue),
+            AVALeaderFollowerInstance.HALT_KEY: NSNumber(bool: self.halt)
+        ]
         if let result = self.result {
             json[AVALeaderFollowerInstance.RESULT_KEY] = NSNumber(integer: result.rawValue)
         }

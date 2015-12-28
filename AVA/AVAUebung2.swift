@@ -65,32 +65,73 @@ class AVAUebung2: NSObject, AVAService {
     
     private var balance: Double = 0
     
+    private var halt = false
+    
     
     // MARK: | Instance Handling
     
     private func handleReceivedInstance(instance: AVALeaderFollowerInstance, fromPeer peer: AVAVertexName) {
         if instance.result != nil {
             // Leader
-            self.handleResultOfInstance(instance, follower: peer)
+            if !self.halt {
+                self.handleResultOfInstance(instance, follower: peer)
+                if let maxBalance = self.setup?.maxBalance {
+                    if self.balance > maxBalance {
+                        self.logger.log(AVALogEntry(level: AVALogLevel.Warning, event: AVAEvent.Processing, peer: self.setup!.peerName!, description: "Node '\(self.setup!.peerName!)' reached maximum balance \(maxBalance)(\(self.balance)) and will HALT"))
+                        self.halt = true
+                        return
+                    }
+                }
+                if instance.halt {
+                    self.halt = true
+                    self.logger.log(AVALogEntry(level: AVALogLevel.Warning, event: AVAEvent.Processing, peer: self.setup!.peerName!, description: "Received result with HALT flag from '\(peer)' and will HALT too", remotePeer: peer))
+                }
+            }
         } else {
             // Follower
+            if self.halt {
+                // Halt already set
+                self.logger.log(AVALogEntry(level: AVALogLevel.Info, event: AVAEvent.Processing, peer: self.setup!.peerName!, description: "Declined offer from '\(peer)' and sending HALT", remotePeer: peer))
+                instance.result = AVALeaderFollowerInstanceResult.Declined
+                instance.halt = true
+                self.nodeManager.sendMessage(AVAMessage(type: AVAMessageType.ApplicationData, sender: self.setup!.peerName!, payload: instance.toJSON()), toVertex: peer)
+                return
+            }
+            // Halt not yet set
             if let followerStrategy = self.followerStrategy {
+                
+                // Follower strategy exists
                 if self.shouldAcceptInstance(instance, followerStrategy: followerStrategy) {
+                    // Accepting offer
                     self.applyStrategyOnFollower(instance.leaderStrategy, withStake: self.setup!.stake!)
                     self.logger.log(AVALogEntry(level: AVALogLevel.Success, event: AVAEvent.Processing, peer: self.setup!.peerName!, description: "Accepted offer from '\(peer)', balance -> \(self.balance)", remotePeer: peer))
+                    if let maxBalance = self.setup?.maxBalance {
+                        if self.balance > maxBalance {
+                            self.logger.log(AVALogEntry(level: AVALogLevel.Warning, event: AVAEvent.Processing, peer: self.setup!.peerName!, description: "Node '\(self.setup!.peerName!)' reached maximum balance \(maxBalance)(\(self.balance)) and will HALT"))
+                            instance.halt = true
+                            self.halt = true
+                        }
+                    }
                 } else {
+                    // Declining offer
                     self.logger.log(AVALogEntry(level: AVALogLevel.Info, event: AVAEvent.Processing, peer: self.setup!.peerName!, description: "Declined offer from '\(peer)'", remotePeer: peer))
                 }
                 self.nodeManager.sendMessage(AVAMessage(type: AVAMessageType.ApplicationData, sender: self.setup!.peerName!, payload: instance.toJSON()), toVertex: peer)
-                if let leaderStrategy = self.leaderStrategy {
-                    self.createInstances(self.setup!.nodesToContactCount!, withLeaderStrategy: leaderStrategy)
+                
+                if !self.halt {
+                    if let leaderStrategy = self.leaderStrategy {
+                        self.createInstances(self.setup!.nodesToContactCount!, withLeaderStrategy: leaderStrategy)
+                    }
                 }
             } else {
+                // Follower Strategy missing
                 instance.result = AVALeaderFollowerInstanceResult.NoFollowerStrategy
                 self.logger.log(AVALogEntry(level: AVALogLevel.Info, event: AVAEvent.Processing, peer: self.setup!.peerName!, description: "Declining proposal from peer '\(peer)' due to missing follower strategy", remotePeer: peer))
                 self.nodeManager.sendMessage(AVAMessage(type: AVAMessageType.ApplicationData, sender: self.setup!.peerName!, payload: instance.toJSON()), toVertex: peer)
-                if let leaderStrategy = self.leaderStrategy {
-                    self.createInstances(self.setup!.nodesToContactCount!, withLeaderStrategy: leaderStrategy)
+                if !self.halt {
+                    if let leaderStrategy = self.leaderStrategy {
+                        self.createInstances(self.setup!.nodesToContactCount!, withLeaderStrategy: leaderStrategy)
+                    }
                 }
             }
         }

@@ -51,6 +51,9 @@ enum AVAServiceType: UInt {
             
         case .Uebung2:
             result.appendContentsOf([NODES_TO_CONTACT_COUNT_NAME, "\(setup.nodesToContactCount!)", STAKE_NAME, "\(setup.stake!)"])
+            if let maxBalance = setup.maxBalance {
+                result.appendContentsOf([MAX_BALANCE_NAME, "\(maxBalance)"])
+            }
             break
             
         }
@@ -68,6 +71,7 @@ private let RUMOR_COUNT_TO_ACCAPTENCE_PARAMETER_NAME = "--rumorCountToAcceptance
 private let SERVICE_PARAMETER_NAME = "--service"
 private let NODES_TO_CONTACT_COUNT_NAME = "--nodesToContact"
 private let STAKE_NAME = "--stake"
+private let MAX_BALANCE_NAME = "--maxBalance"
 
 
 /**
@@ -149,6 +153,13 @@ class AVASetup: NSObject {
     
     /**
      
+     Den maximalen Betrag den ein Spieler im Leader-Follower-Spiel erspeilen soll.
+     
+     */
+    var maxBalance: Double?
+    
+    /**
+     
      Der Service, den der Knoten bereitstellen soll.
      
      */
@@ -213,6 +224,7 @@ class AVASetup: NSObject {
         result += "\n\trumorCountToAcceptance -> \(rumorCountToAcceptance)"
         result += "\n\tnodesToContactCount -> \(nodesToContactCount)"
         result += "\n\tstake -> \(stake)"
+        result += "\n\tmaxBalance -> \(maxBalance)"
         result += "\n\tservice -> \(service)"
         result += "\n}"
         return result
@@ -415,6 +427,13 @@ class AVAArgumentsParser: NSObject {
                 exit(2)
             }
             setup.stake = Double(self.currentArgument()!)
+        },
+        MAX_BALANCE_NAME: {(setup: AVASetup) -> () in
+            if (!self.nextArgument()) {
+                print("Missing arguments")
+                exit(2)
+            }
+            setup.maxBalance = Double(self.currentArgument()!)
         }
     ]
 }
