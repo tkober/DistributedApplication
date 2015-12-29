@@ -62,16 +62,18 @@ enum AVAServiceType: UInt {
 }
 
 
-private let OBSERVER_PARAMETER_NAME = "--observer"
-private let TOPOLOGY_PARAMETER_NAME = "--topology"
-private let RANDOM_TOPOLOGY_PARAMETER_NAME = "--randomTopology"
-private let PEER_NAME_PARAMETER_NAME = "--peerName"
-private let RUMOR_PARAMETER_NAME = "--rumor"
-private let RUMOR_COUNT_TO_ACCAPTENCE_PARAMETER_NAME = "--rumorCountToAcceptance"
-private let SERVICE_PARAMETER_NAME = "--service"
-private let NODES_TO_CONTACT_COUNT_NAME = "--nodesToContact"
-private let STAKE_NAME = "--stake"
-private let MAX_BALANCE_NAME = "--maxBalance"
+let OBSERVER_PARAMETER_NAME = "--observer"
+let TOPOLOGY_PARAMETER_NAME = "--topology"
+let RANDOM_TOPOLOGY_PARAMETER_NAME = "--randomTopology"
+let PEER_NAME_PARAMETER_NAME = "--peerName"
+let RUMOR_PARAMETER_NAME = "--rumor"
+let RUMOR_COUNT_TO_ACCAPTENCE_PARAMETER_NAME = "--rumorCountToAcceptance"
+let SERVICE_PARAMETER_NAME = "--service"
+let NODES_TO_CONTACT_COUNT_NAME = "--nodesToContact"
+let STAKE_NAME = "--stake"
+let MAX_BALANCE_NAME = "--maxBalance"
+let DISABLE_NODE_UI_LOG_NAME = "--disableNodeUILog"
+let LOG_MEASUREMENTS_ONLY_NAME = "--logMeasurementsOnly"
 
 
 /**
@@ -194,6 +196,19 @@ class AVASetup: NSObject {
         }
     }
     
+    /**
+     
+     Sagt aus, ob der Log der Knoten auch in der GUI dargestellt werden soll.
+     
+     */
+    var disableNodeUILog = false
+    
+    /**
+     
+     Sagt aus, ob Log-Einträge mit dem Log Level 'Measurement' geloggt werden sollen.
+     
+     */
+    var logMeasurementsOnly = false
     
     /**
      
@@ -226,6 +241,8 @@ class AVASetup: NSObject {
         result += "\n\tstake -> \(stake)"
         result += "\n\tmaxBalance -> \(maxBalance)"
         result += "\n\tservice -> \(service)"
+        result += "\n\tdisableNodeUILog -> \(disableNodeUILog)"
+        result += "\n\tlogMeasurementsOnly -> \(logMeasurementsOnly)"
         result += "\n}"
         return result
     }
@@ -434,6 +451,20 @@ class AVAArgumentsParser: NSObject {
                 exit(2)
             }
             setup.maxBalance = Double(self.currentArgument()!)
+        },
+        DISABLE_NODE_UI_LOG_NAME: {(setup: AVASetup) -> () in
+            if (!self.nextArgument()) {
+                print("Missing arguments")
+                exit(2)
+            }
+            setup.disableNodeUILog = (self.currentArgument()! as NSString).boolValue
+        },
+        LOG_MEASUREMENTS_ONLY_NAME: {(setup: AVASetup) -> () in
+            if (!self.nextArgument()) {
+                print("Missing arguments")
+                exit(2)
+            }
+            setup.logMeasurementsOnly = (self.currentArgument()! as NSString).boolValue
         }
     ]
 }

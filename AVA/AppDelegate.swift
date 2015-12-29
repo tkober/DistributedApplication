@@ -257,7 +257,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     func instantiateVertex(vertex: AVAVertex, fromTopology topology: String, withServiceOfType serviceType: AVAServiceType) {
         let task = NSTask()
         task.launchPath = self.setup.applicationPath
-        task.arguments = ["--topology", topology, "--peerName", vertex.name]
+        task.arguments = [
+            TOPOLOGY_PARAMETER_NAME, topology,
+            PEER_NAME_PARAMETER_NAME, vertex.name,
+            DISABLE_NODE_UI_LOG_NAME, self.setup.disableNodeUILog ? "1" : "0",
+            LOG_MEASUREMENTS_ONLY_NAME, self.setup.logMeasurementsOnly ? "1" : "0"]
         task.arguments?.appendContentsOf(serviceType.nodeInstantiationParametersFromSetup(self.setup))
         dispatch_async(dispatch_queue_create("peer_\(vertex)_instantiate", DISPATCH_QUEUE_SERIAL)) { () -> Void in
             task.launch()
@@ -350,15 +354,22 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 extension AppDelegate: AVALogging {
     
     func log(entry: AVALogEntry) {
-        dispatch_async(self.loggingQueue) { () -> Void in
-            if let stream = self.loggingStream, log = entry.jsonStringValue() {
-                stream.write("\(log),\n")
+        if self.setup.logMeasurementsOnly && entry.level != AVALogLevel.Measurement {
+            
+        } else {
+            dispatch_async(self.loggingQueue) { () -> Void in
+                if let stream = self.loggingStream, log = entry.jsonStringValue() {
+                    stream.write("\(log),\n")
+                }
             }
-        }
-        dispatch_async(dispatch_get_main_queue()) { () -> Void in
-            let attributedString = NSAttributedString(string: "[\(entry.event.stringValue())]: \(entry.entryDescription)\n", attributes: entry.level.attributes())
-            self.loggingTextView?.textStorage?.appendAttributedString(attributedString)
-            self.loggingTextView?.scrollRangeToVisible(NSMakeRange((self.loggingTextView?.string?.characters.count)!, 0))
+            if !self.setup.disableNodeUILog {
+                dispatch_async(dispatch_get_main_queue()) { () -> Void in
+                    let attributedString = NSAttributedString(string: "[\(entry.event.stringValue())]: \(entry.entryDescription)\n", attributes: entry.level.attributes())
+                    self.loggingTextView?.textStorage?.appendAttributedString(attributedString)
+                    self.loggingTextView?.scrollRangeToVisible(NSMakeRange((self.loggingTextView?.string?.characters.count)!, 0))
+                }
+
+            }
         }
     }
     
