@@ -108,11 +108,9 @@ enum AVALogLevel: Int {
  
  */
 enum AVAEvent: Int {
-    case Discovery
-    case InvitationSent
-    case InvitationReceived
-    case Connecting
+    case AcceptedConnection
     case Connect
+    case ConnectionError
     case Disconnect
     case DataSent
     case DataReceived
@@ -121,20 +119,15 @@ enum AVAEvent: Int {
     
     func stringValue() -> String {
         switch self {
-        case .Discovery:
-            return "Discovery"
-            
-        case .InvitationSent:
-            return "InvitationSent"
-            
-        case .InvitationReceived:
-            return "InvitationReceived"
-            
-        case .Connecting:
-            return "Connecting"
+        
+        case .AcceptedConnection:
+            return "AcceptedConnection"
             
         case .Connect:
             return "Connect"
+            
+        case .ConnectionError:
+            return "ConnectionError"
             
         case .Disconnect:
             return "Disconnect"
@@ -154,19 +147,14 @@ enum AVAEvent: Int {
     
     func adjacencyDirection(ownPeerToRemoteInOrder inOrder: Bool) -> AVAGraphvizAdjacencyDirection {
         switch self {
-        case .Discovery:
-            return inOrder ? .InOrder : .Inverse
             
-        case .InvitationSent:
-            return inOrder ? .InOrder : .Inverse
-            
-        case .InvitationReceived:
-            return inOrder ? .Inverse : .InOrder
-            
-        case .Connecting:
+        case .AcceptedConnection:
             return inOrder ? .InOrder : .Inverse
             
         case .Connect:
+            return inOrder ? .InOrder : .Inverse
+            
+        case .ConnectionError:
             return inOrder ? .InOrder : .Inverse
             
         case .Disconnect:

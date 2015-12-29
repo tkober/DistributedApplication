@@ -369,7 +369,7 @@ class AVANodeManager: NSObject {
 extension AVANodeManager: AVAServerSocketDelegate {
     
     func serverSocket(socket: AVAServerSocket, acceptedConnection connection: AVASocketConnectionInfo) {
-        let logEntry = AVALogEntry(level: AVALogLevel.Debug, event: AVAEvent.Processing, peer: self.ownVertex.name, description: "Accepted connection from \(connection.address):\(connection.port)")
+        let logEntry = AVALogEntry(level: AVALogLevel.Debug, event: AVAEvent.AcceptedConnection, peer: self.ownVertex.name, description: "Accepted connection from \(connection.address):\(connection.port)")
         self.logger.log(logEntry)
     }
     
@@ -433,7 +433,7 @@ extension AVANodeManager: AVASocketStreamDelegate {
     
     
     func socketStreamFailed(stream: AVASocketStream, status: NSStreamStatus, error: NSError?) {
-        self.logger.log(AVALogEntry(level: AVALogLevel.Error, event: AVAEvent.Processing, peer: self.ownVertex.name, description: "Error occurred in stream to vertex '\(stream.vertex.name)'. error -> '\(error)'", remotePeer: stream.vertex.name))
+        self.logger.log(AVALogEntry(level: AVALogLevel.Error, event: AVAEvent.ConnectionError, peer: self.ownVertex.name, description: "Error occurred in stream to vertex '\(stream.vertex.name)'. error -> '\(error)'", remotePeer: stream.vertex.name))
     }
 }
 
