@@ -68,7 +68,9 @@ void start_reading_posix_socket(int socket_fd, POSIXServerSocketReadCallback rea
     while (1) {
         ssize_t n;
         bzero(buffer, POSIXSocketBufferSize);
-        n = read(socket_fd, buffer, POSIXSocketBufferSize-1);
+//        n = read(socket_fd, buffer, POSIXSocketBufferSize-1);
+        n = recv(socket_fd, buffer, POSIXSocketBufferSize-1, 0);
+        assert(n >= 0);
         if (n > 0) {
 //            char *data = malloc(sizeof(char) * n);
 //            memcpy(data, buffer, n+1);
@@ -78,6 +80,12 @@ void start_reading_posix_socket(int socket_fd, POSIXServerSocketReadCallback rea
 //            free(data);
         }
     }
+}
+
+
+void close_socket(int socket_fd)
+{
+//    shutdown(socket_fd, 2);
 }
 
 

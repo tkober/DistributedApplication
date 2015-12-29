@@ -73,6 +73,7 @@ class AVAServerSocket: NSObject {
     }
     
     
-    func invalidate() {
+    func close() {
+        close_socket(self.socket)
     }
 }

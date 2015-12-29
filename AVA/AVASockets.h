@@ -23,6 +23,6 @@ typedef void(^POSIXServerSocketReadCallback)(char *data, ssize_t length);
 
 int setup_posix_server_socket(in_port_t port);
 void start_posix_server_socket(int socket_fd, int backlog, POSIXServerSocketAcceptCallback acceptCallback, POSIXServerSocketReadCallback readCallback);
-
+void close_socket(int socket_fd);
 
 #endif /* AVASocketServer_h */

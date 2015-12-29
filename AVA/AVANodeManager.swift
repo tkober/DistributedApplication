@@ -235,6 +235,18 @@ class AVANodeManager: NSObject {
         }
     }
     
+    /**
+     
+     Beenendet den AVANodeManager.
+     
+     */
+    func close() {
+        for stream in self.socketStreams {
+            stream.close()
+        }
+        serverSocket.close()
+    }
+    
     
     // MARK: | State
     

@@ -65,7 +65,7 @@ class ObserverViewController: NSViewController {
     
     @IBAction private func terminateButtonPressed(sender: NSButton) {
         let appDelegate = NSApp.delegate as! AppDelegate
-        appDelegate.terminateTopology()
+        appDelegate.terminateTopologyIfNecessary()
     }
     
     
