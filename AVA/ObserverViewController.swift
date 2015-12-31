@@ -78,6 +78,7 @@ class ObserverViewController: NSViewController {
                     appDelegate.log(logEntry)
                     let message = AVAMessage.initializeMessage(OBSERVER_NAME)
                     appDelegate.nodeManager?.sendMessage(message, toVertex: vertex.name)
+                    appDelegate.scheduleTerminationCheck()
                 } else {
                     let logEntry = AVALogEntry(level: AVALogLevel.Error, event: AVAEvent.Processing, peer: OBSERVER_NAME, description: "Initilization failed due to invalid node '\(vertexName)'")
                     appDelegate.log(logEntry)
@@ -188,15 +189,9 @@ class ObserverViewController: NSViewController {
         
         do {
             let dot = GRAPHVIZ.dotFromTopology(topology, vertexDecorator: { (vertex: AVAVertexName) -> AVAGraphvizVertexDecoration in
-                return (vertex == ownPeerName ? AVAGraphvizBlue : AVAGraphvizGrey, AVAGraphvizSolid)
-                }, adjacencyDecorator: { (adjacency: AVAAdjacency) -> AVAGraphvizAdjacencyDecoration in
-                    if adjacency.v1 == ownPeerName || adjacency.v2 == ownPeerName {
-                        let vertex = adjacency.v1 == ownPeerName ? adjacency.v2 : adjacency.v1
-                        let style = state.connectedPeers.contains(vertex) ? AVAGraphvizSolid : AVAGraphvizDotted
-                        return (AVAGraphvizAdjacencyDirection.Undirected, AVAGraphvizBlue, style, nil)
-                    } else {
-                        return (AVAGraphvizAdjacencyDirection.Undirected, AVAGraphvizGrey, AVAGraphvizSolid, nil)
-                    }
+                return (state.connectedPeers.contains(vertex) ? AVAGraphvizBlue : AVAGraphvizGrey, AVAGraphvizSolid)
+            }, adjacencyDecorator: { (adjacency: AVAAdjacency) -> AVAGraphvizAdjacencyDecoration in
+                return (AVAGraphvizAdjacencyDirection.Undirected, AVAGraphvizGrey, AVAGraphvizSolid, nil)
             })
             try dot.writeToFile(tempFilePath, atomically: true, encoding: NSUTF8StringEncoding)
             self.renderAndUpdateGraphImage(tempFilePath)
@@ -214,7 +209,7 @@ class ObserverViewController: NSViewController {
             do {
                 try NSFileManager.defaultManager().removeItemAtPath(tempFilePath)
             } catch {
-                
+                print("could not remove file")
             }
         }
     }

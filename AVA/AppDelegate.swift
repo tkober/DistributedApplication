@@ -267,9 +267,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         task.launchPath = self.setup.applicationPath
         task.arguments = [
             TOPOLOGY_PARAMETER_NAME, topology,
-            PEER_NAME_PARAMETER_NAME, vertex.name,
-            DISABLE_NODE_UI_LOG_NAME, self.setup.disableNodeUILog ? "1" : "0",
-            LOG_MEASUREMENTS_ONLY_NAME, self.setup.logMeasurementsOnly ? "1" : "0"]
+            PEER_NAME_PARAMETER_NAME, vertex.name
+        ]
+        if self.setup.disableNodeUILog {
+            task.arguments?.append(DISABLE_NODE_UI_LOG_NAME)
+        }
+        if self.setup.logMeasurementsOnly {
+            task.arguments?.append(LOG_MEASUREMENTS_ONLY_NAME)
+        }
         task.arguments?.appendContentsOf(serviceType.nodeInstantiationParametersFromSetup(self.setup))
         dispatch_async(dispatch_queue_create("peer_\(vertex)_instantiate", DISPATCH_QUEUE_SERIAL)) { () -> Void in
             task.launch()
@@ -350,7 +355,89 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             }
         }
     }
-
+    
+    
+    // MARK: | Termination
+    
+    var terminationCheckingQueue: dispatch_queue_t = dispatch_queue_create("", DISPATCH_QUEUE_SERIAL)
+    
+    
+    func scheduleTerminationCheck() {
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(0.5 * Double(NSEC_PER_SEC))), self.terminationCheckingQueue) { () -> Void in
+            self.initializeTerminationChecking()
+        }
+    }
+    
+    
+    func initializeTerminationChecking() {
+        var peers = [AVAVertexName]()
+        for vertex in self.topology.vertices {
+            if vertex.name != OBSERVER_NAME {
+                peers.append(vertex.name)
+                vertex.messageReceivedCount = nil
+                vertex.messageSentCount = nil
+            }
+        }
+        self.nodeManager?.sendMessage(AVAMessage.terminationStatusRequestMessage(OBSERVER_NAME), toVertices: peers)
+    }
+    
+    
+    var lastOverallMessagReceivedCount: UInt?
+    
+    
+    var lastOverallMessagSentCount: UInt?
+    
+    
+    func receivedMessageCountFromAllNodes() -> Bool {
+        for vertex in self.topology.vertices {
+            if vertex.name != OBSERVER_NAME {
+                if vertex.messageSentCount == nil || vertex.messageReceivedCount == nil {
+                    return false
+                }
+            }
+        }
+        return true
+    }
+    
+    
+    func handleTerminationStatusMessage(message: AVAMessage) {
+        if let vertex = self.topology.vertextForName(message.sender), let payload = message.payload {
+            do {
+                let status = try AVATerminationStatus(json: payload)
+                vertex.messageSentCount = status.sentCount
+                vertex.messageReceivedCount = status.receivedCount
+            } catch {
+                
+            }
+        }
+    }
+    
+    
+    func checkForTermination() -> Bool {
+        var sent: UInt = 0
+        var received: UInt = 0
+        
+        for vertex in self.topology.vertices {
+            if vertex.name != OBSERVER_NAME {
+                sent += vertex.messageSentCount!
+                received += vertex.messageReceivedCount!
+            }
+        }
+        if let lastSent = self.lastOverallMessagSentCount, let lastReceived = self.lastOverallMessagReceivedCount {
+            if lastSent == sent && lastReceived == received {
+                return true
+            }
+        }
+        self.lastOverallMessagSentCount = sent
+        self.lastOverallMessagReceivedCount = received
+        return false
+    }
+    
+    
+    func sendOwnTerminationStatus() {
+        let status = self.nodeManager?.terminationStatus
+        self.nodeManager?.sendMessage(AVAMessage(type: AVAMessageType.TerminationStatus, sender: self.setup.peerName, payload: status?.toJSON()), toVertex: OBSERVER_NAME)
+    }
 }
 
 
@@ -440,6 +527,22 @@ extension AppDelegate: AVANodeManagerDelegate {
                 self.service!.nodeManager(nodeManager, didReceiveApplicationDataMessage: message)
             } else {
                 self.messageBuffer.append(message)
+            }
+            break
+            
+        case .TerminationStatusRequest:
+            self.sendOwnTerminationStatus()
+            break
+            
+        case .TerminationStatus:
+            self.handleTerminationStatusMessage(message)
+            if self.receivedMessageCountFromAllNodes() {
+                if self.checkForTermination() {
+                    print("Terminated")
+                } else {
+                    print("Not yet terminated")
+                    self.scheduleTerminationCheck()
+                }
             }
             break
         }

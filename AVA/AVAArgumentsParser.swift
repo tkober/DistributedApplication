@@ -453,18 +453,10 @@ class AVAArgumentsParser: NSObject {
             setup.maxBalance = Double(self.currentArgument()!)
         },
         DISABLE_NODE_UI_LOG_NAME: {(setup: AVASetup) -> () in
-            if (!self.nextArgument()) {
-                print("Missing arguments")
-                exit(2)
-            }
-            setup.disableNodeUILog = (self.currentArgument()! as NSString).boolValue
+            setup.disableNodeUILog = true
         },
         LOG_MEASUREMENTS_ONLY_NAME: {(setup: AVASetup) -> () in
-            if (!self.nextArgument()) {
-                print("Missing arguments")
-                exit(2)
-            }
-            setup.logMeasurementsOnly = (self.currentArgument()! as NSString).boolValue
+            setup.logMeasurementsOnly = true
         }
     ]
 }

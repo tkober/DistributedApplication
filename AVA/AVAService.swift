@@ -73,6 +73,17 @@ protocol AVAService: class {
 }
 
 
+enum AVAJSONError: ErrorType {
+    
+    /**
+     
+     Zeigt an, dass im JSON nicht alle Informationen vorhanden sind um eine Instanz zu erstellen.
+     
+     */
+    case invalidPayload
+}
+
+
 /**
  
  Dieses Protokoll muss von Klassen implementiert werden, die als über AVAMessages im Netzwerk verbreitet weden, bzw. Empfangen werden sollen.

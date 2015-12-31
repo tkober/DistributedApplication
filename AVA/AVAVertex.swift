@@ -37,6 +37,10 @@ class AVAVertex: NSObject {
     
     var attributes: AVAJSON?
     
+    var messageReceivedCount: UInt?
+    
+    var messageSentCount: UInt?
+    
     
     init(name: AVAVertexName, ip: String, port: UInt16, attributes: AVAJSON?) {
         self.name = name
@@ -98,4 +102,45 @@ class AVAVertex: NSObject {
 
 func ==(lhs: AVAVertex, rhs: AVAVertex) -> Bool {
     return lhs.name == rhs.name || (lhs.ip == rhs.ip && lhs.port == rhs.port)
+}
+
+
+class AVATerminationStatus: NSObject, AVAJSONConvertable {
+    
+    
+    private static let SENT_KEY = "sent"
+    
+    private static let RECEIVED_KEY = "received"
+    
+    
+    var sentCount: UInt
+    
+    var receivedCount: UInt
+    
+    
+    // MARK: | Initializer
+    
+    init (sent: UInt, received: UInt) {
+        self.sentCount = sent
+        self.receivedCount = received
+    }
+    
+    
+    // MARK: | AVAJSONConvertable
+    
+    required convenience init(json: AVAJSON) throws {
+        if let sent = ((json as! NSDictionary)[AVATerminationStatus.SENT_KEY] as? NSNumber), let received = ((json as! NSDictionary)[AVATerminationStatus.RECEIVED_KEY] as? NSNumber) {
+            self.init(sent: sent.unsignedIntegerValue, received: received.unsignedIntegerValue)
+        } else {
+            throw AVAJSONError.invalidPayload
+        }
+    }
+    
+    
+    func toJSON() -> AVAJSON {
+        return [
+            AVATerminationStatus.SENT_KEY: NSNumber(unsignedInteger: self.sentCount),
+            AVATerminationStatus.RECEIVED_KEY: NSNumber(unsignedInteger: self.receivedCount)
+        ]
+    }
 }

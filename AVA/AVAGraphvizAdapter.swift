@@ -116,7 +116,7 @@ class AVAGraphvizAdapter: NSObject {
      */
     
     
-    private lazy var renderingQueue = dispatch_queue_create("ava.graphviz_adapter.rendering_queue", DISPATCH_QUEUE_CONCURRENT)
+    private lazy var renderingQueue = dispatch_queue_create("ava.graphviz_adapter.rendering_queue", DISPATCH_QUEUE_SERIAL)
     
     
     // MARK: Source File Creation
@@ -137,7 +137,7 @@ class AVAGraphvizAdapter: NSObject {
      - returns: Den Inhalt des .dot-Files als String.
     
      */
-    func dotFromTopology(topology: AVATopology, vertexDecorator: AVAGraphvizVertexDecorator, renderObserver: Bool = true, adjacencyDecorator: AVAGraphvizAdjacencyDecorator) -> String {
+    func dotFromTopology(topology: AVATopology, vertexDecorator: AVAGraphvizVertexDecorator, renderObserver: Bool = false, adjacencyDecorator: AVAGraphvizAdjacencyDecorator) -> String {
         let topologyToRender = renderObserver ? topology : topology.topologyExcludingObserver()
         var result = "digraph G {"
         for vertex in topologyToRender.vertices {

@@ -265,7 +265,16 @@ class AVANodeManager: NSObject {
     
     // MARK: | Messaging
     
-
+    private var messageSentCount: UInt = 0
+    
+    private var messageReceivedCount: UInt = 0
+    
+    var terminationStatus: AVATerminationStatus {
+        get {
+            return AVATerminationStatus(sent: self.messageSentCount, received: self.messageReceivedCount)
+        }
+    }
+    
     private lazy var messagingQueue: dispatch_queue_t = dispatch_queue_create("ava.node_manager.messaging_queue", DISPATCH_QUEUE_SERIAL)
 
     
@@ -296,6 +305,9 @@ class AVANodeManager: NSObject {
                         let result = stream.writeData(data)
                         let logEntry: AVALogEntry
                         if result {
+                            if vertex != OBSERVER_NAME {
+                                self.messageSentCount++
+                            }
                             logEntry = AVALogEntry(level: AVALogLevel.Debug, event: AVAEvent.DataSent, peer: self.ownVertex.name, description: "Sent message (\(messageData.length) bytes) to '\(vertex)'", remotePeer: vertex, message: message)
                         } else {
                             logEntry = AVALogEntry(level: AVALogLevel.Warning, event: AVAEvent.DataSent, peer: self.ownVertex.name, description: "Failed to send message (\(messageData.length) bytes) to '\(vertex)'", remotePeer: vertex, message: message)
@@ -407,6 +419,9 @@ extension AVANodeManager: AVAServerSocketDelegate {
                     if let messageData = messageString.dataUsingEncoding(NSUTF8StringEncoding) {
                         do {
                             let message = try AVAMessage(data: messageData)
+                            if message.sender != OBSERVER_NAME {
+                                self.messageReceivedCount++
+                            }
                             let logEntry = AVALogEntry(level: AVALogLevel.Info, event: AVAEvent.DataReceived, peer: self.ownVertex.name, description: "Received message (\(messageData.length) bytes) from '\(message.sender)' ", remotePeer: message.sender, message: message)
                             self.logger.log(logEntry)
                             self.delegate?.nodeManager(self, didReceiveMessage: message)

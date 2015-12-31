@@ -46,6 +46,20 @@ enum AVAMessageType: Int {
      
      */
     case ApplicationData;
+    
+    /**
+     
+     Wird vom Observer an die Knoten geschickt um den Termination-Status abzufragen.
+     
+     */
+    case TerminationStatusRequest;
+    
+    /**
+     
+     Enthält die Anzahl an empfangenen und gesendeten Nachrichten.
+     
+     */
+    case TerminationStatus;
 }
 
 
@@ -181,6 +195,22 @@ class AVAMessage: NSObject {
      */
     static func terminateMessage(sender: String) -> AVAMessage {
         return AVAMessage(type: AVAMessageType.Terminate, sender: sender)
+    }
+    
+    
+    /**
+     
+     Erzeugt eine TerminationStatusRequest-Message für einen gegeben Sender.
+     
+     - parameters:
+     
+     - sender: Der Absender der Nachricht.
+     
+     - returns: Die erzeugte Nachricht.
+     
+     */
+    static func terminationStatusRequestMessage(sender: String) -> AVAMessage {
+        return AVAMessage(type: AVAMessageType.TerminationStatusRequest, sender: sender)
     }
     
     
