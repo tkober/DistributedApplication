@@ -67,12 +67,36 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "--disableNodeUILog"
+            argument = "--logDebug"
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "--logMeasurementsOnly"
+            argument = "--logInfo"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "--logWarning"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "--logError"
             isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "--logSuccess"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "--logMeasurement"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "--logLifecycle"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "--disableNodeUILog"
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "--topology"

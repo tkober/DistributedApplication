@@ -99,7 +99,7 @@ class AVALogViewController: NSViewController {
         do {
             let dot = GRAPHVIZ.dotFromTopology(topology, vertexDecorator: { (vertex: AVAVertexName) -> AVAGraphvizVertexDecoration in
                 return (logEntry.peer == vertex ? logEntry.level.graphvizsColor() :  AVAGraphvizGrey, AVAGraphvizSolid)
-            }, adjacencyDecorator: { (adjacency: AVAAdjacency) -> AVAGraphvizAdjacencyDecoration in
+            }, renderObserver: true, adjacencyDecorator: { (adjacency: AVAAdjacency) -> AVAGraphvizAdjacencyDecoration in
                 if let remotePeer = logEntry.remotePeer {
                     let logAdjacency = AVAAdjacency(v1: logEntry.peer, v2: remotePeer)
                     if logAdjacency == adjacency {

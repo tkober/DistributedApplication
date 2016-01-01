@@ -85,7 +85,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         } else {
             self.setupAsNode()
         }
-        self.setupLogger()
         
         if let onArgumentsProcessed = self.onArgumentsProcessed {
             onArgumentsProcessed(ownPeerName: self.setup.peerName!, isMaster: self.setup.isObserver, topology: self.topology)
@@ -105,6 +104,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     func setupAsObserver() {
         self.setup.peerName = OBSERVER_NAME
         var topologyFilePath: String
+        self.setupLogger()
         
         if self.setup.randomTopology {
             self.buildRandomTopology()
@@ -118,6 +118,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             topologyFilePath = self.setup.topologyFilePath!
             self.buildTopologyFromFile()
         }
+        self.service = self.serviceFromSetup(self.setup)
         
         self.initialWindow.contentViewController = self.storyboard.instantiateControllerWithIdentifier(ObserverViewController.STORYBOARD_ID) as? NSViewController
         
@@ -135,6 +136,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             print("Invalid value for parameter --peerName:")
             print("'\(OBSERVER_NAME)' is prohibited as a node name")
         }
+        self.setupLogger()
         
         self.buildTopologyFromFile()
         
@@ -269,17 +271,36 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             TOPOLOGY_PARAMETER_NAME, topology,
             PEER_NAME_PARAMETER_NAME, vertex.name
         ]
+        
+        if self.setup.logDebug {
+            task.arguments?.append(LOG_DEBUG_NAME)
+        }
+        if self.setup.logInfo {
+            task.arguments?.append(LOG_INFO_NAME)
+        }
+        if self.setup.logWarning {
+            task.arguments?.append(LOG_WARNING_NAME)
+        }
+        if self.setup.logError {
+            task.arguments?.append(LOG_ERROR_NAME)
+        }
+        if self.setup.logSuccess {
+            task.arguments?.append(LOG_SUCCESS_NAME)
+        }
+        if self.setup.logMeasurement {
+            task.arguments?.append(LOG_MEASUREMENT_NAME)
+        }
+        if self.setup.logLifecycle {
+            task.arguments?.append(LOG_LIFECYCLE_NAME)
+        }
         if self.setup.disableNodeUILog {
             task.arguments?.append(DISABLE_NODE_UI_LOG_NAME)
-        }
-        if self.setup.logMeasurementsOnly {
-            task.arguments?.append(LOG_MEASUREMENTS_ONLY_NAME)
         }
         task.arguments?.appendContentsOf(serviceType.nodeInstantiationParametersFromSetup(self.setup))
         dispatch_async(dispatch_queue_create("peer_\(vertex)_instantiate", DISPATCH_QUEUE_SERIAL)) { () -> Void in
             task.launch()
         }
-        self.log(AVALogEntry(level: AVALogLevel.Debug, event: AVAEvent.Processing, peer: self.setup.peerName!, description: "Instantiated peer '\(vertex.name)'", remotePeer: vertex.name))
+        self.log(AVALogEntry(level: AVALogLevel.Lifecycle, event: AVAEvent.Processing, peer: self.setup.peerName!, description: "Instantiated peer '\(vertex.name)'", remotePeer: vertex.name))
     }
     
     
@@ -438,6 +459,18 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let status = self.nodeManager?.terminationStatus
         self.nodeManager?.sendMessage(AVAMessage(type: AVAMessageType.TerminationStatus, sender: self.setup.peerName, payload: status?.toJSON()), toVertex: OBSERVER_NAME)
     }
+    
+    
+    // MARK: | Measurements
+    
+    func requestMeasurementsIfNecessary() {
+        if let service = self.service {
+            if service.needsMeasurement {
+                let message = AVAMessage.finalMeasurementRequestMessage(OBSERVER_NAME)
+                self.nodeManager?.broadcastMessage(message)
+            }
+        }
+    }
 }
 
 
@@ -449,22 +482,61 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 extension AppDelegate: AVALogging {
     
     func log(entry: AVALogEntry) {
-        if self.setup.logMeasurementsOnly && entry.level != AVALogLevel.Measurement {
+        switch (entry.level) {
+        case .Debug:
+            if !self.setup.logDebug {
+                return
+            }
+            break
             
-        } else {
-            dispatch_async(self.loggingQueue) { () -> Void in
-                if let stream = self.loggingStream, log = entry.jsonStringValue() {
-                    stream.write("\(log),\n")
-                }
+        case .Info:
+            if !self.setup.logInfo {
+                return
             }
-            if !self.setup.disableNodeUILog {
-                dispatch_async(dispatch_get_main_queue()) { () -> Void in
-                    let attributedString = NSAttributedString(string: "[\(entry.event.stringValue())]: \(entry.entryDescription)\n", attributes: entry.level.attributes())
-                    self.loggingTextView?.textStorage?.appendAttributedString(attributedString)
-                    self.loggingTextView?.scrollRangeToVisible(NSMakeRange((self.loggingTextView?.string?.characters.count)!, 0))
-                }
-
+            break
+            
+        case .Warning:
+            if !self.setup.logWarning {
+                return
             }
+            break
+            
+        case .Error:
+            if !self.setup.logError {
+                return
+            }
+            break
+            
+        case .Success:
+            if !self.setup.logSuccess {
+                return
+            }
+            break
+            
+        case .Measurement:
+            if !self.setup.logMeasurement {
+                return
+            }
+            break
+            
+        case .Lifecycle:
+            if !self.setup.logLifecycle {
+                return
+            }
+            break
+        }
+        dispatch_async(self.loggingQueue) { () -> Void in
+            if let stream = self.loggingStream, log = entry.jsonStringValue() {
+                stream.write("\(log),\n")
+            }
+        }
+        if !self.setup.disableNodeUILog {
+            dispatch_async(dispatch_get_main_queue()) { () -> Void in
+                let attributedString = NSAttributedString(string: "[\(entry.event.stringValue())]: \(entry.entryDescription)\n", attributes: entry.level.attributes())
+                self.loggingTextView?.textStorage?.appendAttributedString(attributedString)
+                self.loggingTextView?.scrollRangeToVisible(NSMakeRange((self.loggingTextView?.string?.characters.count)!, 0))
+            }
+            
         }
     }
     
@@ -538,13 +610,23 @@ extension AppDelegate: AVANodeManagerDelegate {
             self.handleTerminationStatusMessage(message)
             if self.receivedMessageCountFromAllNodes() {
                 if self.checkForTermination() {
-                    print("Terminated")
+                    self.log(AVALogEntry(level: AVALogLevel.Lifecycle, event: AVAEvent.Termination, peer: self.setup.peerName!, description: "Service has terminated"))
+                    self.requestMeasurementsIfNecessary()
                 } else {
-                    print("Not yet terminated")
                     self.scheduleTerminationCheck()
                 }
             }
             break
+            
+        case .FinalMeasurementRequest:
+            let message = AVAMessage(type: AVAMessageType.FinalMeasurement, sender: self.setup.peerName, payload: self.service!.finalMeasurements)
+            self.service!.onFinalMeasurementSent()
+            self.nodeManager?.sendMessage(message, toVertex: OBSERVER_NAME)
+            break
+            
+        case .FinalMeasurement:
+            self.service!.handleMeasurementMessage(message)
+            break;
         }
     }
     

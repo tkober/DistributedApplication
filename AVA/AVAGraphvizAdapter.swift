@@ -18,6 +18,7 @@ let AVAGraphvizOrange: AVAGraphvizColor = "orange"
 let AVAGraphvizRed: AVAGraphvizColor = "red"
 let AVAGraphvizPurple: AVAGraphvizColor = "purple"
 let AVAGraphvizGreen: AVAGraphvizColor = "green"
+let AVAGraphvizPink: AVAGraphvizColor = "pink"
 
 
 typealias AVAGraphvizLineStyle = String

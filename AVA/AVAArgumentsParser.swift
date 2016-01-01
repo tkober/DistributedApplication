@@ -72,8 +72,14 @@ let SERVICE_PARAMETER_NAME = "--service"
 let NODES_TO_CONTACT_COUNT_NAME = "--nodesToContact"
 let STAKE_NAME = "--stake"
 let MAX_BALANCE_NAME = "--maxBalance"
+let LOG_DEBUG_NAME = "--logDebug"
+let LOG_INFO_NAME = "--logInfo"
+let LOG_WARNING_NAME = "--logWarning"
+let LOG_ERROR_NAME = "--logError"
+let LOG_SUCCESS_NAME = "--logSuccess"
+let LOG_MEASUREMENT_NAME = "--logMeasurement"
+let LOG_LIFECYCLE_NAME = "--logLifecycle"
 let DISABLE_NODE_UI_LOG_NAME = "--disableNodeUILog"
-let LOG_MEASUREMENTS_ONLY_NAME = "--logMeasurementsOnly"
 
 
 /**
@@ -198,17 +204,59 @@ class AVASetup: NSObject {
     
     /**
      
-     Sagt aus, ob der Log der Knoten auch in der GUI dargestellt werden soll.
+     Gibt an, dass Einträge des Levels Debug geloggt werden sollen.
      
      */
-    var disableNodeUILog = false
+    var logDebug = false
     
     /**
      
-     Sagt aus, ob Log-Einträge mit dem Log Level 'Measurement' geloggt werden sollen.
+     Gibt an, dass Einträge des Levels Info geloggt werden sollen.
      
      */
-    var logMeasurementsOnly = false
+    var logInfo = false
+    
+    /**
+     
+     Gibt an, dass Einträge des Levels Warning geloggt werden sollen.
+     
+     */
+    var logWarning = false
+    
+    /**
+     
+     Gibt an, dass Einträge des Levels Error geloggt werden sollen.
+     
+     */
+    var logError = false
+    
+    /**
+     
+     Gibt an, dass Einträge des Levels Success geloggt werden sollen.
+     
+     */
+    var logSuccess = false
+    
+    /**
+     
+     Gibt an, dass Einträge des Levels Measurement geloggt werden sollen.
+     
+     */
+    var logMeasurement = false
+    
+    /**
+     
+     Gibt an, dass Einträge des Levels Lifecycle geloggt werden sollen.
+     
+     */
+    var logLifecycle = false
+    
+    /**
+     
+     Gibt an, dass der Log nicht in der GUI dargestellt werden soll.
+     
+     */
+    var disableNodeUILog = false
     
     /**
      
@@ -241,8 +289,15 @@ class AVASetup: NSObject {
         result += "\n\tstake -> \(stake)"
         result += "\n\tmaxBalance -> \(maxBalance)"
         result += "\n\tservice -> \(service)"
+        result += "\n\tlogDebug -> \(logDebug)"
+        result += "\n\tlogInfo -> \(logInfo)"
+        result += "\n\tlogWarning -> \(logWarning)"
+        result += "\n\tlogError -> \(logError)"
+        result += "\n\tlogSuccess -> \(logSuccess)"
+        result += "\n\tlogMeasurement -> \(logMeasurement)"
+        result += "\n\tlogLifecycle -> \(logLifecycle)"
         result += "\n\tdisableNodeUILog -> \(disableNodeUILog)"
-        result += "\n\tlogMeasurementsOnly -> \(logMeasurementsOnly)"
+        
         result += "\n}"
         return result
     }
@@ -452,11 +507,29 @@ class AVAArgumentsParser: NSObject {
             }
             setup.maxBalance = Double(self.currentArgument()!)
         },
+        LOG_DEBUG_NAME: {(setup: AVASetup) -> () in
+            setup.logDebug = true
+        },
+        LOG_INFO_NAME: {(setup: AVASetup) -> () in
+            setup.logInfo = true
+        },
+        LOG_WARNING_NAME: {(setup: AVASetup) -> () in
+            setup.logWarning = true
+        },
+        LOG_ERROR_NAME: {(setup: AVASetup) -> () in
+            setup.logError = true
+        },
+        LOG_SUCCESS_NAME: {(setup: AVASetup) -> () in
+            setup.logSuccess = true
+        },
+        LOG_MEASUREMENT_NAME: {(setup: AVASetup) -> () in
+            setup.logMeasurement = true
+        },
+        LOG_LIFECYCLE_NAME: {(setup: AVASetup) -> () in
+            setup.logLifecycle = true
+        },
         DISABLE_NODE_UI_LOG_NAME: {(setup: AVASetup) -> () in
             setup.disableNodeUILog = true
-        },
-        LOG_MEASUREMENTS_ONLY_NAME: {(setup: AVASetup) -> () in
-            setup.logMeasurementsOnly = true
         }
     ]
 }

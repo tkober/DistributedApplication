@@ -60,6 +60,20 @@ enum AVAMessageType: Int {
      
      */
     case TerminationStatus;
+    
+    /**
+     
+     Wird vom Observer an die Knoten geschickt um eventuelle Messwerte abzufragen.
+     
+     */
+    case FinalMeasurementRequest;
+    
+    /**
+     
+     Enthält Messdaten eines Knoten.
+     
+     */
+    case FinalMeasurement;
 }
 
 
@@ -179,6 +193,22 @@ class AVAMessage: NSObject {
         let json: [String: AnyObject]
         try json = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions(rawValue: 0)) as! [String: AnyObject]
         self.init(json: json)
+    }
+    
+    
+    /**
+     
+     Erzeugt eine FinalMeasurementRequest-Message für einen gegeben Sender.
+     
+     - parameters:
+     
+     - sender: Der Absender der Nachricht.
+     
+     - returns: Die erzeugte Nachricht.
+     
+     */
+    static func finalMeasurementRequestMessage(sender: String) -> AVAMessage {
+        return AVAMessage(type: AVAMessageType.FinalMeasurementRequest, sender: sender)
     }
     
     

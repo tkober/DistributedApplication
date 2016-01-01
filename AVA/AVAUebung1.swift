@@ -139,4 +139,20 @@ class AVAUebung1: NSObject, AVAService {
     
     
     var isRunning = false
+    
+    
+    var needsMeasurement = false
+    
+    
+    var finalMeasurements: AVAJSON! {
+        get {
+            return nil
+        }
+    }
+    
+    
+    func onFinalMeasurementSent() {}
+    
+    
+    func handleMeasurementMessage(message: AVAMessage) {}
 }

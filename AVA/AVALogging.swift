@@ -21,6 +21,7 @@ enum AVALogLevel: Int {
     case Error;
     case Success;
     case Measurement;
+    case Lifecycle;
     
     
     func stringValue() -> String {
@@ -42,6 +43,9 @@ enum AVALogLevel: Int {
             
         case .Measurement:
             return "Measurement"
+            
+        case .Lifecycle:
+            return "Lifecycle"
         }
     }
     
@@ -72,6 +76,10 @@ enum AVALogLevel: Int {
         case .Measurement:
             attributes = [NSForegroundColorAttributeName: NSColor.greenColor()]
             break
+            
+        case .Lifecycle:
+            attributes = [NSForegroundColorAttributeName: NSColor.magentaColor()]
+            break
         }
         return attributes
     }
@@ -96,6 +104,9 @@ enum AVALogLevel: Int {
             
         case .Measurement:
             return AVAGraphvizGreen
+            
+        case .Lifecycle:
+            return AVAGraphvizPink
         }
     }
 }
@@ -115,6 +126,7 @@ enum AVAEvent: Int {
     case DataSent
     case DataReceived
     case Processing
+    case Termination
     
     
     func stringValue() -> String {
@@ -140,6 +152,9 @@ enum AVAEvent: Int {
             
         case .Processing:
             return "Processing"
+            
+        case .Termination:
+            return "Termination"
             
         }
     }

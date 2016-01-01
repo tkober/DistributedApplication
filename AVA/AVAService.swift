@@ -70,6 +70,23 @@ protocol AVAService: class {
      
      */
     func start()
+    
+    
+    /**
+     
+     Gibt an ob nach der Terminierung des Services Messewerte gesammelt werden sollen.
+     
+     */
+    var needsMeasurement: Bool { get }
+    
+    
+    var finalMeasurements: AVAJSON! { get }
+
+    
+    func onFinalMeasurementSent()
+    
+    
+    func handleMeasurementMessage(message: AVAMessage)
 }
 
 

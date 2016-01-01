@@ -11,6 +11,10 @@ import Cocoa
 
 class AVAUebung2: NSObject, AVAService {
     
+    private let FINAL_MEASUREMENT_BALANCE_KEY = "balance"
+    private let FINAL_MEASUREMENT_LEADER_STRATEGY_KEY = "leaderStrategy"
+    private let FINAL_MEASUREMENT_FOLLOWER_STRATEGY_KEY = "followerStrategy"
+    
     /**
      
      Der AVALogging, der zum Loggen verwendet werden soll.
@@ -311,4 +315,75 @@ class AVAUebung2: NSObject, AVAService {
     
     
     var isRunning = false
+    
+    
+    var needsMeasurement = true
+    
+    
+    var finalMeasurements: AVAJSON! {
+        get {
+            var result = [
+                FINAL_MEASUREMENT_BALANCE_KEY: NSNumber(double: self.balance)
+            ]
+            if let leaderStrategy = self.leaderStrategy {
+                result[FINAL_MEASUREMENT_LEADER_STRATEGY_KEY] = NSNumber(integer: leaderStrategy.rawValue)
+            }
+            if let followerStrategy = self.followerStrategy {
+                result[FINAL_MEASUREMENT_FOLLOWER_STRATEGY_KEY] = NSNumber(integer: followerStrategy.rawValue)
+            }
+            return result
+        }
+    }
+    
+    
+    func onFinalMeasurementSent() {
+        self.logger.log(AVALogEntry(level: AVALogLevel.Measurement, event: AVAEvent.Processing, peer: self.setup!.peerName!, description: "Final balance of node '\(self.setup!.peerName!)' is \(self.balance)"))
+    }
+    
+    
+    func handleMeasurementMessage(message: AVAMessage) {
+        let appDelegate = NSApp.delegate as! AppDelegate
+        if let vertex = appDelegate.topology.vertextForName(message.sender) {
+            vertex.measurements = message.payload
+        }
+        
+        var measurements = [AVALeaderFollowerMeasurement]()
+        for vertex in appDelegate.topology.vertices {
+            if vertex.name != OBSERVER_NAME {
+                if vertex.measurements == nil {
+                    return
+                }
+                let measurement = vertex.measurements as! NSDictionary
+                measurements.append(AVALeaderFollowerMeasurement(name: vertex.name, balance: measurement[FINAL_MEASUREMENT_BALANCE_KEY] as! NSNumber, leaderStrategy: measurement[FINAL_MEASUREMENT_LEADER_STRATEGY_KEY] as? NSNumber, followerStrategy: measurement[FINAL_MEASUREMENT_FOLLOWER_STRATEGY_KEY] as? NSNumber))
+            }
+        }
+        measurements.sortInPlace { (a: AVALeaderFollowerMeasurement, b: AVALeaderFollowerMeasurement) -> Bool in
+            return a.balance.doubleValue > b.balance.doubleValue
+        }
+        var csv = "node (Strategies);Balance"
+        for measurement in measurements {
+            csv += "\n"
+            csv += measurement.csvValue()
+        }
+        self.logger.log(AVALogEntry(level: AVALogLevel.Measurement, event: AVAEvent.Processing, peer: self.setup!.peerName!, description: "Game result as CSV:\n\(csv)"))
+    }
 }
+
+
+struct AVALeaderFollowerMeasurement {
+    
+    var name: AVAVertexName
+    
+    var balance: NSNumber
+    
+    var leaderStrategy: NSNumber?
+    
+    var followerStrategy: NSNumber?
+    
+    
+    func csvValue() -> String {
+        // name (LS|FS);Balance
+        return "\(self.name)(\(self.leaderStrategy != nil ? self.leaderStrategy!.stringValue : "-")|\(self.followerStrategy != nil ? self.followerStrategy!.stringValue : "-"));\(self.balance)"
+    }
+}
+

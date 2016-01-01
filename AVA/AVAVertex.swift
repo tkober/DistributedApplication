@@ -41,6 +41,8 @@ class AVAVertex: NSObject {
     
     var messageSentCount: UInt?
     
+    var measurements: AVAJSON?
+    
     
     init(name: AVAVertexName, ip: String, port: UInt16, attributes: AVAJSON?) {
         self.name = name
