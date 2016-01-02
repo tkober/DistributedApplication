@@ -224,7 +224,7 @@ class AVANodeManager: NSObject {
     func start() {
         serverSocket.setup()
         serverSocket.start()
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(5 * Double(NSEC_PER_SEC))), dispatch_get_main_queue()) { () -> Void in
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(10 * Double(NSEC_PER_SEC))), dispatch_get_main_queue()) { () -> Void in
             for vertex in self.verticesToConnect {
                 let vertexName = self.topology.vertextForName(vertex.name)!
                 let socketStream = AVASocketStream(vertex: vertexName)

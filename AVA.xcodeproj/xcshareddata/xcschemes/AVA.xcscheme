@@ -76,7 +76,7 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "--logWarning"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "--logError"
@@ -107,8 +107,24 @@
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "~/Documents/Studium/9_Semester/AVA/complete.topology"
+            argument = "~/Documents/Studium/9_Semester/AVA/Uebung2/A2_8.topology"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "~/Documents/Studium/9_Semester/AVA/Uebung2/A2_16.topology"
             isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "~/Documents/Studium/9_Semester/AVA/Uebung2/A2_24.topology"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "~/Documents/Studium/9_Semester/AVA/Uebung2/A3_16.topology"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "~/Documents/Studium/9_Semester/AVA/Uebung2/A3_32.topology"
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "--randomTopology"
@@ -171,7 +187,7 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "3"
+            argument = "5"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument

@@ -9,7 +9,7 @@
 #include "AVASockets.h"
 
 
-int POSIXSocketBufferSize = 1024;
+int POSIXSocketBufferSize = 8192;
 
 
 extern void start_reading_posix_socket(int socket_fd, POSIXServerSocketReadCallback readCallback);
