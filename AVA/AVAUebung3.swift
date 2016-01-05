@@ -42,6 +42,9 @@ class AVAUebung3: NSObject, AVAService {
     }
     
     
+    private static let INITIAL_SHARED_RESOURCE_CONTENT = "000000000"
+    
+    
     // MARK: | AVAService
     
     func initializeWithBufferedMessage(messages: [AVAMessage]) {
@@ -67,6 +70,23 @@ class AVAUebung3: NSObject, AVAService {
         self.setup = setup
         self.logger = appDelegate
         super.init()
+        
+        if setup.isObserver {
+            if let path = self.setup?.sharedResoucePath {
+                do {
+                    if NSFileManager.defaultManager().fileExistsAtPath(path) {
+                        try NSFileManager.defaultManager().removeItemAtPath(path)
+                    }
+                    try AVAUebung3.INITIAL_SHARED_RESOURCE_CONTENT.writeToFile(path, atomically: true, encoding: NSUTF8StringEncoding)
+                } catch {
+                    print("Fatal Error: Setting up shared resource failed.")
+                    exit(7);
+                }
+            } else {
+                print("Missing parameter: --sharedResource")
+                exit(5);
+            }
+        }
     }
     
     

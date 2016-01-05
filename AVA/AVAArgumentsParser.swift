@@ -64,6 +64,7 @@ enum AVAServiceType: UInt {
             break
             
         case .Uebung3:
+            result.appendContentsOf([SHARED_RESOURCE_PATH_NAME, "\(setup.sharedResoucePath!)"])
             break
             
         }
@@ -578,7 +579,7 @@ class AVAArgumentsParser: NSObject {
                 print("Missing arguments")
                 exit(2)
             }
-            setup.sharedResoucePath = self.currentArgument()!
+            setup.sharedResoucePath = (self.currentArgument()! as NSString).stringByExpandingTildeInPath
         }
     ]
 }
