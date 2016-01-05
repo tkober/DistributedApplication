@@ -350,6 +350,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         if self.setup.isObserver {
             self.topology.vertextForName(message.sender)?.hasRepotedStandby = true
             logEntry = AVALogEntry(level: AVALogLevel.Info, event: AVAEvent.Processing, peer: self.setup.peerName, description: "Node '\(message.sender)' reported standby. (\(self.topology.verticesInStandby().count)/\(self.topology.vertices.count - 1))", remotePeer: message.sender, message: message)
+            if self.topology.verticesInStandby().count == self.topology.vertices.count - 1 {
+                print("Topology is ready to start")
+                self.log(AVALogEntry(level: AVALogLevel.Lifecycle, event: AVAEvent.Processing, peer: OBSERVER_NAME, description: "Topology is ready to start"))
+            }
         } else {
             logEntry = AVALogEntry(level: AVALogLevel.Error, event: AVAEvent.Processing, peer: self.setup.peerName, description: "Received Standby message from '\(message.sender)'", remotePeer: message.sender, message: message)
             
@@ -568,8 +572,7 @@ extension AppDelegate: AVANodeManagerDelegate {
     func nodeManager(nodeManager: AVANodeManager, stateUpdated state: AVANodeState) {
         if state.disconnectedPeers.count == 0 {
             if self.setup.isObserver {
-                print("Topology is ready to start")
-                self.log(AVALogEntry(level: AVALogLevel.Lifecycle, event: AVAEvent.Processing, peer: OBSERVER_NAME, description: "Topology is ready to start"))
+                
             } else {
                 self.startServiceIfNecessary()
                 nodeManager.sendMessage(AVAMessage.standbyMessage(self.setup.peerName), toVertex: OBSERVER_NAME)
