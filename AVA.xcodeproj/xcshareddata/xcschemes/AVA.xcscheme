@@ -116,7 +116,7 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "~/Documents/Studium/9_Semester/AVA/Uebung2/A2_8.topology"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "~/Documents/Studium/9_Semester/AVA/Uebung2/A2_16.topology"
@@ -136,7 +136,7 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "~/Documents/Studium/9_Semester/AVA/Uebung3/Test.topology"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "--randomTopology"
@@ -160,11 +160,11 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "2"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "3"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "--rumor"
@@ -184,27 +184,27 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "--nodesToContact"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "3"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "--stake"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "3"
-            isEnabled = "NO">
+            argument = "100"
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "--maxBalance"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "10000"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "--sharedResoucre"

@@ -48,8 +48,8 @@ class AVAUebung2: NSObject, AVAService {
     private var leaderStrategy: AVALeaderStrategy? {
         get {
             if let attributes = (self.nodeAttributes as? NSDictionary) {
-                if let number = attributes.valueForKey(LEADER_STRATEGY_ATTRIBUTE)?.integerValue {
-                    return number
+                if let raw = attributes.valueForKey(LEADER_STRATEGY_ATTRIBUTE) {
+                    return AVALeaderStrategy(rawValue: (raw as! NSNumber).integerValue)
                 }
             }
             return nil
@@ -59,8 +59,8 @@ class AVAUebung2: NSObject, AVAService {
     private var followerStrategy: AVAFollowerStrategy? {
         get {
             if let attributes = (self.nodeAttributes as? NSDictionary) {
-                if let number = attributes.valueForKey(FOLLOWER_STRATEGY_ATTRIBUTE)?.integerValue {
-                    return number
+                if let raw = attributes.valueForKey(FOLLOWER_STRATEGY_ATTRIBUTE) {
+                    return AVAFollowerStrategy(rawValue: (raw as! NSNumber).integerValue)
                 }
             }
             return nil
@@ -153,25 +153,81 @@ class AVAUebung2: NSObject, AVAService {
     
     
     private func shouldAcceptInstance(instance: AVALeaderFollowerInstance, followerStrategy strategy: AVAFollowerStrategy) -> Bool {
-        if instance.leaderStrategy >= strategy {
+        switch strategy {
+            
+        case .AlwaysAccept:
             instance.result = AVALeaderFollowerInstanceResult.Accepted
             return true
-        } else {
-            instance.result = AVALeaderFollowerInstanceResult.Declined
-            return false
+            
+        case .AcceptAtLeast1Third:
+            if instance.leaderStrategy != AVALeaderStrategy.OfferNothing {
+                instance.result = AVALeaderFollowerInstanceResult.Accepted
+                return true
+            }
+            break
+            
+        case .AcceptAtLeast2Third:
+            if instance.leaderStrategy == AVALeaderStrategy.OfferEverything || instance.leaderStrategy == AVALeaderStrategy.Offer2Third {
+                instance.result = AVALeaderFollowerInstanceResult.Accepted
+                return true
+            }
+            break
+            
+        case .AcceptEverythingOnly:
+            if instance.leaderStrategy == AVALeaderStrategy.OfferEverything {
+                instance.result = AVALeaderFollowerInstanceResult.Accepted
+                return true
+            }
+            break
+            
         }
+        instance.result = AVALeaderFollowerInstanceResult.Declined
+        return false
     }
     
     
     private func applyStrategyOnLeader(strategy: AVALeaderStrategy, withStake stake: Double) {
-        self.balance += stake - Double(strategy)
-
+        switch strategy {
+            
+        case .OfferNothing:
+            self.balance += stake
+            break
+            
+        case .Offer1Third:
+            self.balance += (stake / 3) * 2;
+            break
+            
+        case .Offer2Third:
+            self.balance += stake / 3;
+            break
+            
+        case .OfferEverything:
+            break
+            
+        }
     }
 
     
     
     private func applyStrategyOnFollower(strategy: AVALeaderStrategy, withStake stake: Double) {
-        self.balance += Double(strategy)
+        switch strategy {
+            
+        case .OfferNothing:
+            break
+            
+        case .Offer1Third:
+            self.balance += stake / 3;
+            break
+            
+        case .Offer2Third:
+            self.balance += (stake / 3) * 2;
+            break
+            
+        case .OfferEverything:
+            self.balance += stake
+            break
+            
+        }
     }
     
     
@@ -280,10 +336,10 @@ class AVAUebung2: NSObject, AVAService {
                 FINAL_MEASUREMENT_BALANCE_KEY: NSNumber(double: self.balance)
             ]
             if let leaderStrategy = self.leaderStrategy {
-                result[FINAL_MEASUREMENT_LEADER_STRATEGY_KEY] = NSNumber(integer: leaderStrategy)
+                result[FINAL_MEASUREMENT_LEADER_STRATEGY_KEY] = NSNumber(integer: leaderStrategy.rawValue)
             }
             if let followerStrategy = self.followerStrategy {
-                result[FINAL_MEASUREMENT_FOLLOWER_STRATEGY_KEY] = NSNumber(integer: followerStrategy)
+                result[FINAL_MEASUREMENT_FOLLOWER_STRATEGY_KEY] = NSNumber(integer: followerStrategy.rawValue)
             }
             return result
         }
