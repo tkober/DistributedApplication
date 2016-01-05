@@ -660,6 +660,8 @@ extension AppDelegate {
         case AVAServiceType.Uebung2:
             return AVAUebung2(setup: setup)
             
+        case AVAServiceType.Uebung3:
+            return AVAUebung3(setup: setup)
         }
     }
     

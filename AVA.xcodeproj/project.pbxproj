@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		DC5DC8251C3C08ED009B3F1A /* AVAUebung3.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC5DC8241C3C08ED009B3F1A /* AVAUebung3.swift */; };
+		DC5DC8271C3C0B06009B3F1A /* AVAMutexAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC5DC8261C3C0B06009B3F1A /* AVAMutexAction.swift */; };
 		DC613D291C16C95200380987 /* AVASocketStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC613D281C16C95200380987 /* AVASocketStream.swift */; };
 		DCE000481C03251C00EDF1FD /* AVAVertex.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCE000471C03251C00EDF1FD /* AVAVertex.swift */; };
 		DCE0004B1C0339A800EDF1FD /* AVAAdjacency.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCE0004A1C0339A800EDF1FD /* AVAAdjacency.swift */; };
@@ -32,6 +34,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		DC5DC8241C3C08ED009B3F1A /* AVAUebung3.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AVAUebung3.swift; sourceTree = "<group>"; };
+		DC5DC8261C3C0B06009B3F1A /* AVAMutexAction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AVAMutexAction.swift; sourceTree = "<group>"; };
 		DC613D281C16C95200380987 /* AVASocketStream.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AVASocketStream.swift; sourceTree = "<group>"; };
 		DCE000471C03251C00EDF1FD /* AVAVertex.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AVAVertex.swift; sourceTree = "<group>"; };
 		DCE0004A1C0339A800EDF1FD /* AVAAdjacency.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AVAAdjacency.swift; sourceTree = "<group>"; };
@@ -71,6 +75,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		DC5DC8231C3C0710009B3F1A /* Uebung3 */ = {
+			isa = PBXGroup;
+			children = (
+				DC5DC8241C3C08ED009B3F1A /* AVAUebung3.swift */,
+				DC5DC8261C3C0B06009B3F1A /* AVAMutexAction.swift */,
+			);
+			name = Uebung3;
+			sourceTree = "<group>";
+		};
 		DC613D271C16C93E00380987 /* SocketStream */ = {
 			isa = PBXGroup;
 			children = (
@@ -201,6 +214,7 @@
 				F1B3F2CA1BDD79B3009C0E7B /* AVAService.swift */,
 				F19D22C21BE03C12006CB5F8 /* Uebung1 */,
 				F126F5161C2FBC6300DC3748 /* Uebung2 */,
+				DC5DC8231C3C0710009B3F1A /* Uebung3 */,
 			);
 			name = Service;
 			sourceTree = "<group>";
@@ -311,6 +325,7 @@
 			files = (
 				DC613D291C16C95200380987 /* AVASocketStream.swift in Sources */,
 				F19D22C41BE03C31006CB5F8 /* AVAUebung1.swift in Sources */,
+				DC5DC8251C3C08ED009B3F1A /* AVAUebung3.swift in Sources */,
 				F1E816671BDAE5CF00F03284 /* AVAMessage.swift in Sources */,
 				F1C697601BE8B53B0022D8F6 /* AVALogViewController.swift in Sources */,
 				DCE0004B1C0339A800EDF1FD /* AVAAdjacency.swift in Sources */,
@@ -324,6 +339,7 @@
 				F15C07DE1BD7A4B000EB41D8 /* AVALogging.swift in Sources */,
 				F13699F11C04DBB400D71D38 /* AVASockets.c in Sources */,
 				F15C07CB1BD75CCF00EB41D8 /* AppDelegate.swift in Sources */,
+				DC5DC8271C3C0B06009B3F1A /* AVAMutexAction.swift in Sources */,
 				F146FD431BD97AD70028B4E1 /* AVAGraphvizAdapter.swift in Sources */,
 				F16B55861C2AD6CA00B4EF04 /* ObserverViewController.swift in Sources */,
 				F161EDE91BD856E6008131C3 /* AVATopology.swift in Sources */,

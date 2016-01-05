@@ -25,10 +25,17 @@ enum AVAServiceType: UInt {
     
     /**
      
-     Service für die Übung 1.
+     Service für die Übung 2.
      
      */
     case Uebung2 = 2
+    
+    /**
+     
+     Service für die Übung 3.
+     
+     */
+    case Uebung3 = 3
     
     
     /**
@@ -54,6 +61,9 @@ enum AVAServiceType: UInt {
             if let maxBalance = setup.maxBalance {
                 result.appendContentsOf([MAX_BALANCE_NAME, "\(maxBalance)"])
             }
+            break
+            
+        case .Uebung3:
             break
             
         }
@@ -82,6 +92,7 @@ let LOG_LIFECYCLE_NAME = "--logLifecycle"
 let DISABLE_NODE_UI_LOG_NAME = "--disableNodeUILog"
 let INSTANT_MEASUREMENT_NAME = "--instantMeasurement"
 let NO_GRAPHVIZ_NAME = "--noGraphviz"
+let SHARED_RESOURCE_PATH_NAME = "--sharedResoucre"
 
 
 /**
@@ -276,6 +287,13 @@ class AVASetup: NSObject {
     
     /**
      
+     Der Pfad zur shared resource in Uebung 3.
+     
+     */
+    var sharedResoucePath: String?
+    
+    /**
+     
      Erzeugt ein neues AVASetup-Objekt.
      
      - parameters:
@@ -315,6 +333,7 @@ class AVASetup: NSObject {
         result += "\n\tdisableNodeUILog -> \(disableNodeUILog)"
         result += "\n\tinstantMeasurement -> \(instantMeasurement)"
         result += "\n\tnoGraphviz -> \(noGraphviz)"
+        result += "\n\tsharedResoucePath -> \(sharedResoucePath)"
         result += "\n}"
         return result
     }
@@ -553,6 +572,13 @@ class AVAArgumentsParser: NSObject {
         },
         NO_GRAPHVIZ_NAME: {(setup: AVASetup) -> () in
             setup.noGraphviz = true
+        },
+        SHARED_RESOURCE_PATH_NAME: {(setup: AVASetup) -> () in
+            if (!self.nextArgument()) {
+                print("Missing arguments")
+                exit(2)
+            }
+            setup.sharedResoucePath = self.currentArgument()!
         }
     ]
 }
