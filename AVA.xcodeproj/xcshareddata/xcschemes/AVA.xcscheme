@@ -72,7 +72,7 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "--noGraphviz"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "--logDebug"
@@ -116,7 +116,7 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "~/Documents/Studium/9_Semester/AVA/Uebung2/A2_8.topology"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "~/Documents/Studium/9_Semester/AVA/Uebung2/A2_16.topology"
@@ -136,7 +136,7 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "~/Documents/Studium/9_Semester/AVA/Uebung3/Test.topology"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "--randomTopology"
@@ -160,11 +160,11 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "2"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "3"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "--rumor"
@@ -184,35 +184,35 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "--nodesToContact"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "3"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "--stake"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "3"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "--maxBalance"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "10000"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "--sharedResoucre"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "~/Desktop/ava.shared_resource"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>
       <AdditionalOptions>
