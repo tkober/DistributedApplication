@@ -67,6 +67,14 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
+            argument = "--instantMeasurement"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "--noGraphviz"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
             argument = "--logDebug"
             isEnabled = "NO">
          </CommandLineArgument>
@@ -112,7 +120,7 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "~/Documents/Studium/9_Semester/AVA/Uebung2/A2_16.topology"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "~/Documents/Studium/9_Semester/AVA/Uebung2/A2_24.topology"
@@ -124,7 +132,7 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "~/Documents/Studium/9_Semester/AVA/Uebung2/A3_32.topology"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "--randomTopology"
@@ -187,7 +195,7 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "5"
+            argument = "3"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument

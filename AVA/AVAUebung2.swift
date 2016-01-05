@@ -48,8 +48,8 @@ class AVAUebung2: NSObject, AVAService {
     private var leaderStrategy: AVALeaderStrategy? {
         get {
             if let attributes = (self.nodeAttributes as? NSDictionary) {
-                if let raw = attributes.valueForKey(LEADER_STRATEGY_ATTRIBUTE) {
-                    return AVALeaderStrategy(rawValue: (raw as! NSNumber).integerValue)
+                if let number = attributes.valueForKey(LEADER_STRATEGY_ATTRIBUTE)?.integerValue {
+                    return number
                 }
             }
             return nil
@@ -59,8 +59,8 @@ class AVAUebung2: NSObject, AVAService {
     private var followerStrategy: AVAFollowerStrategy? {
         get {
             if let attributes = (self.nodeAttributes as? NSDictionary) {
-                if let raw = attributes.valueForKey(FOLLOWER_STRATEGY_ATTRIBUTE) {
-                    return AVAFollowerStrategy(rawValue: (raw as! NSNumber).integerValue)
+                if let number = attributes.valueForKey(FOLLOWER_STRATEGY_ATTRIBUTE)?.integerValue {
+                    return number
                 }
             }
             return nil
@@ -69,7 +69,17 @@ class AVAUebung2: NSObject, AVAService {
     
     private var balance: Double = 0
     
-    private var halt = false
+    private var halt = false {
+        didSet {
+            if self.setup!.instantMeasurement {
+                if self.halt == true {
+                    let message = AVAMessage(type: AVAMessageType.FinalMeasurement, sender: self.setup!.peerName!, payload: self.finalMeasurements)
+                    self.onFinalMeasurementSent()
+                    self.nodeManager.sendMessage(message, toVertex: OBSERVER_NAME)
+                }
+            }
+        }
+    }
     
     
     // MARK: | Instance Handling
@@ -143,81 +153,25 @@ class AVAUebung2: NSObject, AVAService {
     
     
     private func shouldAcceptInstance(instance: AVALeaderFollowerInstance, followerStrategy strategy: AVAFollowerStrategy) -> Bool {
-        switch strategy {
-            
-        case .AlwaysAccept:
+        if instance.leaderStrategy >= strategy {
             instance.result = AVALeaderFollowerInstanceResult.Accepted
             return true
-            
-        case .AcceptAtLeast1Third:
-            if instance.leaderStrategy != AVALeaderStrategy.OfferNothing {
-                instance.result = AVALeaderFollowerInstanceResult.Accepted
-                return true
-            }
-            break
-            
-        case .AcceptAtLeast2Third:
-            if instance.leaderStrategy == AVALeaderStrategy.OfferEverything || instance.leaderStrategy == AVALeaderStrategy.Offer2Third {
-                instance.result = AVALeaderFollowerInstanceResult.Accepted
-                return true
-            }
-            break
-            
-        case .AcceptEverythingOnly:
-            if instance.leaderStrategy == AVALeaderStrategy.OfferEverything {
-                instance.result = AVALeaderFollowerInstanceResult.Accepted
-                return true
-            }
-            break
-            
+        } else {
+            instance.result = AVALeaderFollowerInstanceResult.Declined
+            return false
         }
-        instance.result = AVALeaderFollowerInstanceResult.Declined
-        return false
     }
     
     
     private func applyStrategyOnLeader(strategy: AVALeaderStrategy, withStake stake: Double) {
-        switch strategy {
-            
-        case .OfferNothing:
-            self.balance += stake
-            break
-            
-        case .Offer1Third:
-            self.balance += (stake / 3) * 2;
-            break
-            
-        case .Offer2Third:
-            self.balance += stake / 3;
-            break
-            
-        case .OfferEverything:
-            break
-            
-        }
+        self.balance += stake - Double(strategy)
+
     }
 
     
     
     private func applyStrategyOnFollower(strategy: AVALeaderStrategy, withStake stake: Double) {
-        switch strategy {
-            
-        case .OfferNothing:
-            break
-            
-        case .Offer1Third:
-            self.balance += stake / 3;
-            break
-            
-        case .Offer2Third:
-            self.balance += (stake / 3) * 2;
-            break
-            
-        case .OfferEverything:
-            self.balance += stake
-            break
-            
-        }
+        self.balance += Double(strategy)
     }
     
     
@@ -326,10 +280,10 @@ class AVAUebung2: NSObject, AVAService {
                 FINAL_MEASUREMENT_BALANCE_KEY: NSNumber(double: self.balance)
             ]
             if let leaderStrategy = self.leaderStrategy {
-                result[FINAL_MEASUREMENT_LEADER_STRATEGY_KEY] = NSNumber(integer: leaderStrategy.rawValue)
+                result[FINAL_MEASUREMENT_LEADER_STRATEGY_KEY] = NSNumber(integer: leaderStrategy)
             }
             if let followerStrategy = self.followerStrategy {
-                result[FINAL_MEASUREMENT_FOLLOWER_STRATEGY_KEY] = NSNumber(integer: followerStrategy.rawValue)
+                result[FINAL_MEASUREMENT_FOLLOWER_STRATEGY_KEY] = NSNumber(integer: followerStrategy)
             }
             return result
         }

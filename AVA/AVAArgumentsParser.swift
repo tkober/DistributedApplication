@@ -80,6 +80,8 @@ let LOG_SUCCESS_NAME = "--logSuccess"
 let LOG_MEASUREMENT_NAME = "--logMeasurement"
 let LOG_LIFECYCLE_NAME = "--logLifecycle"
 let DISABLE_NODE_UI_LOG_NAME = "--disableNodeUILog"
+let INSTANT_MEASUREMENT_NAME = "--instantMeasurement"
+let NO_GRAPHVIZ_NAME = "--noGraphviz"
 
 
 /**
@@ -260,6 +262,20 @@ class AVASetup: NSObject {
     
     /**
      
+     Gibt an, ob ein Service selbständig Messwerte an den Beobachter senden soll oder erst bei Aufforderung.
+     
+     */
+    var instantMeasurement = false
+    
+    /**
+     
+     Gibt an, ob der Topologie-Status mit Graphviz dargestellt werden soll.
+     
+     */
+    var noGraphviz = false
+    
+    /**
+     
      Erzeugt ein neues AVASetup-Objekt.
      
      - parameters:
@@ -297,7 +313,8 @@ class AVASetup: NSObject {
         result += "\n\tlogMeasurement -> \(logMeasurement)"
         result += "\n\tlogLifecycle -> \(logLifecycle)"
         result += "\n\tdisableNodeUILog -> \(disableNodeUILog)"
-        
+        result += "\n\tinstantMeasurement -> \(instantMeasurement)"
+        result += "\n\tnoGraphviz -> \(noGraphviz)"
         result += "\n}"
         return result
     }
@@ -530,6 +547,12 @@ class AVAArgumentsParser: NSObject {
         },
         DISABLE_NODE_UI_LOG_NAME: {(setup: AVASetup) -> () in
             setup.disableNodeUILog = true
+        },
+        INSTANT_MEASUREMENT_NAME: {(setup: AVASetup) -> () in
+            setup.instantMeasurement = true
+        },
+        NO_GRAPHVIZ_NAME: {(setup: AVASetup) -> () in
+            setup.noGraphviz = true
         }
     ]
 }

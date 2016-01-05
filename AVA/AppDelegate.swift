@@ -296,6 +296,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         if self.setup.disableNodeUILog {
             task.arguments?.append(DISABLE_NODE_UI_LOG_NAME)
         }
+        if self.setup.instantMeasurement {
+            task.arguments?.append(INSTANT_MEASUREMENT_NAME)
+        }
         task.arguments?.appendContentsOf(serviceType.nodeInstantiationParametersFromSetup(self.setup))
         dispatch_async(dispatch_queue_create("peer_\(vertex)_instantiate", DISPATCH_QUEUE_SERIAL)) { () -> Void in
             task.launch()
@@ -564,9 +567,9 @@ extension AppDelegate: AVANodeManagerDelegate {
     
     func nodeManager(nodeManager: AVANodeManager, stateUpdated state: AVANodeState) {
         if state.disconnectedPeers.count == 0 {
-            
             if self.setup.isObserver {
-                
+                print("Topology is ready to start")
+                self.log(AVALogEntry(level: AVALogLevel.Lifecycle, event: AVAEvent.Processing, peer: OBSERVER_NAME, description: "Topology is ready to start"))
             } else {
                 self.startServiceIfNecessary()
                 nodeManager.sendMessage(AVAMessage.standbyMessage(self.setup.peerName), toVertex: OBSERVER_NAME)

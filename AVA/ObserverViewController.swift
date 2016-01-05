@@ -150,7 +150,11 @@ class ObserverViewController: NSViewController {
         appDelegate.loggingTextView = loggingTextView
         appDelegate.onArgumentsProcessed = self.onArgumentProcessing
         appDelegate.onNodeStateUpdate = self.onNodeStateUpdate
-
+        
+        if appDelegate.setup.noGraphviz {
+            self.renderingGraphProgressIndicator?.stopAnimation(self)
+            self.renderingGraphProgressIndicator?.hidden = true
+        }
     }
     
     
@@ -202,14 +206,17 @@ class ObserverViewController: NSViewController {
     
     
     func renderAndUpdateGraphImage(tempFilePath: String) {
-        GRAPHVIZ.renderPNGFromDOTFile(tempFilePath) { (image) -> () in
-            if let graphImage = image {
-                self.updateGraphImage(graphImage)
-            }
-            do {
-                try NSFileManager.defaultManager().removeItemAtPath(tempFilePath)
-            } catch {
-                print("could not remove file")
+        let appDelegate = NSApp.delegate as! AppDelegate
+        if !appDelegate.setup.noGraphviz {
+            GRAPHVIZ.renderPNGFromDOTFile(tempFilePath) { (image) -> () in
+                if let graphImage = image {
+                    self.updateGraphImage(graphImage)
+                }
+                do {
+                    try NSFileManager.defaultManager().removeItemAtPath(tempFilePath)
+                } catch {
+                    print("could not remove file")
+                }
             }
         }
     }

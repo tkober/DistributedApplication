@@ -11,32 +11,13 @@ import Foundation
 
 let LEADER_STRATEGY_ATTRIBUTE = "leader_strategy"
 
-enum AVALeaderStrategy: Int {
-    
-    case OfferNothing = 0
-    
-    case Offer1Third
-    
-    case Offer2Third
-    
-    case OfferEverything
-    
-}
+typealias AVALeaderStrategy = Int
+
 
 
 let FOLLOWER_STRATEGY_ATTRIBUTE = "follower_strategy"
 
-enum AVAFollowerStrategy: Int {
-    
-    case AlwaysAccept = 0
-    
-    case AcceptAtLeast1Third
-    
-    case AcceptAtLeast2Third
-    
-    case AcceptEverythingOnly
-    
-}
+typealias AVAFollowerStrategy = Int
 
 
 /**
@@ -104,24 +85,20 @@ class AVALeaderFollowerInstance: NSObject, AVAJSONConvertable {
     // MARK: | AVAJSONConvertable
     
     convenience required init(json: AVAJSON) throws {
-        if let strategyRaw = ((json as! NSDictionary)[AVALeaderFollowerInstance.LEADER_STRATEGY_KEY] as? NSNumber) {
-            if let strategy = AVALeaderStrategy(rawValue: strategyRaw.integerValue) {
-                var result: AVALeaderFollowerInstanceResult? = nil
-                if let resultRaw = ((json as! NSDictionary)[AVALeaderFollowerInstance.RESULT_KEY] as? NSNumber) {
-                    if let resultValue = AVALeaderFollowerInstanceResult(rawValue: resultRaw.integerValue) {
-                        result = resultValue
-                    } else {
-                        throw AVALeaderFollowerInstanceError.invalidResultValue
-                    }
-                }
-                if let halt = ((json as! NSDictionary)[AVALeaderFollowerInstance.HALT_KEY] as? NSNumber) {
-                    self.init(leaderStrategy: strategy, result: result)
-                    self.halt = halt.boolValue
+        if let strategyNumber = ((json as! NSDictionary)[AVALeaderFollowerInstance.LEADER_STRATEGY_KEY] as? NSNumber)?.integerValue {
+            var result: AVALeaderFollowerInstanceResult? = nil
+            if let resultRaw = ((json as! NSDictionary)[AVALeaderFollowerInstance.RESULT_KEY] as? NSNumber) {
+                if let resultValue = AVALeaderFollowerInstanceResult(rawValue: resultRaw.integerValue) {
+                    result = resultValue
                 } else {
-                    throw AVALeaderFollowerInstanceError.invalidPayload
+                    throw AVALeaderFollowerInstanceError.invalidResultValue
                 }
+            }
+            if let halt = ((json as! NSDictionary)[AVALeaderFollowerInstance.HALT_KEY] as? NSNumber) {
+                self.init(leaderStrategy: strategyNumber, result: result)
+                self.halt = halt.boolValue
             } else {
-                throw AVALeaderFollowerInstanceError.invalidStrategyValue
+                throw AVALeaderFollowerInstanceError.invalidPayload
             }
         } else {
             throw AVALeaderFollowerInstanceError.invalidPayload
@@ -131,7 +108,7 @@ class AVALeaderFollowerInstance: NSObject, AVAJSONConvertable {
     
     func toJSON() -> AVAJSON {
         var json: [String: AnyObject] = [
-            AVALeaderFollowerInstance.LEADER_STRATEGY_KEY: NSNumber(integer: self.leaderStrategy.rawValue),
+            AVALeaderFollowerInstance.LEADER_STRATEGY_KEY: NSNumber(integer: self.leaderStrategy),
             AVALeaderFollowerInstance.HALT_KEY: NSNumber(bool: self.halt)
         ]
         if let result = self.result {
