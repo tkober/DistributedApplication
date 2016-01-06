@@ -45,6 +45,11 @@ class AVAUebung3: NSObject, AVAService {
     private static let INITIAL_SHARED_RESOURCE_CONTENT = "000000000"
     
     
+    private func scheduleMutexEntrance() {
+        self.logger.log(AVALogEntry(level: AVALogLevel.Warning, event: AVAEvent.Processing, peer: self.setup!.peerName!, description: "Node '\(self.setup!.peerName!)' scheduled mutex entrance"))
+    }
+    
+    
     // MARK: | AVAService
     
     func initializeWithBufferedMessage(messages: [AVAMessage]) {
@@ -57,8 +62,26 @@ class AVAUebung3: NSObject, AVAService {
     
     func nodeManager(nodeManager: AVANodeManager, didReceiveApplicationDataMessage message: AVAMessage) {
         if let payload = message.payload {
-
-            
+            do {
+                let mutexAction = try AVAMutexAction(json: payload)
+                switch mutexAction.type {
+                    
+                case .Start:
+                    self.scheduleMutexEntrance()
+                    break
+                    
+                case .Request:
+                    break
+                    
+                case .Confirmation:
+                    break
+                    
+                case .Release:
+                    break
+                    
+                }
+            } catch {
+            }
         } else {
             self.logger.log(AVALogEntry(level: AVALogLevel.Warning, event: AVAEvent.Processing, peer: self.setup!.peerName!, description: "Received application data do not contain any payload"))
         }
@@ -91,7 +114,9 @@ class AVAUebung3: NSObject, AVAService {
     
     
     func start() {
-
+        let startMessage = AVAMessage(type: AVAMessageType.ApplicationData, sender: self.setup!.peerName!, payload: AVAMutexAction(type: AVAMutexActionType.Start).toJSON())
+        self.nodeManager.broadcastMessage(startMessage, exceptingVertices: [OBSERVER_NAME])
+        self.scheduleMutexEntrance()
     }
     
     
