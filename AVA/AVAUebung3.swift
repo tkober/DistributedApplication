@@ -48,10 +48,17 @@ class AVAUebung3: NSObject, AVAService {
     private var criticalSectionEntranceTimer: NSTimer!
     
     
-    private func scheduleCriticalSectionEntrance() {
-        let delay = Double(arc4random_uniform(100)) / 1000
-        dispatch_sync(dispatch_get_main_queue()) { () -> Void in
-            self.criticalSectionEntranceTimer = NSTimer.scheduledTimerWithTimeInterval(delay, target: self, selector: "requestCriticalSectionEntrance", userInfo: nil, repeats: false)
+    private func scheduleCriticalSectionEntranceIfNeeded() {
+        if self.needsAdditionalCriticalSecionEntrance() {
+            let delay = (Double(500) + Double(arc4random_uniform(2000))) / Double(1000)
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(delay * Double(NSEC_PER_SEC))), dispatch_get_main_queue()) { () -> Void in
+                self.requestCriticalSectionEntrance()
+            }
+            
+//            dispatch_sync(dispatch_get_main_queue()) { () -> Void in
+//                self.criticalSectionEntranceTimer = NSTimer.scheduledTimerWithTimeInterval(delay, target: self, selector: "requestCriticalSectionEntrance", userInfo: nil, repeats: false)
+//            }
+
         }
     }
     
@@ -69,6 +76,7 @@ class AVAUebung3: NSObject, AVAService {
         let mutexAction = AVAMutexAction(type: AVAMutexActionType.Request, timestamp: entrance.timestamp)
         let message = AVAMessage(type: AVAMessageType.ApplicationData, sender: self.setup!.peerName!, payload: mutexAction.toJSON())
         self.nodeManager.broadcastMessage(message, exceptingVertices: [OBSERVER_NAME])
+        self.scheduleCriticalSectionEntranceIfNeeded()
     }
     
     
@@ -135,19 +143,18 @@ class AVAUebung3: NSObject, AVAService {
             if let nextMutex = self.mutexQueue.first {
                 if nextMutex.node == self.setup!.peerName && nextMutex.nodesToConfirm.count == 0 {
                     self.removeCriticalSectionEntranceRequestFromQueue(nextMutex)
-                    self.logger.log(AVALogEntry(level: AVALogLevel.Warning, event: AVAEvent.Processing, peer: self.setup!.peerName, description: "Entering critical section"))
-                    self.useSharedResource()
-                    self.logger.log(AVALogEntry(level: AVALogLevel.Success, event: AVAEvent.Processing, peer: self.setup!.peerName, description: "Leaving critical section"))
-                    let action = AVAMutexAction(type: AVAMutexActionType.Release, timestamp: nextMutex.timestamp)
-                    let message = AVAMessage(type: AVAMessageType.ApplicationData, sender: self.setup!.peerName, payload: action.toJSON())
-                    self.nodeManager.broadcastMessage(message, exceptingVertices: [OBSERVER_NAME])
                     if self.needsAdditionalCriticalSecionEntrance() {
-                        self.scheduleCriticalSectionEntrance()
+                        self.logger.log(AVALogEntry(level: AVALogLevel.Warning, event: AVAEvent.Processing, peer: self.setup!.peerName, description: "Entering critical section"))
+                        self.useSharedResource()
+                        self.logger.log(AVALogEntry(level: AVALogLevel.Success, event: AVAEvent.Processing, peer: self.setup!.peerName, description: "Leaving critical section"))
                     } else {
                         self.logger.log(AVALogEntry(level: AVALogLevel.Lifecycle, event: AVAEvent.Termination, peer: self.setup!.peerName, description: "Process terminated and will not enter the critical section anymore"))
                         let measurementMessage = AVAMessage(type: AVAMessageType.FinalMeasurement, sender: self.setup!.peerName, payload: nil)
                         self.nodeManager.sendMessage(measurementMessage, toVertex: OBSERVER_NAME)
                     }
+                    let action = AVAMutexAction(type: AVAMutexActionType.Release, timestamp: nextMutex.timestamp)
+                    let message = AVAMessage(type: AVAMessageType.ApplicationData, sender: self.setup!.peerName, payload: action.toJSON())
+                    self.nodeManager.broadcastMessage(message, exceptingVertices: [OBSERVER_NAME])
                 }
             }
         }
@@ -222,7 +229,7 @@ class AVAUebung3: NSObject, AVAService {
                     
                 case .Start:
                     self.scheduleCriticalSectionExecution()
-                    self.scheduleCriticalSectionEntrance()
+                    self.scheduleCriticalSectionEntranceIfNeeded()
                     break
                     
                 case .Request:
@@ -275,7 +282,7 @@ class AVAUebung3: NSObject, AVAService {
         let startMessage = AVAMessage(type: AVAMessageType.ApplicationData, sender: self.setup!.peerName!, payload: AVAMutexAction(type: AVAMutexActionType.Start, timestamp: NSDate().timeIntervalSince1970).toJSON())
         self.nodeManager.broadcastMessage(startMessage, exceptingVertices: [OBSERVER_NAME])
         self.scheduleCriticalSectionExecution()
-        self.scheduleCriticalSectionEntrance()
+        self.scheduleCriticalSectionEntranceIfNeeded()
     }
     
     
