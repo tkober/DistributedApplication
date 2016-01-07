@@ -20,7 +20,7 @@ class AVACriticalSectionEntranceRequest: NSObject {
     var nodesToConfirm = [AVAVertexName]()
     
     
-    init(node: AVAVertexName, timestamp: NSTimeInterval = NSDate().timeIntervalSince1970) {
+    init(node: AVAVertexName, timestamp: NSTimeInterval) {
         self.node = node
         self.timestamp = timestamp
     }

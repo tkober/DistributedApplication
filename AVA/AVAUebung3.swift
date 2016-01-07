@@ -57,7 +57,7 @@ class AVAUebung3: NSObject, AVAService {
     
     
     func requestCriticalSectionEntrance() {
-        let entrance = AVACriticalSectionEntranceRequest(node: self.setup!.peerName!)
+        let entrance = AVACriticalSectionEntranceRequest(node: self.setup!.peerName!, timestamp: NSDate().timeIntervalSince1970)
         let appDelegate = NSApp.delegate as! AppDelegate
         for vertex in appDelegate.topology.topologyExcludingObserver().vertices {
             if vertex.name != appDelegate.setup.peerName {
@@ -107,9 +107,7 @@ class AVAUebung3: NSObject, AVAService {
     
     private func handleMutexConfirmation(mutexAction: AVAMutexAction, fromNode from: AVAVertexName) {
         for mutex in self.mutexQueue {
-            // TODO: Check
-//            if mutex.node == self.setup!.peerName && mutex.timestamp == mutexAction.timestamp {
-            if mutex.node == self.setup!.peerName {
+            if mutex.node == self.setup!.peerName && NSNumber(double: mutex.timestamp).stringValue == NSNumber(double: mutexAction.timestamp).stringValue {
                 if let index = mutex.nodesToConfirm.indexOf(from) {
                     mutex.nodesToConfirm.removeAtIndex(index)
                 }
@@ -118,6 +116,7 @@ class AVAUebung3: NSObject, AVAService {
                 return
             }
         }
+        print("Critical section entrance request not found \(from)@\(mutexAction.timestamp)")
     }
     
     
@@ -273,7 +272,7 @@ class AVAUebung3: NSObject, AVAService {
     
     
     func start() {
-        let startMessage = AVAMessage(type: AVAMessageType.ApplicationData, sender: self.setup!.peerName!, payload: AVAMutexAction(type: AVAMutexActionType.Start).toJSON())
+        let startMessage = AVAMessage(type: AVAMessageType.ApplicationData, sender: self.setup!.peerName!, payload: AVAMutexAction(type: AVAMutexActionType.Start, timestamp: NSDate().timeIntervalSince1970).toJSON())
         self.nodeManager.broadcastMessage(startMessage, exceptingVertices: [OBSERVER_NAME])
         self.scheduleCriticalSectionExecution()
         self.scheduleCriticalSectionEntrance()

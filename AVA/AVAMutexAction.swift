@@ -34,7 +34,7 @@ class AVAMutexAction: NSObject, AVAJSONConvertable {
     let timestamp: NSTimeInterval
     
     
-    init(type: AVAMutexActionType, timestamp: NSTimeInterval = NSDate().timeIntervalSince1970) {
+    init(type: AVAMutexActionType, timestamp: NSTimeInterval) {
         self.type = type
         self.timestamp = timestamp
     }
