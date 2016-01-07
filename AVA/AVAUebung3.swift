@@ -45,8 +45,163 @@ class AVAUebung3: NSObject, AVAService {
     private static let INITIAL_SHARED_RESOURCE_CONTENT = "000000000"
     
     
-    private func scheduleMutexEntrance() {
-        self.logger.log(AVALogEntry(level: AVALogLevel.Warning, event: AVAEvent.Processing, peer: self.setup!.peerName!, description: "Node '\(self.setup!.peerName!)' scheduled mutex entrance"))
+    private var criticalSectionEntranceTimer: NSTimer!
+    
+    
+    private func scheduleCriticalSectionEntrance() {
+        let delay = Double(arc4random_uniform(100)) / 1000
+        dispatch_sync(dispatch_get_main_queue()) { () -> Void in
+            self.criticalSectionEntranceTimer = NSTimer.scheduledTimerWithTimeInterval(delay, target: self, selector: "requestCriticalSectionEntrance", userInfo: nil, repeats: false)
+        }
+    }
+    
+    
+    func requestCriticalSectionEntrance() {
+        let entrance = AVACriticalSectionEntranceRequest(node: self.setup!.peerName!)
+        let appDelegate = NSApp.delegate as! AppDelegate
+        for vertex in appDelegate.topology.topologyExcludingObserver().vertices {
+            if vertex.name != appDelegate.setup.peerName {
+                entrance.nodesToConfirm.append(vertex.name)
+            }
+        }
+        self.logger.log(AVALogEntry(level: AVALogLevel.Warning, event: AVAEvent.Processing, peer: self.setup!.peerName!, description: "Node '\(self.setup!.peerName!)' requested criticical section entrance"))
+        self.addCriticalSectionEntranceRequestToQueue(entrance)
+        let mutexAction = AVAMutexAction(type: AVAMutexActionType.Request, timestamp: entrance.timestamp)
+        let message = AVAMessage(type: AVAMessageType.ApplicationData, sender: self.setup!.peerName!, payload: mutexAction.toJSON())
+        self.nodeManager.broadcastMessage(message, exceptingVertices: [OBSERVER_NAME])
+    }
+    
+    
+    private var _mutexQueue = [AVACriticalSectionEntranceRequest]()
+    
+    
+    private func addCriticalSectionEntranceRequestToQueue(request: AVACriticalSectionEntranceRequest) {
+        self._mutexQueue.append(request)
+//        print("\(self.setup!.peerName!) -> \(self.mutexQueue)")
+    }
+    
+    
+    private func removeCriticalSectionEntranceRequestFromQueue(request: AVACriticalSectionEntranceRequest) {
+        if let index = self._mutexQueue.indexOf(request) {
+            self._mutexQueue.removeAtIndex(index)
+        }
+    }
+    
+    
+    private var mutexQueue: [AVACriticalSectionEntranceRequest] {
+        get {
+            return self._mutexQueue.sort({ (a: AVACriticalSectionEntranceRequest, b: AVACriticalSectionEntranceRequest) -> Bool in
+                return a < b
+            })
+        }
+    }
+    
+    
+    private func handleMutexEntranceRequest(entrance: AVACriticalSectionEntranceRequest) {
+        self.addCriticalSectionEntranceRequestToQueue(entrance)
+        let action = AVAMutexAction(type: AVAMutexActionType.Confirmation, timestamp: entrance.timestamp)
+        let message = AVAMessage(type: AVAMessageType.ApplicationData, sender: self.setup!.peerName, payload: action.toJSON())
+        self.nodeManager.sendMessage(message, toVertex: entrance.node)
+    }
+    
+    
+    private func handleMutexConfirmation(mutexAction: AVAMutexAction, fromNode from: AVAVertexName) {
+        for mutex in self.mutexQueue {
+            // TODO: Check
+//            if mutex.node == self.setup!.peerName && mutex.timestamp == mutexAction.timestamp {
+            if mutex.node == self.setup!.peerName {
+                if let index = mutex.nodesToConfirm.indexOf(from) {
+                    mutex.nodesToConfirm.removeAtIndex(index)
+                }
+                let logEntry = AVALogEntry(level: AVALogLevel.Info, event: AVAEvent.Processing, peer: self.setup!.peerName, description: "'\(from)' confirmed critical section entrance request. \(mutex.nodesToConfirm.count) confirmations pending")
+                self.logger.log(logEntry)
+                return
+            }
+        }
+    }
+    
+    
+    private let ciriticaSectionWorkerQueue = dispatch_queue_create("ava.ciritical_section_worker_queue", DISPATCH_QUEUE_SERIAL)
+    
+    
+    private func scheduleCriticalSectionExecution() {
+        dispatch_async(self.ciriticaSectionWorkerQueue) { () -> Void in
+            self.executeCriticalSecionIfRequired()
+        }
+    }
+    
+    
+    private func executeCriticalSecionIfRequired() {
+        while true {
+            if let nextMutex = self.mutexQueue.first {
+                if nextMutex.node == self.setup!.peerName && nextMutex.nodesToConfirm.count == 0 {
+                    self.removeCriticalSectionEntranceRequestFromQueue(nextMutex)
+                    self.logger.log(AVALogEntry(level: AVALogLevel.Warning, event: AVAEvent.Processing, peer: self.setup!.peerName, description: "Entering critical section"))
+                    self.useSharedResource()
+                    self.logger.log(AVALogEntry(level: AVALogLevel.Success, event: AVAEvent.Processing, peer: self.setup!.peerName, description: "Leaving critical section"))
+                    let action = AVAMutexAction(type: AVAMutexActionType.Release, timestamp: nextMutex.timestamp)
+                    let message = AVAMessage(type: AVAMessageType.ApplicationData, sender: self.setup!.peerName, payload: action.toJSON())
+                    self.nodeManager.broadcastMessage(message, exceptingVertices: [OBSERVER_NAME])
+                    if self.needsAdditionalCriticalSecionEntrance() {
+                        self.scheduleCriticalSectionEntrance()
+                    } else {
+                        self.logger.log(AVALogEntry(level: AVALogLevel.Lifecycle, event: AVAEvent.Termination, peer: self.setup!.peerName, description: "Process terminated and will not enter the critical section anymore"))
+                        let measurementMessage = AVAMessage(type: AVAMessageType.FinalMeasurement, sender: self.setup!.peerName, payload: nil)
+                        self.nodeManager.sendMessage(measurementMessage, toVertex: OBSERVER_NAME)
+                    }
+                }
+            }
+        }
+    }
+    
+    
+    private var zeroReadInSharedResourceCounter = 0
+    
+    
+    private func useSharedResource() {
+        let sharedResouceConent = String(data: NSData(contentsOfFile: self.setup!.sharedResoucePath!)!, encoding: NSUTF8StringEncoding)
+        let sharedResouceRows = sharedResouceConent?.componentsSeparatedByString("\n")
+        var sharedResouceValue = Int(sharedResouceRows!.first!)!
+        
+        if sharedResouceValue == 0 {
+            zeroReadInSharedResourceCounter++
+        }
+        
+        if Int(self.setup!.peerName)! % 2 == 0 {
+            sharedResouceValue--
+        } else {
+            sharedResouceValue++
+        }
+        
+        var newContent = "\(sharedResouceValue)"
+        for var i = 1; i < sharedResouceRows!.count; i++ {
+            newContent += "\n\(sharedResouceRows![i])"
+        }
+        newContent += "\n\(self.setup!.peerName)"
+        do {
+            try newContent.writeToFile(self.setup!.sharedResoucePath!, atomically: true, encoding: NSUTF8StringEncoding)
+        } catch {
+            let logEntry = AVALogEntry(level: AVALogLevel.Error, event: AVAEvent.Processing, peer: self.setup!.peerName, description: "Error while writing to shared resource")
+            self.logger.log(logEntry)
+        }
+    }
+    
+    
+    private func needsAdditionalCriticalSecionEntrance() -> Bool {
+        return self.zeroReadInSharedResourceCounter < 3
+    }
+    
+    
+    private func handleMutexRelease(mutexAction: AVAMutexAction, fromNode from: AVAVertexName) {
+        for mutex in self.mutexQueue {
+            if mutex.node == from && mutex.timestamp == mutexAction.timestamp {
+                self.removeCriticalSectionEntranceRequestFromQueue(mutex)
+                let logEntry = AVALogEntry(level: AVALogLevel.Info, event: AVAEvent.Processing, peer: self.setup!.peerName, description: "Removed critical section entrance of peer '\(mutex.node)' from queue")
+                self.logger.log(logEntry)
+                return
+            }
+        }
+
     }
     
     
@@ -67,16 +222,20 @@ class AVAUebung3: NSObject, AVAService {
                 switch mutexAction.type {
                     
                 case .Start:
-                    self.scheduleMutexEntrance()
+                    self.scheduleCriticalSectionExecution()
+                    self.scheduleCriticalSectionEntrance()
                     break
                     
                 case .Request:
+                    self.handleMutexEntranceRequest(AVACriticalSectionEntranceRequest(node: message.sender, timestamp: mutexAction.timestamp))
                     break
                     
                 case .Confirmation:
+                    self.handleMutexConfirmation(mutexAction, fromNode: message.sender)
                     break
                     
                 case .Release:
+                    self.handleMutexRelease(mutexAction, fromNode: message.sender)
                     break
                     
                 }
@@ -116,14 +275,15 @@ class AVAUebung3: NSObject, AVAService {
     func start() {
         let startMessage = AVAMessage(type: AVAMessageType.ApplicationData, sender: self.setup!.peerName!, payload: AVAMutexAction(type: AVAMutexActionType.Start).toJSON())
         self.nodeManager.broadcastMessage(startMessage, exceptingVertices: [OBSERVER_NAME])
-        self.scheduleMutexEntrance()
+        self.scheduleCriticalSectionExecution()
+        self.scheduleCriticalSectionEntrance()
     }
     
     
     var isRunning = false
     
     
-    var needsMeasurement = true
+    var needsMeasurement = false
     
     
     var finalMeasurements: AVAJSON! {
@@ -138,6 +298,8 @@ class AVAUebung3: NSObject, AVAService {
     
     
     func handleMeasurementMessage(message: AVAMessage) {
-
+        if self.setup!.isObserver {
+            self.logger.log(AVALogEntry(level: AVALogLevel.Lifecycle, event: AVAEvent.Termination, peer: self.setup!.peerName, description: "Node '\(message.sender)' terminated and will not enter the critical section anymore"))
+        }
     }
 }

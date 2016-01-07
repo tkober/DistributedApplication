@@ -78,7 +78,9 @@ class ObserverViewController: NSViewController {
                     appDelegate.log(logEntry)
                     let message = AVAMessage.initializeMessage(OBSERVER_NAME)
                     appDelegate.nodeManager?.sendMessage(message, toVertex: vertex.name)
-                    appDelegate.scheduleTerminationCheck()
+                    if appDelegate.setup.automaticTermination {
+                        appDelegate.scheduleTerminationCheck()
+                    }
                 } else {
                     let logEntry = AVALogEntry(level: AVALogLevel.Error, event: AVAEvent.Processing, peer: OBSERVER_NAME, description: "Initilization failed due to invalid node '\(vertexName)'")
                     appDelegate.log(logEntry)

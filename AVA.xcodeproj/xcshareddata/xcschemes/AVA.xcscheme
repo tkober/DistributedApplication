@@ -67,8 +67,12 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "--instantMeasurement"
+            argument = "--automaticTermination"
             isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "--instantMeasurement"
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "--noGraphviz"
@@ -195,7 +199,7 @@
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "100"
+            argument = "3"
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
@@ -203,7 +207,7 @@
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "10000"
+            argument = "100"
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument

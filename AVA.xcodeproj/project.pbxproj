@@ -30,6 +30,7 @@
 		F19D22C41BE03C31006CB5F8 /* AVAUebung1.swift in Sources */ = {isa = PBXBuildFile; fileRef = F19D22C31BE03C31006CB5F8 /* AVAUebung1.swift */; };
 		F1B3F2CB1BDD79B3009C0E7B /* AVAService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1B3F2CA1BDD79B3009C0E7B /* AVAService.swift */; };
 		F1C697601BE8B53B0022D8F6 /* AVALogViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1C6975F1BE8B53B0022D8F6 /* AVALogViewController.swift */; };
+		F1CB0CD61C3D3761004F5C59 /* AVACriticalSectionEntranceRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1CB0CD51C3D3761004F5C59 /* AVACriticalSectionEntranceRequest.swift */; };
 		F1E816671BDAE5CF00F03284 /* AVAMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1E816661BDAE5CF00F03284 /* AVAMessage.swift */; };
 /* End PBXBuildFile section */
 
@@ -61,6 +62,7 @@
 		F19D22C31BE03C31006CB5F8 /* AVAUebung1.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AVAUebung1.swift; sourceTree = "<group>"; };
 		F1B3F2CA1BDD79B3009C0E7B /* AVAService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AVAService.swift; sourceTree = "<group>"; };
 		F1C6975F1BE8B53B0022D8F6 /* AVALogViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AVALogViewController.swift; sourceTree = "<group>"; };
+		F1CB0CD51C3D3761004F5C59 /* AVACriticalSectionEntranceRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AVACriticalSectionEntranceRequest.swift; sourceTree = "<group>"; };
 		F1E816661BDAE5CF00F03284 /* AVAMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AVAMessage.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -80,6 +82,7 @@
 			children = (
 				DC5DC8241C3C08ED009B3F1A /* AVAUebung3.swift */,
 				DC5DC8261C3C0B06009B3F1A /* AVAMutexAction.swift */,
+				F1CB0CD51C3D3761004F5C59 /* AVACriticalSectionEntranceRequest.swift */,
 			);
 			name = Uebung3;
 			sourceTree = "<group>";
@@ -326,6 +329,7 @@
 				DC613D291C16C95200380987 /* AVASocketStream.swift in Sources */,
 				F19D22C41BE03C31006CB5F8 /* AVAUebung1.swift in Sources */,
 				DC5DC8251C3C08ED009B3F1A /* AVAUebung3.swift in Sources */,
+				F1CB0CD61C3D3761004F5C59 /* AVACriticalSectionEntranceRequest.swift in Sources */,
 				F1E816671BDAE5CF00F03284 /* AVAMessage.swift in Sources */,
 				F1C697601BE8B53B0022D8F6 /* AVALogViewController.swift in Sources */,
 				DCE0004B1C0339A800EDF1FD /* AVAAdjacency.swift in Sources */,

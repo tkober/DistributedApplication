@@ -86,7 +86,7 @@ class AVAVertex: NSObject {
         var result = "\(super.description) {"
         result += "\n\tname -> \(self.name)"
         result += "\n\tip -> \(self.ip)"
-        result += "\nport -> \(self.port)"
+        result += "\n\tport -> \(self.port)"
         result += "\n}"
         return result
     }

@@ -94,6 +94,7 @@ let DISABLE_NODE_UI_LOG_NAME = "--disableNodeUILog"
 let INSTANT_MEASUREMENT_NAME = "--instantMeasurement"
 let NO_GRAPHVIZ_NAME = "--noGraphviz"
 let SHARED_RESOURCE_PATH_NAME = "--sharedResoucre"
+let AUTOMATIC_TERMINATION_NAME = "--automaticTermination"
 
 
 /**
@@ -288,6 +289,13 @@ class AVASetup: NSObject {
     
     /**
      
+     Gibt an, ob automatische Terminierung mittels Doppelzählung verwendet werden soll.
+     
+     */
+    var automaticTermination = false
+    
+    /**
+     
      Der Pfad zur shared resource in Uebung 3.
      
      */
@@ -335,6 +343,7 @@ class AVASetup: NSObject {
         result += "\n\tinstantMeasurement -> \(instantMeasurement)"
         result += "\n\tnoGraphviz -> \(noGraphviz)"
         result += "\n\tsharedResoucePath -> \(sharedResoucePath)"
+        result += "\n\tautomaticTermination -> \(automaticTermination)"
         result += "\n}"
         return result
     }
@@ -580,6 +589,9 @@ class AVAArgumentsParser: NSObject {
                 exit(2)
             }
             setup.sharedResoucePath = (self.currentArgument()! as NSString).stringByExpandingTildeInPath
+        },
+        AUTOMATIC_TERMINATION_NAME: {(setup: AVASetup) -> () in
+            setup.automaticTermination = true
         }
     ]
 }
