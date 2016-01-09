@@ -294,6 +294,8 @@ class AVANodeManager: NSObject {
     func sendMessage(message:AVAMessage, toVertex vertex: AVAVertexName) -> Bool {
         for stream in self.socketStreams {
             if stream.vertex.name == vertex {
+                let lamportTimestamp = LAMPORT_CLOCK.tick()
+                message.lamportTimestamp = lamportTimestamp
                 if let messageData = message.jsonData() {
                     let data = NSMutableData(data: messageData)
                     data.appendData(";".dataUsingEncoding(NSUTF8StringEncoding)!)
@@ -419,6 +421,9 @@ extension AVANodeManager: AVAServerSocketDelegate {
                     if let messageData = messageString.dataUsingEncoding(NSUTF8StringEncoding) {
                         do {
                             let message = try AVAMessage(data: messageData)
+                            if let lamport = message.lamportTimestamp {
+                                LAMPORT_CLOCK.update(lamport)
+                            }
                             if message.sender != OBSERVER_NAME {
                                 self.messageReceivedCount++
                             }

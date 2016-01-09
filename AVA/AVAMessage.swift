@@ -89,6 +89,7 @@ class AVAMessage: NSObject {
     private static let TIMESTAMP_JSON_KEY = "timestamp"
     private static let SENDER_JSON_KEY = "sender"
     private static let PAYLOAD_JSON_KEY = "payload"
+    private static let LAMPORT_TIMESTAMP_KEY = "lamport_timestamp"
     
     
     /**
@@ -121,6 +122,14 @@ class AVAMessage: NSObject {
      
      */
     var payload: AVAJSON?
+    
+    
+    /**
+     
+     
+     
+     */
+    var lamportTimestamp: AVALamportTimestamp?
     
     
     var size: Int {
@@ -175,6 +184,9 @@ class AVAMessage: NSObject {
         let payload = json[AVAMessage.PAYLOAD_JSON_KEY]
         let timestamp = (json[AVAMessage.TIMESTAMP_JSON_KEY] as! NSNumber).doubleValue
         self.init(type: AVAMessageType(rawValue: type.integerValue)!, sender: (sender as! String), payload: payload, timestamp: timestamp)
+        if let lamport = (json[AVAMessage.LAMPORT_TIMESTAMP_KEY] as? NSNumber)?.unsignedLongLongValue {
+            self.lamportTimestamp = lamport
+        }
     }
     
     
@@ -314,6 +326,9 @@ class AVAMessage: NSObject {
         ]
         if let payload = self.payload {
             result[AVAMessage.PAYLOAD_JSON_KEY] = payload
+        }
+        if let lamport = self.lamportTimestamp {
+            result[AVAMessage.LAMPORT_TIMESTAMP_KEY] = NSNumber(unsignedLongLong: lamport)
         }
         return result
     }

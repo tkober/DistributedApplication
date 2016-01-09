@@ -50,7 +50,7 @@ class AVAUebung3: NSObject, AVAService {
     
     private func scheduleCriticalSectionEntranceIfNeeded() {
         if self.needsAdditionalCriticalSecionEntrance() {
-            let delay = (Double(500) + Double(arc4random_uniform(2000))) / Double(1000)
+            let delay = (Double(arc4random_uniform(500))) / Double(1000)
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(delay * Double(NSEC_PER_SEC))), dispatch_get_main_queue()) { () -> Void in
                 self.requestCriticalSectionEntrance()
             }
@@ -64,7 +64,8 @@ class AVAUebung3: NSObject, AVAService {
     
     
     func requestCriticalSectionEntrance() {
-        let entrance = AVACriticalSectionEntranceRequest(node: self.setup!.peerName!, timestamp: NSDate().timeIntervalSince1970)
+        let lamportTimestamp = LAMPORT_CLOCK.tick()
+        let entrance = AVACriticalSectionEntranceRequest(node: self.setup!.peerName!, timestamp: NSDate().timeIntervalSince1970, lamportTimestamp: lamportTimestamp)
         let appDelegate = NSApp.delegate as! AppDelegate
         for vertex in appDelegate.topology.topologyExcludingObserver().vertices {
             if vertex.name != appDelegate.setup.peerName {
@@ -73,7 +74,7 @@ class AVAUebung3: NSObject, AVAService {
         }
         self.logger.log(AVALogEntry(level: AVALogLevel.Warning, event: AVAEvent.Processing, peer: self.setup!.peerName!, description: "Node '\(self.setup!.peerName!)' requested criticical section entrance"))
         self.addCriticalSectionEntranceRequestToQueue(entrance)
-        let mutexAction = AVAMutexAction(type: AVAMutexActionType.Request, timestamp: entrance.timestamp)
+        let mutexAction = AVAMutexAction(type: AVAMutexActionType.Request, timestamp: entrance.timestamp, lamportTimestamp: entrance.lamportTimestamp)
         let message = AVAMessage(type: AVAMessageType.ApplicationData, sender: self.setup!.peerName!, payload: mutexAction.toJSON())
         self.nodeManager.broadcastMessage(message, exceptingVertices: [OBSERVER_NAME])
         self.scheduleCriticalSectionEntranceIfNeeded()
@@ -107,7 +108,7 @@ class AVAUebung3: NSObject, AVAService {
     
     private func handleMutexEntranceRequest(entrance: AVACriticalSectionEntranceRequest) {
         self.addCriticalSectionEntranceRequestToQueue(entrance)
-        let action = AVAMutexAction(type: AVAMutexActionType.Confirmation, timestamp: entrance.timestamp)
+        let action = AVAMutexAction(type: AVAMutexActionType.Confirmation, timestamp: entrance.timestamp, lamportTimestamp: entrance.lamportTimestamp)
         let message = AVAMessage(type: AVAMessageType.ApplicationData, sender: self.setup!.peerName, payload: action.toJSON())
         self.nodeManager.sendMessage(message, toVertex: entrance.node)
     }
@@ -115,7 +116,7 @@ class AVAUebung3: NSObject, AVAService {
     
     private func handleMutexConfirmation(mutexAction: AVAMutexAction, fromNode from: AVAVertexName) {
         for mutex in self.mutexQueue {
-            if mutex.node == self.setup!.peerName && NSNumber(double: mutex.timestamp).stringValue == NSNumber(double: mutexAction.timestamp).stringValue {
+            if mutex.node == self.setup!.peerName && mutex.lamportTimestamp == mutexAction.lamportTimestamp {
                 if let index = mutex.nodesToConfirm.indexOf(from) {
                     mutex.nodesToConfirm.removeAtIndex(index)
                 }
@@ -152,7 +153,7 @@ class AVAUebung3: NSObject, AVAService {
                         let measurementMessage = AVAMessage(type: AVAMessageType.FinalMeasurement, sender: self.setup!.peerName, payload: nil)
                         self.nodeManager.sendMessage(measurementMessage, toVertex: OBSERVER_NAME)
                     }
-                    let action = AVAMutexAction(type: AVAMutexActionType.Release, timestamp: nextMutex.timestamp)
+                    let action = AVAMutexAction(type: AVAMutexActionType.Release, timestamp: nextMutex.timestamp, lamportTimestamp: nextMutex.lamportTimestamp)
                     let message = AVAMessage(type: AVAMessageType.ApplicationData, sender: self.setup!.peerName, payload: action.toJSON())
                     self.nodeManager.broadcastMessage(message, exceptingVertices: [OBSERVER_NAME])
                 }
@@ -233,7 +234,7 @@ class AVAUebung3: NSObject, AVAService {
                     break
                     
                 case .Request:
-                    self.handleMutexEntranceRequest(AVACriticalSectionEntranceRequest(node: message.sender, timestamp: mutexAction.timestamp))
+                    self.handleMutexEntranceRequest(AVACriticalSectionEntranceRequest(node: message.sender, timestamp: mutexAction.timestamp, lamportTimestamp: mutexAction.lamportTimestamp))
                     break
                     
                 case .Confirmation:
@@ -279,7 +280,7 @@ class AVAUebung3: NSObject, AVAService {
     
     
     func start() {
-        let startMessage = AVAMessage(type: AVAMessageType.ApplicationData, sender: self.setup!.peerName!, payload: AVAMutexAction(type: AVAMutexActionType.Start, timestamp: NSDate().timeIntervalSince1970).toJSON())
+        let startMessage = AVAMessage(type: AVAMessageType.ApplicationData, sender: self.setup!.peerName!, payload: AVAMutexAction(type: AVAMutexActionType.Start, timestamp: NSDate().timeIntervalSince1970, lamportTimestamp: LAMPORT_CLOCK.tick()).toJSON())
         self.nodeManager.broadcastMessage(startMessage, exceptingVertices: [OBSERVER_NAME])
         self.scheduleCriticalSectionExecution()
         self.scheduleCriticalSectionEntranceIfNeeded()

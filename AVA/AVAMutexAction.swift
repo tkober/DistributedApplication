@@ -28,15 +28,20 @@ class AVAMutexAction: NSObject, AVAJSONConvertable {
     
     private static let TIMESTAMP_JSON_KEY = "timestamp"
     
+    private static let LAMPORT_TIMESTAMP_JSON_KEY = "lamport_timestamp"
+    
     
     let type: AVAMutexActionType
     
     let timestamp: NSTimeInterval
     
+    let lamportTimestamp: AVALamportTimestamp
     
-    init(type: AVAMutexActionType, timestamp: NSTimeInterval) {
+    
+    init(type: AVAMutexActionType, timestamp: NSTimeInterval, lamportTimestamp: AVALamportTimestamp) {
         self.type = type
         self.timestamp = timestamp
+        self.lamportTimestamp = lamportTimestamp
     }
     
     
@@ -45,9 +50,9 @@ class AVAMutexAction: NSObject, AVAJSONConvertable {
     
     convenience required init(json: AVAJSON) throws {
         
-        if let typeRaw = ((json as! NSDictionary)[AVAMutexAction.TYPE_JSON_KEY] as? NSNumber), let timestampRaw = ((json as! NSDictionary)[AVAMutexAction.TIMESTAMP_JSON_KEY] as? NSNumber) {
+        if let typeRaw = ((json as! NSDictionary)[AVAMutexAction.TYPE_JSON_KEY] as? NSNumber), let timestampRaw = ((json as! NSDictionary)[AVAMutexAction.TIMESTAMP_JSON_KEY] as? NSNumber), let lamporTimestampRaw = ((json as! NSDictionary)[AVAMutexAction.LAMPORT_TIMESTAMP_JSON_KEY] as? NSNumber) {
             if let type = AVAMutexActionType(rawValue: typeRaw.integerValue) {
-                self.init(type: type, timestamp: timestampRaw.doubleValue)
+                self.init(type: type, timestamp: timestampRaw.doubleValue, lamportTimestamp: lamporTimestampRaw.unsignedLongLongValue)
             } else {
                 throw AVAJSONError.invalidPayload
             }
@@ -59,7 +64,8 @@ class AVAMutexAction: NSObject, AVAJSONConvertable {
     func toJSON() -> AVAJSON {
         return [
             AVAMutexAction.TYPE_JSON_KEY: NSNumber(integer: self.type.rawValue),
-            AVAMutexAction.TIMESTAMP_JSON_KEY: NSNumber(double: self.timestamp)
+            AVAMutexAction.TIMESTAMP_JSON_KEY: NSNumber(double: self.timestamp),
+            AVAMutexAction.LAMPORT_TIMESTAMP_JSON_KEY: NSNumber(unsignedLongLong: self.lamportTimestamp)
         ]
     }
 }

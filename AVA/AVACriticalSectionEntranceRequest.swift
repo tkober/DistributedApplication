@@ -14,20 +14,24 @@ class AVACriticalSectionEntranceRequest: NSObject {
     let timestamp: NSTimeInterval
     
     
+    let lamportTimestamp: AVALamportTimestamp
+    
+    
     let node: AVAVertexName
     
     
     var nodesToConfirm = [AVAVertexName]()
     
     
-    init(node: AVAVertexName, timestamp: NSTimeInterval) {
+    init(node: AVAVertexName, timestamp: NSTimeInterval, lamportTimestamp: AVALamportTimestamp) {
         self.node = node
         self.timestamp = timestamp
+        self.lamportTimestamp = lamportTimestamp
     }
     
     
     override var description: String {
-        return "<\(super.description):: peer -> \(self.node), timestamp -> \(self.timestamp)>"
+        return "<\(super.description):: peer -> \(self.node), timestamp -> \(self.timestamp), lamportTimestamp -> \(self.lamportTimestamp)>"
     }
 }
 

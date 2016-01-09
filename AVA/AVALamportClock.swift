@@ -12,7 +12,7 @@ import Cocoa
 let LAMPORT_CLOCK = AVALamportClock.sharedInstance
 
 
-typealias AVALamportTimestamp = UInt
+typealias AVALamportTimestamp = UInt64
 
 
 class AVALamportClock: NSObject {
