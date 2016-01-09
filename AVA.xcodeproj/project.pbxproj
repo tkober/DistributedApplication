@@ -12,6 +12,7 @@
 		DC613D291C16C95200380987 /* AVASocketStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC613D281C16C95200380987 /* AVASocketStream.swift */; };
 		DCE000481C03251C00EDF1FD /* AVAVertex.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCE000471C03251C00EDF1FD /* AVAVertex.swift */; };
 		DCE0004B1C0339A800EDF1FD /* AVAAdjacency.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCE0004A1C0339A800EDF1FD /* AVAAdjacency.swift */; };
+		F11DB1C11C40D7C700F76B3E /* AVALamportClock.swift in Sources */ = {isa = PBXBuildFile; fileRef = F11DB1C01C40D7C700F76B3E /* AVALamportClock.swift */; };
 		F126F5181C2FC35800DC3748 /* AVAUebung2.swift in Sources */ = {isa = PBXBuildFile; fileRef = F126F5171C2FC35800DC3748 /* AVAUebung2.swift */; };
 		F126F51A1C2FC94B00DC3748 /* AVALeaderFollowerInstance.swift in Sources */ = {isa = PBXBuildFile; fileRef = F126F5191C2FC94B00DC3748 /* AVALeaderFollowerInstance.swift */; };
 		F135276A1C0B5AB200786C24 /* AVAServerSocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = F13527691C0B5AB200786C24 /* AVAServerSocket.swift */; };
@@ -40,6 +41,7 @@
 		DC613D281C16C95200380987 /* AVASocketStream.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AVASocketStream.swift; sourceTree = "<group>"; };
 		DCE000471C03251C00EDF1FD /* AVAVertex.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AVAVertex.swift; sourceTree = "<group>"; };
 		DCE0004A1C0339A800EDF1FD /* AVAAdjacency.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AVAAdjacency.swift; sourceTree = "<group>"; };
+		F11DB1C01C40D7C700F76B3E /* AVALamportClock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AVALamportClock.swift; sourceTree = "<group>"; };
 		F126F5171C2FC35800DC3748 /* AVAUebung2.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AVAUebung2.swift; sourceTree = "<group>"; };
 		F126F5191C2FC94B00DC3748 /* AVALeaderFollowerInstance.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AVALeaderFollowerInstance.swift; sourceTree = "<group>"; };
 		F13527691C0B5AB200786C24 /* AVAServerSocket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AVAServerSocket.swift; sourceTree = "<group>"; };
@@ -95,6 +97,14 @@
 			name = SocketStream;
 			sourceTree = "<group>";
 		};
+		F11DB1BF1C40D7AD00F76B3E /* LamportClock */ = {
+			isa = PBXGroup;
+			children = (
+				F11DB1C01C40D7C700F76B3E /* AVALamportClock.swift */,
+			);
+			name = LamportClock;
+			sourceTree = "<group>";
+		};
 		F126F5161C2FBC6300DC3748 /* Uebung2 */ = {
 			isa = PBXGroup;
 			children = (
@@ -143,6 +153,7 @@
 			children = (
 				F13699EE1C04DBB400D71D38 /* AVA-Bridging-Header.h */,
 				F15C07CA1BD75CCF00EB41D8 /* AppDelegate.swift */,
+				F11DB1BF1C40D7AD00F76B3E /* LamportClock */,
 				F1B3F2C91BDD79A4009C0E7B /* Service */,
 				F146FD411BD97ABF0028B4E1 /* Grahviz */,
 				F161EDE71BD856D8008131C3 /* Topology */,
@@ -329,6 +340,7 @@
 				DC613D291C16C95200380987 /* AVASocketStream.swift in Sources */,
 				F19D22C41BE03C31006CB5F8 /* AVAUebung1.swift in Sources */,
 				DC5DC8251C3C08ED009B3F1A /* AVAUebung3.swift in Sources */,
+				F11DB1C11C40D7C700F76B3E /* AVALamportClock.swift in Sources */,
 				F1CB0CD61C3D3761004F5C59 /* AVACriticalSectionEntranceRequest.swift in Sources */,
 				F1E816671BDAE5CF00F03284 /* AVAMessage.swift in Sources */,
 				F1C697601BE8B53B0022D8F6 /* AVALogViewController.swift in Sources */,
